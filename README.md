@@ -1,6 +1,6 @@
 # WebScript
 
-Utilidades para TypeScript e JavaScript.
+Utilidades para TypeScript e JavaScript voltados para desenvolvimento web.
 
 O código-fonte...
 - ... está armazenado e versionado nas pastas `ts` e `js`, para TypeScript e JavaScript respectivamente.
