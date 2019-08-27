@@ -1,0 +1,15 @@
+{
+  "name": "webscript",
+  "version": "1.0.0",
+  "description": "Utils for TypeScript and JavaScript.",
+  "scripts": {
+    "build": "rimraf ./js && tsc"
+  },
+  "author": "sergio@cabral.br.com",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "rimraf": "^3.0.0",
+    "typescript": "^3.5.3"
+  }
+}
