@@ -1,3 +1,3 @@
 # Cabrones.npm — JavaScript Helpers
 
-Not implemented.
+Not implemented
