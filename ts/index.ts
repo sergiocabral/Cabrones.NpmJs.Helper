@@ -1,4 +1,5 @@
 function helloWord(){
-  console.log("Hello World, but not implemented");
+  const message: string = "Hello World, but not implemented";
+  console.log(message);
 };
 module.exports = helloWord;

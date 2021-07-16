@@ -2,11 +2,17 @@
   "name": "@sergiocabral/helper",
   "version": "1.0.2",
   "description": "JavaScript helpers for NodeJS",
-  "main": "index.js",
+  "main": "js/index.js",
+  "types": "js/index.d.ts",
   "scripts": {
-    "start": "node index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build",
+    "version" : "git add -A ts",
+    "postversion": "git push && git push --tags"
   },
+  "files": [
+    "js/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sergiocabral/Cabrones.npm.git"
