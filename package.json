@@ -5,10 +5,13 @@
   "main": "js/index.js",
   "types": "js/index.d.ts",
   "scripts": {
+    "format": "prettier --write \"ts/**/*.ts\" \"js/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
     "build": "tsc",
     "prepare": "npm run build",
     "version": "git add -A ts",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "test": "jest"
   },
   "files": [
     "js/**/*"
@@ -24,7 +27,13 @@
   },
   "homepage": "https://github.com/sergiocabral/Cabrones.npm#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.24",
     "@types/node": "^16.3.2",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "ts-jest": "^27.0.3",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.3.5"
   }
 }
