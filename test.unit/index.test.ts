@@ -1,4 +1,4 @@
-import helloWord from '../ts/index';
+import { helloWord } from '../ts/index';
 
 test('teste', () => {
     const result = helloWord();
