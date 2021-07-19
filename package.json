@@ -11,7 +11,7 @@
     "prepare": "npm run build",
     "version": "git add -A ts",
     "postversion": "git push && git push --tags",
-    "test": "jest"
+    "test": "jest --config jest.config.ts"
   },
   "files": [
     "js/**/*"
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/node": "^16.3.2",
+    "ts-node": "^10.1.0",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.3",
