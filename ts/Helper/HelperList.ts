@@ -1,7 +1,7 @@
 /**
  * Utilitários para listas (array).
  */
-export abstract class List {
+export class HelperList {
   /**
    * Captura um item aleatório na lista.
    * @param array Lista.

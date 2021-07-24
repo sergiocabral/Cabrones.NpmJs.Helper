@@ -1,5 +1,5 @@
-import { List } from './List';
+import { HelperList } from './Helper/HelperList';
 
 export {
-  List
+  HelperList
 }
