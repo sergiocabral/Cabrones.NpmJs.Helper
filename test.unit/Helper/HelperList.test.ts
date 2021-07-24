@@ -1,6 +1,6 @@
 import { HelperList } from '../../ts';
 
-describe('Classe List', () => {
+describe('Classe HelperList', () => {
   test('Instanciar apenas para ter 100% de cobertura', () => {
     // Arrange, Given
 
