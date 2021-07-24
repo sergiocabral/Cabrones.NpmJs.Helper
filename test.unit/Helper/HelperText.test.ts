@@ -14,4 +14,39 @@ describe('Classe HelperText', () => {
     expect(instance).toBeDefined();
   });
 
+  test('escapeRegExp deve escapar uma string para expressão regular', () => {
+    // Arrange, Given
+
+    const regexSymbols = [
+      '.',
+      '*',
+      '+',
+      '?',
+      '^',
+      '$',
+      '{',
+      '}',
+      '(',
+      ')',
+      '|',
+      '[',
+      ']',
+      '\\'
+    ];
+    const regexSymbolsEscaped = [];
+
+    // Act, When
+
+    for (const regexSymbol of regexSymbols) {
+      regexSymbolsEscaped.push(HelperText.escapeRegExp(regexSymbol));
+    }
+
+    // Assert, Then
+
+    expect(regexSymbols.length).toBe(regexSymbolsEscaped.length);
+    for (let i = 0; i < regexSymbols.length && i < regexSymbolsEscaped.length; i++) {
+      expect(regexSymbolsEscaped[i]).not.toBe(regexSymbols[i]);
+      expect(regexSymbolsEscaped[i]).toBe('\\' + regexSymbols[i]);
+    }
+  });
 });
