@@ -1,7 +1,6 @@
 import { HelperList } from '../../ts';
 
 describe('Classe List', () => {
-
   test('Instanciar apenas para ter 100% de cobertura', () => {
     // Arrange, Given
 
@@ -20,9 +19,9 @@ describe('Classe List', () => {
     const sampleLength = 1000;
     const sample = [];
 
-    const item1 = "qualquer coisa";
-    const item2 = "outra coisa";
-    const list = [ item1, item2 ];
+    const item1 = 'qualquer coisa';
+    const item2 = 'outra coisa';
+    const list = [item1, item2];
 
     // Act, When
 
@@ -38,5 +37,4 @@ describe('Classe List', () => {
 
     expect(reason).toBe(1);
   });
-
 });

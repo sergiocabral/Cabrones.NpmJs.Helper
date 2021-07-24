@@ -1,7 +1,6 @@
 import { HelperText } from '../../ts';
 
 describe('Classe HelperText', () => {
-
   test('Instanciar apenas para ter 100% de cobertura', () => {
     // Arrange, Given
 
@@ -17,22 +16,7 @@ describe('Classe HelperText', () => {
   test('escapeRegExp deve escapar uma string para expressão regular', () => {
     // Arrange, Given
 
-    const regexSymbols = [
-      '.',
-      '*',
-      '+',
-      '?',
-      '^',
-      '$',
-      '{',
-      '}',
-      '(',
-      ')',
-      '|',
-      '[',
-      ']',
-      '\\'
-    ];
+    const regexSymbols = ['.', '*', '+', '?', '^', '$', '{', '}', '(', ')', '|', '[', ']', '\\'];
     const regexSymbolsEscaped = [];
 
     // Act, When
