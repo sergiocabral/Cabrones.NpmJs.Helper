@@ -1,6 +1,6 @@
 {
   "name": "@sergiocabral/helper",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "JavaScript helpers for NodeJS",
   "main": "js/index.js",
   "types": "js/index.d.ts",
@@ -9,7 +9,7 @@
     "lint": "tslint -p tsconfig.json",
     "build": "tsc",
     "prepare": "npm run build",
-    "version": "git add -A ts",
+    "version": "npm run test && git add -A ts",
     "postversion": "git push && git push --tags",
     "test": "jest --config jest.config.ts"
   },
