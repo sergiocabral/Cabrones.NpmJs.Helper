@@ -49,4 +49,23 @@ describe('Classe HelperText', () => {
       expect(regexSymbolsEscaped[i]).toBe('\\' + regexSymbols[i]);
     }
   });
+
+  test('replaceAll deve substituir todas as ocorrências', () => {
+    // Arrange, Given
+
+    const search = 'a';
+    const replacement = 'b';
+    const initialText = search.repeat(5);
+
+    // Act, When
+
+    const replacedText = HelperText.replaceAll(initialText, search, replacement);
+
+    // Assert, Then
+
+    expect(replacedText.length).toBe(initialText.length);
+
+    const expectedText = replacement.repeat(initialText.length);
+    expect(replacedText).toBe(expectedText);
+  });
 });
