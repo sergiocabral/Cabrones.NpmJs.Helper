@@ -12,7 +12,7 @@ describe('Classe List', () => {
     // Assert, Then
 
     expect(instance).toBeDefined();
-  })
+  });
 
   test('getRandom deve retornar um elemento aleatório da lista', () => {
     // Arrange, Given
@@ -38,4 +38,5 @@ describe('Classe List', () => {
 
     expect(reason).toBe(1);
   });
+
 });
