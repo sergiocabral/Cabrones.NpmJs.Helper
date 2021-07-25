@@ -1,6 +1,6 @@
 import { LogLevel } from './LogLevel';
 import { ILogWriter } from './ILogWriter';
-import { LogWriterToConsole } from "./LogWriterToConsole";
+import { LogWriterToConsole } from './LogWriterToConsole';
 
 /**
  * Agrupador de escritores de log.
