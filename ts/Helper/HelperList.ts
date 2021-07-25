@@ -1,13 +1,13 @@
 /**
  * Utilitários para listas (array).
  */
-import { InvalidExecutionError } from "../Error/InvalidExecutionError";
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 
 export class HelperList {
   /**
    * Construtor proibido.
    */
-  public constructor () {
+  public constructor() {
     throw new InvalidExecutionError('This is a static class.');
   }
 

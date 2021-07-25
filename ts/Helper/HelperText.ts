@@ -1,14 +1,14 @@
 /**
  * Utilitários para texto (string).
  */
-import { InvalidExecutionError } from "../Error/InvalidExecutionError";
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { KeyValue } from '../Type/KeyValue';
 
 export class HelperText {
   /**
    * Construtor proibido.
    */
-  public constructor () {
+  public constructor() {
     throw new InvalidExecutionError('This is a static class.');
   }
 
