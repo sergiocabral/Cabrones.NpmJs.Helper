@@ -21,6 +21,7 @@ import { LogLevel } from './Log/LogLevel';
 import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
+import './Helper/Prototype/Array';
 import './Helper/Prototype/String';
 
 export {
