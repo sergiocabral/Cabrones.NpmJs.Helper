@@ -4,13 +4,13 @@ declare global {
   /**
    * Estender objetos tipo Array.
    */
-  interface Array<T> {
-    getRandom<T>(): T;
+  interface Array<T = unknown> {
+    getRandom(): T;
   }
 }
 
-Array.prototype.getRandom = function <T>(): T {
-  return HelperList.getRandom(this);
+Array.prototype.getRandom = function <T = unknown>(): T {
+  return HelperList.getRandom<T>(this);
 };
 
 export {};
