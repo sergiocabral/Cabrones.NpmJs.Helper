@@ -1,16 +1,16 @@
 import { HelperList } from '../../ts';
+import { InvalidExecutionError } from "../../ts/Error/InvalidExecutionError";
 
 describe('Classe HelperList', () => {
-  test('Instanciar apenas para ter 100% de cobertura', () => {
+  test('Não deve permitir instanciar', () => {
     // Arrange, Given
-
     // Act, When
 
-    const instance = new HelperList();
+    const instantiate = () => new HelperList();
 
     // Assert, Then
 
-    expect(instance).toBeDefined();
+    expect(instantiate).toThrowError(InvalidExecutionError);
   });
 
   test('getRandom deve retornar um elemento aleatório da lista', () => {

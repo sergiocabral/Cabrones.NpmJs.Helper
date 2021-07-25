@@ -1,16 +1,16 @@
-import { HelperText } from '../../ts';
+import { HelperText } from "../../ts";
+import { InvalidExecutionError } from "../../ts/Error/InvalidExecutionError";
 
 describe('Classe HelperText', () => {
-  test('Instanciar apenas para ter 100% de cobertura', () => {
+  test('Não deve permitir instanciar', () => {
     // Arrange, Given
-
     // Act, When
 
-    const instance = new HelperText();
+    const instantiate = () => new HelperText();
 
     // Assert, Then
 
-    expect(instance).toBeDefined();
+    expect(instantiate).toThrowError(InvalidExecutionError);
   });
 
   test('escapeRegExp deve escapar uma string para expressão regular', () => {

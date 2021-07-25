@@ -1,9 +1,17 @@
 /**
  * Utilitários para texto (string).
  */
+import { InvalidExecutionError } from "../Error/InvalidExecutionError";
 import { KeyValue } from '../Type/KeyValue';
 
 export class HelperText {
+  /**
+   * Construtor proibido.
+   */
+  public constructor () {
+    throw new InvalidExecutionError('This is a static class.');
+  }
+
   /**
    * Substituir valores dentro de um template de texto.
    * @param template Template contendo variáveis como {0}, {1}... ou {prop1}, {prop2}...
