@@ -37,17 +37,14 @@ export {
   NotReadyError,
   RequestError,
   ShouldNeverHappenError,
-
   HelperList,
   HelperObject,
   HelperText,
-
   ILogMessage,
   ILogWriter,
   Logger,
   LogLevel,
   LogWriter,
   LogWriterToConsole,
-
   KeyValue
 };
