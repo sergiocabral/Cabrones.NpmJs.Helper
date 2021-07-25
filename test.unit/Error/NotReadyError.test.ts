@@ -1,4 +1,4 @@
-import { NotReadyError } from '../../ts/Error/NotReadyError';
+import { NotReadyError } from '../../ts';
 
 describe('Classe NotReadyError', function () {
   test('Criar uma instância de erro', () => {

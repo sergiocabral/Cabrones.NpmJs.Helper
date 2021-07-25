@@ -1,4 +1,4 @@
-import { RequestError } from '../../ts/Error/RequestError';
+import { RequestError } from '../../ts';
 
 describe('Classe RequestError', function () {
   test('Criar uma instância de erro', () => {

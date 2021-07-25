@@ -1,4 +1,4 @@
-import { ShouldNeverHappenError } from '../../ts/Error/ShouldNeverHappenError';
+import { ShouldNeverHappenError } from '../../ts';
 
 describe('Classe ShouldNeverHappenError', function () {
   test('Criar uma instância de erro', () => {

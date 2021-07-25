@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../../ts/Error/NotImplementedError';
+import { NotImplementedError } from '../../ts';
 
 describe('Classe NotImplementedError', function () {
   test('Criar uma instância de erro', () => {

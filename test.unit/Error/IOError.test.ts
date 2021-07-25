@@ -1,4 +1,4 @@
-import { IOError } from '../../ts/Error/IOError';
+import { IOError } from '../../ts';
 
 describe('Classe IOError', function () {
   test('Criar uma instância de erro', () => {

@@ -1,4 +1,4 @@
-import { NetworkError } from '../../ts/Error/NetworkError';
+import { NetworkError } from '../../ts';
 
 describe('Classe NetworkError', function () {
   test('Criar uma instância de erro', () => {

@@ -1,4 +1,4 @@
-import { InvalidExecutionError } from '../../ts/Error/InvalidExecutionError';
+import { InvalidExecutionError } from '../../ts';
 
 describe('Classe InvalidExecutionError', function () {
   test('Criar uma instância de erro', () => {

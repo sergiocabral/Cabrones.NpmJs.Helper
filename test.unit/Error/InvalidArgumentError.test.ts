@@ -1,4 +1,4 @@
-import { InvalidArgumentError } from '../../ts/Error/InvalidArgumentError';
+import { InvalidArgumentError } from '../../ts';
 
 describe('Classe InvalidArgumentError', function () {
   test('Criar uma instância de erro', () => {

@@ -1,4 +1,4 @@
-import { InvalidUserOperationError } from '../../ts/Error/InvalidUserOperationError';
+import { InvalidUserOperationError } from '../../ts';
 
 describe('Classe InvalidUserOperationError', function () {
   test('Criar uma instância de erro', () => {

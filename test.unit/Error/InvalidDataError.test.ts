@@ -1,4 +1,4 @@
-import { InvalidDataError } from '../../ts/Error/InvalidDataError';
+import { InvalidDataError } from '../../ts';
 
 describe('Classe InvalidDataError', function () {
   test('Criar uma instância de erro', () => {

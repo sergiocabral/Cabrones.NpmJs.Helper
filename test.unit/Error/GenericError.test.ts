@@ -1,4 +1,4 @@
-import { GenericError } from '../../ts/Error/GenericError';
+import { GenericError } from '../../ts';
 
 describe('Classe GenericError', function () {
   test('Criar uma instância de erro', () => {

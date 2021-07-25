@@ -1,5 +1,4 @@
-import { HelperText } from '../../../ts';
-import { KeyValue } from '../../../ts/Type/KeyValue';
+import { HelperText, KeyValue } from '../../../ts';
 
 describe('Prototype para String', () => {
   const originals: KeyValue<any> = {};

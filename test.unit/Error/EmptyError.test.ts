@@ -1,4 +1,4 @@
-import { EmptyError } from '../../ts/Error/EmptyError';
+import { EmptyError } from '../../ts';
 
 describe('Classe EmptyError', function () {
   test('Criar uma instância de erro', () => {

@@ -1,5 +1,4 @@
-import { HelperList } from '../../ts';
-import { InvalidExecutionError } from '../../ts/Error/InvalidExecutionError';
+import { HelperList, InvalidExecutionError } from '../../ts';
 
 describe('Classe HelperList', () => {
   test('Não deve permitir instanciar', () => {

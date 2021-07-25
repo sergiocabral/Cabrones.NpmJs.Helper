@@ -1,5 +1,4 @@
-import { HelperText } from '../../ts';
-import { InvalidExecutionError } from '../../ts/Error/InvalidExecutionError';
+import { HelperText, InvalidExecutionError } from '../../ts';
 
 describe('Classe HelperText', () => {
   test('Não deve permitir instanciar', () => {
