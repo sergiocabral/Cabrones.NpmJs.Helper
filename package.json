@@ -20,14 +20,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sergiocabral/Cabrones.npm.git"
+    "url": "git+https://github.com/sergiocabral/Cabrones.NpmJs.Helper.git"
   },
   "author": "sergiocabral.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sergiocabral/Cabrones.npm/issues"
+    "url": "https://github.com/sergiocabral/Cabrones.NpmJs.Helper/issues"
   },
-  "homepage": "https://github.com/sergiocabral/Cabrones.npm#readme",
+  "homepage": "https://github.com/sergiocabral/node_modules#readme",
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/node": "^16.4.1",
