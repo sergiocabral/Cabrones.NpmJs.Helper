@@ -1,3 +1,3 @@
-# node_modules — JavaScript Helpers
+# Cabrones.NpmJs — JavaScript Helpers
 
-Not implemented
+General-purpose functionality in JavaScript.
