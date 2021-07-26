@@ -32,6 +32,7 @@ export class LogWriterToConsole extends LogWriter {
       case LogLevel.Fatal:
         log = console.error;
         break;
+      case LogLevel.Verbose:
       default:
         log = console.debug;
         break;

@@ -9,19 +9,19 @@ import { LogLevel } from './LogLevel';
  */
 export abstract class LogWriter implements ILogWriter {
   /**
-   * Nível mínimo de log para aceitar escrita do log recebido.
+   * Construtor.
+   * @param minimumLevel Nível mínimo de log para aceitar escrita do log recebido.
+   * @param defaultLogLevel Nível padrão de log quando não informado
    */
-  public minimumLevel: LogLevel = LogLevel.Verbose;
+  public constructor(
+    public minimumLevel: LogLevel = LogLevel.Verbose,
+    public defaultLogLevel: LogLevel = LogWriter.defaultLogLevel
+  ) {}
 
   /**
    * Nível padrão de log quando não informado.
    */
   public static defaultLogLevel: LogLevel = LogLevel.Debug;
-
-  /**
-   * Nível padrão de log quando não informado.
-   */
-  public defaultLogLevel: LogLevel = LogWriter.defaultLogLevel;
 
   /**
    * Posta uma mensagem de log.
