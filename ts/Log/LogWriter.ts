@@ -14,9 +14,14 @@ export abstract class LogWriter implements ILogWriter {
    * @param defaultLogLevel Nível padrão de log quando não informado
    */
   public constructor(
-    public minimumLevel: LogLevel = LogLevel.Verbose,
+    public minimumLevel: LogLevel = LogWriter.minimumLevel,
     public defaultLogLevel: LogLevel = LogWriter.defaultLogLevel
   ) {}
+
+  /**
+   * Nível mínimo de log para aceitar escrita do log recebido.
+   */
+  public static minimumLevel: LogLevel = LogLevel.Verbose;
 
   /**
    * Nível padrão de log quando não informado.
@@ -42,7 +47,6 @@ export abstract class LogWriter implements ILogWriter {
     values = !HelperObject.isFunction(values) ? values : (values as () => unknown)();
     const message = HelperText.querystring(messageTemplate, values);
     const timestamp = new Date();
-    level = level ?? this.defaultLogLevel;
     const logMessage: ILogMessage = { message, timestamp, level, section };
     this.write(logMessage, messageTemplate, values);
   }
