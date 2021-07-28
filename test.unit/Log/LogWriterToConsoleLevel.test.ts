@@ -120,6 +120,38 @@ describe('Class LogWriterToConsoleLevel', () => {
 
       expect(mockLogWrite.mock.calls.length).toBe(levels.length);
     });
+    test('getConsoleFunction deve retorna a função para log pelo nome', () => {
+      // Arrange, Given
+
+      const sut = new LogWriterToConsole();
+
+      const correlationExpected: {
+        [index: string]: (message: string) => void;
+      } = {
+        error: console.error,
+        warn: console.warn,
+        info: console.info,
+        log: console.log,
+        debug: console.debug
+      };
+
+      const correlationVerified: {
+        [index: string]: (message: string) => void;
+      } = {};
+
+      // Act, When
+
+      for (const name of Object.keys(correlationExpected)) {
+        const functionName = name as 'error' | 'warn' | 'info' | 'log' | 'debug';
+        correlationVerified[functionName] = sut.getConsoleFunction(functionName);
+      }
+
+      // Assert, Then
+
+      for (const name of Object.keys(correlationExpected)) {
+        expect(correlationVerified[name]).toBe(correlationExpected[name]);
+      }
+    });
   });
 
   describe('Formatação da mensagem', () => {
