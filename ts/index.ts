@@ -15,6 +15,7 @@ import { HelperList } from './Helper/HelperList';
 import { HelperNumeric } from './Helper/HelperNumeric';
 import { HelperObject } from './Helper/HelperObject';
 import { HelperText } from './Helper/HelperText';
+import { WordGenerator } from './Helper/WordGenerator';
 import { ILogMessage } from './Log/ILogMessage';
 import { ILogWriter } from './Log/ILogWriter';
 import { Logger } from './Log/Logger';
@@ -43,6 +44,7 @@ export {
   HelperNumeric,
   HelperObject,
   HelperText,
+  WordGenerator,
   ILogMessage,
   ILogWriter,
   Logger,
