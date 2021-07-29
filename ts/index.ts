@@ -12,6 +12,7 @@ import { NotReadyError } from './Error/NotReadyError';
 import { RequestError } from './Error/RequestError';
 import { ShouldNeverHappenError } from './Error/ShouldNeverHappenError';
 import { HelperList } from './Helper/HelperList';
+import { HelperNumeric } from './Helper/HelperNumeric';
 import { HelperObject } from './Helper/HelperObject';
 import { HelperText } from './Helper/HelperText';
 import { ILogMessage } from './Log/ILogMessage';
@@ -39,6 +40,7 @@ export {
   RequestError,
   ShouldNeverHappenError,
   HelperList,
+  HelperNumeric,
   HelperObject,
   HelperText,
   ILogMessage,
