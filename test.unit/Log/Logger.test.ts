@@ -58,7 +58,7 @@ describe('Class Logger', () => {
 
       const mockLogWriterPost = jest.fn();
 
-      const count = 10;
+      const count = Math.floor(Math.random() * 100) + 5;
       const logWriters: ILogWriter[] = [];
       for (let i = 0; i < count; i++) {
         logWriters.push({ post: mockLogWriterPost });

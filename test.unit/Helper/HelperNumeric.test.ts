@@ -1,4 +1,4 @@
-import { KeyValue, HelperNumeric } from '../../ts';
+import { KeyValue, HelperNumeric, InvalidArgumentError } from "../../ts";
 
 describe('Classe HelperNumeric', () => {
   describe('random() deve retorna um número aleatório', () => {
@@ -91,5 +91,50 @@ describe('Classe HelperNumeric', () => {
       expect(deviation).toBeGreaterThanOrEqual(1 - percentAcceptableDeviation);
       expect(deviation).toBeLessThanOrEqual(1 + percentAcceptableDeviation);
     }
+  });
+  describe('increment deve somar uma valor a qualquer valor numérico de qualquer comprimento', () => {
+    test('deve incrementar um número comum', () => {
+      // Arrange, Given
+
+      const initialNumber = (Math.floor(Math.random() * 100) + 100).toString();
+      const valueToIncrement = Math.floor(Math.random() * 100) + 100;
+      const expectedResult = (parseInt(initialNumber) + valueToIncrement).toString();
+
+      // Act, When
+
+      const result = HelperNumeric.increment(initialNumber, valueToIncrement);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('deve falhar se o valor de entrada não for numérico', () => {
+      // Arrange, Given
+
+      const inputInvalidNumber = "not a number";
+
+      // Act, When
+
+      const run = () => HelperNumeric.increment(inputInvalidNumber);
+
+      // Assert, Then
+
+      expect(run).toThrowError(InvalidArgumentError);
+    })
+    test('deve conseguir incrementar um número muito grande', () => {
+      // Arrange, Given
+
+      const initialNumberLength = 500;
+      const inputNumber = "9".repeat(initialNumberLength);
+      const expectedResult = "1" + "0".repeat(inputNumber.length);
+
+      // Act, When
+
+      const result = HelperNumeric.increment(inputNumber);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
   });
 });
