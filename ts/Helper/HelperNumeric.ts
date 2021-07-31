@@ -1,7 +1,7 @@
 /**
  * Utilitários para manipulação de números.
  */
-import { InvalidArgumentError } from "../Error/InvalidArgumentError";
+import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
 export class HelperNumeric {
   /**
@@ -32,7 +32,14 @@ export class HelperNumeric {
    * @param value Número em formato texto.
    * @param increment Valor a ser adicionado.
    */
-  public static increment(value: string, increment: number = 1): string {
+  public static increment(value: string, increment = 1): string {
+    if (increment === 0) return value;
+
+    if (increment < 0) throw new InvalidArgumentError('Only positive increment is acceptable.');
+
+    const regexNotNumber = /(\D|^$)/;
+    if (regexNotNumber.test(value)) throw new InvalidArgumentError('Expected only numbers.');
+
     const numbers = value
       .split('')
       .map(number => parseInt(number))
@@ -40,12 +47,6 @@ export class HelperNumeric {
 
     let toSum = increment;
     for (let i = 0; i < numbers.length; i++) {
-      if (!Number.isFinite(numbers[i])) {
-        throw new InvalidArgumentError('Expected a number, but found "{notNumber}" at {position} index.'.querystring({
-          notNumber:numbers[i],
-          position: i
-        }));
-      }
       numbers[i] += toSum;
       if (numbers[i] >= 10) {
         const numberAsText = numbers[i].toString();
@@ -57,9 +58,9 @@ export class HelperNumeric {
         toSum = 0;
       }
     }
-    if (toSum > 0) {
-      numbers.push(toSum);
-    }
+
+    if (toSum > 0) numbers.push(toSum);
+
     return numbers
       .reverse()
       .map(number => number.toString())
