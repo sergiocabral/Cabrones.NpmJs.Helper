@@ -59,7 +59,7 @@ describe('Classe HelperNumeric', () => {
       }
     });
   });
-  test('between deve retorna um número aleatório num intervalo', () => {
+  test('between() deve retorna um número aleatório num intervalo', () => {
     // Arrange, Given
 
     const percentAcceptableDeviation = 0.4;
@@ -94,7 +94,7 @@ describe('Classe HelperNumeric', () => {
       expect(deviation).toBeLessThanOrEqual(1 + percentAcceptableDeviation);
     }
   });
-  describe('sum deve somar ou subtrair números de qualquer comprimento', () => {
+  describe('sum() deve somar ou subtrair números de qualquer comprimento', () => {
     describe('soma e subtração de dois números aleatórios', () => {
       const randomNumber = () =>
         HelperNumeric.between(-1000, 1000) +
@@ -160,5 +160,160 @@ describe('Classe HelperNumeric', () => {
 
       expect(result).toBe(expectedResult);
     });
+    test('incrementar número decimal', () => {
+      // Arrange, Given
+
+      const inputNumbers = '.1';
+      const expectedResult = '0.2';
+
+      // Act, When
+
+      const result = HelperNumeric.sum(inputNumbers, inputNumbers);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('incrementar positivo + positivo', () => {
+      // Arrange, Given
+
+      const inputNumber1 = '11';
+      const inputNumber2 = '22';
+      const expectedResult = '33';
+
+      // Act, When
+
+      const result = HelperNumeric.sum(inputNumber1, inputNumber2);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('incrementar positivo + negativo', () => {
+      // Arrange, Given
+
+      const inputNumber1 = '11';
+      const inputNumber2 = '-22';
+      const expectedResult = '-11';
+
+      // Act, When
+
+      const result = HelperNumeric.sum(inputNumber1, inputNumber2);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('incrementar negativo + positivo', () => {
+      // Arrange, Given
+
+      const inputNumber1 = '-11';
+      const inputNumber2 = '22';
+      const expectedResult = '11';
+
+      // Act, When
+
+      const result = HelperNumeric.sum(inputNumber1, inputNumber2);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('incrementar negativo + negativo', () => {
+      // Arrange, Given
+
+      const inputNumber1 = '-11';
+      const inputNumber2 = '-22';
+      const expectedResult = '-33';
+
+      // Act, When
+
+      const result = HelperNumeric.sum(inputNumber1, inputNumber2);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+  });
+  describe('max()', () => {
+    test('deve retorna o maior número da lista', () => {
+      // Arrange, Given
+
+      const list = Array(10)
+        .fill(0)
+        .map(() => HelperNumeric.between(0, 100));
+      const expectedGreater = list.reduce(
+        (result: number, current: number) =>
+          current > result ? current : result,
+        -1
+      );
+
+      // Act, When
+
+      const greater = HelperNumeric.max(list);
+
+      // Assert, Then
+
+      expect(greater).toBe(expectedGreater);
+    });
+    test('deve falhar se a lista for vazia', () => {
+      // Arrange, Given
+      // Act, When
+
+      const execute = () => HelperNumeric.max([]);
+
+      // Assert, Then
+
+      expect(execute).toThrowError(InvalidArgumentError);
+    });
+  });
+  describe('min()', () => {
+    test('deve retorna o menor número da lista', () => {
+      // Arrange, Given
+
+      const list = Array(10)
+        .fill(0)
+        .map(() => HelperNumeric.between(0, 100));
+      const expectedLess = list.reduce(
+        (result: number, current: number) =>
+          current < result ? current : result,
+        1000
+      );
+
+      // Act, When
+
+      const less = HelperNumeric.min(list);
+
+      // Assert, Then
+
+      expect(less).toBe(expectedLess);
+    });
+    test('deve falhar se a lista for vazia', () => {
+      // Arrange, Given
+      // Act, When
+
+      const execute = () => HelperNumeric.min([]);
+
+      // Assert, Then
+
+      expect(execute).toThrowError(InvalidArgumentError);
+    });
+  });
+  test('sortCompare() deve permitir comparar uma lista numérica', () => {
+    // Arrange, Given
+
+    const sortedList = Array(100)
+      .fill(0)
+      .map((_: number, index: number) => index);
+
+    // Act, When
+
+    const sortedAgain = Array<number>()
+      .concat(sortedList)
+      .sort(HelperNumeric.sortCompare);
+
+    // Assert, Then
+
+    expect(sortedAgain.join(',')).toBe(sortedList.join(','));
   });
 });

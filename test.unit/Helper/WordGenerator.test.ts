@@ -22,7 +22,7 @@ describe('Classe WordGenerator', () => {
     // Arrange, Given
 
     const expectedSyllableMinimumLength = 2;
-    const expectedSyllableMaximumLength = 3;
+    const expectedSyllableMaximumLength = 4;
 
     // Act, When
 

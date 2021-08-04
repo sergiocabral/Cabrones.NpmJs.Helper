@@ -1,9 +1,4 @@
-/**
- * Utilitários para manipulação de números.
- */
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
-import { NotImplementedError } from '../Error/NotImplementedError';
-import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
 
 /**
  * Informações numéricas.
@@ -14,6 +9,9 @@ type NumberData = {
   decimals: number[];
 };
 
+/**
+ * Utilitários para manipulação de números.
+ */
 export class HelperNumeric {
   /**
    * Retorna um número inteiro aleatório
@@ -51,8 +49,7 @@ export class HelperNumeric {
       );
     }
     const regexDigits = /\d+/g;
-    const digits = value.match(regexDigits);
-    if (digits === null) throw new ShouldNeverHappenError();
+    const digits = value.match(regexDigits) as RegExpMatchArray;
 
     if (digits.length === 1) {
       if (value.includes('.')) digits.unshift('0');
@@ -93,8 +90,6 @@ export class HelperNumeric {
           case 'right':
             numbers.push(0);
             break;
-          default:
-            throw new NotImplementedError();
         }
       }
     };
@@ -145,13 +140,12 @@ export class HelperNumeric {
     }
 
     const cannotSum = (): boolean => {
-      if (value1isNegative !== value2isNegative) {
+      if (value1isNegative !== value2isNegative)
         for (let i = numbers1.length - 1; i >= 0; i--) {
           const number2 = Math.abs(numbers2[i]);
           if (number2 > numbers1[i]) return true;
           else if (number2 < numbers1[i]) return false;
         }
-      }
       return false;
     };
     const inverse = cannotSum();
@@ -190,10 +184,13 @@ export class HelperNumeric {
     if (resultAsText.endsWith('.')) {
       resultAsText = resultAsText.substr(0, resultAsText.length - 1);
     }
-    let signal = result[0] < 0 ? '-' : '';
-    if (bothNegative || inverse) {
-      signal = signal === '-' ? '' : '-';
+    if (resultAsText.startsWith('.')) {
+      resultAsText = '0' + resultAsText;
     }
+    const signal =
+      bothNegative || inverse || result.find(n => n < 0) !== undefined
+        ? '-'
+        : '';
     return signal + resultAsText;
   }
 
@@ -211,8 +208,6 @@ export class HelperNumeric {
         return ordered[0];
       case 'max':
         return ordered[ordered.length - 1];
-      default:
-        throw new NotImplementedError();
     }
   }
 
