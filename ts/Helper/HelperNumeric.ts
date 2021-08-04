@@ -2,6 +2,17 @@
  * Utilitários para manipulação de números.
  */
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
+import { NotImplementedError } from '../Error/NotImplementedError';
+import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
+
+/**
+ * Informações numéricas.
+ */
+type NumberData = {
+  isNegative: boolean;
+  integers: number[];
+  decimals: number[];
+};
 
 export class HelperNumeric {
   /**
@@ -28,42 +39,207 @@ export class HelperNumeric {
   }
 
   /**
-   * Incrementa um valor numérico de qualquer comprimento.
-   * @param value Número em formato texto.
-   * @param increment Valor a ser adicionado.
+   * Retorna informações sobre o número informado.
+   * @param value Número como texto.
+   * @private
    */
-  public static increment(value: string, increment = 1): string {
-    if (increment === 0) return value;
+  private static getNumberData(value: string): NumberData {
+    const regexNumeric = /^[+-]?(\d+\.?\d*|\d*\.?\d+)$/;
+    if (!regexNumeric.test(value)) {
+      throw new InvalidArgumentError(
+        'Expected numeric value, but received {value}.'.querystring({ value })
+      );
+    }
+    const regexDigits = /\d+/g;
+    const digits = value.match(regexDigits);
+    if (digits === null) throw new ShouldNeverHappenError();
 
-    if (increment < 0) throw new InvalidArgumentError('Only positive increment is acceptable.');
-
-    const regexNotNumber = /(\D|^$)/;
-    if (regexNotNumber.test(value)) throw new InvalidArgumentError('Expected only numbers.');
-
-    const numbers = value
-      .split('')
-      .map(number => parseInt(number))
-      .reverse();
-
-    let toSum = increment;
-    for (let i = 0; i < numbers.length; i++) {
-      numbers[i] += toSum;
-      if (numbers[i] >= 10) {
-        const numberAsText = numbers[i].toString();
-        const numberToStay = numberAsText.substr(numberAsText.length - 1);
-        const numberToSum = numberAsText.substr(0, numberAsText.length - 1);
-        numbers[i] = parseInt(numberToStay);
-        toSum = parseInt(numberToSum);
-      } else {
-        toSum = 0;
-      }
+    if (digits.length === 1) {
+      if (value.includes('.')) digits.unshift('0');
+      else digits.push('0');
     }
 
-    if (toSum > 0) numbers.push(toSum);
+    const signal = value.substr(0, 1) === '-' ? '-' : '+';
+    const getNumbers = (digits: string) =>
+      digits.split('').map((digit: string) => Number.parseInt(signal + digit));
 
-    return numbers
-      .reverse()
-      .map(number => number.toString())
-      .join('');
+    return {
+      isNegative: signal === '-',
+      integers: getNumbers(digits[0]),
+      decimals: getNumbers(digits[1])
+    };
   }
+
+  /**
+   * Equaliza o comprimento de dois números para realizar operações matemáticas.
+   * @param number1
+   * @param number2
+   * @private
+   */
+  private static equalizeNumbers(
+    number1: NumberData,
+    number2: NumberData
+  ): void {
+    const paddingZero = (
+      numbers: number[],
+      length: number,
+      side: 'left' | 'right'
+    ) => {
+      while (numbers.length < length) {
+        switch (side) {
+          case 'left':
+            numbers.unshift(0);
+            break;
+          case 'right':
+            numbers.push(0);
+            break;
+          default:
+            throw new NotImplementedError();
+        }
+      }
+    };
+
+    const equalizeZeros = (
+      numbers1: number[],
+      numbers2: number[],
+      side: 'left' | 'right'
+    ): void => {
+      const digits = HelperNumeric.max([numbers1.length, numbers2.length]);
+      paddingZero(numbers1, digits, side);
+      paddingZero(numbers2, digits, side);
+    };
+
+    equalizeZeros(number1.integers, number2.integers, 'left');
+    equalizeZeros(number1.decimals, number2.decimals, 'right');
+  }
+
+  /**
+   * Soma valores numéricos de qualquer comprimento
+   * @param value1 Valor 1
+   * @param value2 Valor 2
+   */
+  public static sum(value1: string, value2: string): string {
+    const value1data = HelperNumeric.getNumberData(value1);
+    const value2data = HelperNumeric.getNumberData(value2);
+    HelperNumeric.equalizeNumbers(value1data, value2data);
+
+    let numbers1 = Array<number>()
+      .concat(value1data.integers, value1data.decimals)
+      .reverse();
+    let numbers2 = Array<number>()
+      .concat(value2data.integers, value2data.decimals)
+      .reverse();
+
+    const value1isNegative = value1.substr(0, 1) === '-';
+    const value2isNegative = value2.substr(0, 1) === '-';
+    const bothNegative = value1isNegative && value2isNegative;
+
+    if (bothNegative) {
+      const abs = (numbers: number[]) => numbers.map(digit => Math.abs(digit));
+      numbers1 = abs(numbers1);
+      numbers2 = abs(numbers2);
+    } else if (value1isNegative) {
+      const swap = numbers1;
+      numbers1 = numbers2;
+      numbers2 = swap;
+    }
+
+    const cannotSum = (): boolean => {
+      if (value1isNegative !== value2isNegative) {
+        for (let i = numbers1.length - 1; i >= 0; i--) {
+          const number2 = Math.abs(numbers2[i]);
+          if (number2 > numbers1[i]) return true;
+          else if (number2 < numbers1[i]) return false;
+        }
+      }
+      return false;
+    };
+    const inverse = cannotSum();
+
+    const result: number[] = [];
+    let pendingSum = 0;
+    for (let i = 0; i < numbers1.length && i < numbers2.length; i++) {
+      const number1 = numbers1[i] + pendingSum;
+      const number2 = numbers2[i];
+      let sum = number1 + number2;
+
+      if (sum > 9 || (inverse && sum > 0)) {
+        sum -= 10;
+        pendingSum = +1;
+      } else if (sum < 0 && !inverse) {
+        sum += 10;
+        pendingSum = -1;
+      } else {
+        pendingSum = 0;
+      }
+
+      result.push(sum);
+    }
+    result.push(pendingSum);
+    let resultAsText = result
+      .reverse()
+      .map(digit => Math.abs(digit))
+      .join('');
+    const floatPoint = resultAsText.length - value1data.decimals.length;
+    resultAsText =
+      resultAsText.substr(0, floatPoint) +
+      '.' +
+      resultAsText.substr(floatPoint);
+    const regexPaddingZero = /(^0*|0*$)/g;
+    resultAsText = resultAsText.replace(regexPaddingZero, '');
+    if (resultAsText.endsWith('.')) {
+      resultAsText = resultAsText.substr(0, resultAsText.length - 1);
+    }
+    let signal = result[0] < 0 ? '-' : '';
+    if (bothNegative || inverse) {
+      signal = signal === '-' ? '' : '-';
+    }
+    return signal + resultAsText;
+  }
+
+  /**
+   * Retorna o maior ou menor número de uma lista.
+   * @param numbers
+   * @param mode
+   */
+  private static minOrMax(numbers: number[], mode: 'min' | 'max'): number {
+    if (numbers.length === 0)
+      throw new InvalidArgumentError('Expected one or more numbers.');
+    const ordered = numbers.sort(HelperNumeric.sortCompare);
+    switch (mode) {
+      case 'min':
+        return ordered[0];
+      case 'max':
+        return ordered[ordered.length - 1];
+      default:
+        throw new NotImplementedError();
+    }
+  }
+
+  /**
+   * Retorna o maior número de uma lista.
+   * @param numbers
+   */
+  public static max(numbers: number[]): number {
+    return HelperNumeric.minOrMax(numbers, 'max');
+  }
+
+  /**
+   * Retorna o maior número de uma lista.
+   * @param numbers
+   */
+  public static min(numbers: number[]): number {
+    return HelperNumeric.minOrMax(numbers, 'min');
+  }
+
+  /**
+   * Função para realizar ordenação numérica.
+   * @param number1
+   * @param number2
+   */
+  public static sortCompare = (number1: number, number2: number): number => {
+    if (number1 < number2) return -1;
+    if (number1 > number2) return +1;
+    return 0;
+  };
 }

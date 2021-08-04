@@ -89,27 +89,55 @@ describe('Classe GenericError', function () {
     const messageMark = Math.random().toString();
     const separatorBetweenPrefixAndMessage = ': ';
 
-    const errorWithPrefixAndMessage = new GenericError(`  ${messageMark}  `, undefined, `  ${prefixMark}  `);
-    const errorWithSpacedMessageAndPrefix = new GenericError(`  `, undefined, `  ${prefixMark}  `);
-    const errorWithUndefinedMessageAndPrefix = new GenericError(undefined, undefined, `  ${prefixMark}  `);
+    const errorWithPrefixAndMessage = new GenericError(
+      `  ${messageMark}  `,
+      undefined,
+      `  ${prefixMark}  `
+    );
+    const errorWithSpacedMessageAndPrefix = new GenericError(
+      `  `,
+      undefined,
+      `  ${prefixMark}  `
+    );
+    const errorWithUndefinedMessageAndPrefix = new GenericError(
+      undefined,
+      undefined,
+      `  ${prefixMark}  `
+    );
     const errorWithOnlySpacedMessage = new GenericError(`  `, undefined, `  `);
-    const errorWithOnlyUndefinedMessage = new GenericError(undefined, undefined, `  `);
-    const errorWithOnlyMessage = new GenericError(`  ${messageMark}  `, undefined, `  `);
+    const errorWithOnlyUndefinedMessage = new GenericError(
+      undefined,
+      undefined,
+      `  `
+    );
+    const errorWithOnlyMessage = new GenericError(
+      `  ${messageMark}  `,
+      undefined,
+      `  `
+    );
     const errorWithEmptyPrefixAndMessage = new GenericError('', undefined, '');
 
     // Act, When
 
-    const messageOfErrorWithPrefixAndMessage = errorWithPrefixAndMessage.message;
-    const messageOfErrorWithSpacedMessageAndPrefix = errorWithSpacedMessageAndPrefix.message;
-    const messageOfErrorWithUndefinedMessageAndPrefix = errorWithUndefinedMessageAndPrefix.message;
-    const messageOfErrorWithOnlySpacedMessage = errorWithOnlySpacedMessage.message;
-    const messageOfErrorWithOnlyUndefinedMessage = errorWithOnlyUndefinedMessage.message;
+    const messageOfErrorWithPrefixAndMessage =
+      errorWithPrefixAndMessage.message;
+    const messageOfErrorWithSpacedMessageAndPrefix =
+      errorWithSpacedMessageAndPrefix.message;
+    const messageOfErrorWithUndefinedMessageAndPrefix =
+      errorWithUndefinedMessageAndPrefix.message;
+    const messageOfErrorWithOnlySpacedMessage =
+      errorWithOnlySpacedMessage.message;
+    const messageOfErrorWithOnlyUndefinedMessage =
+      errorWithOnlyUndefinedMessage.message;
     const messageOfErrorWithOnlyMessage = errorWithOnlyMessage.message;
-    const messageOfErrorWithEmptyPrefixAndMessage = errorWithEmptyPrefixAndMessage.message;
+    const messageOfErrorWithEmptyPrefixAndMessage =
+      errorWithEmptyPrefixAndMessage.message;
 
     // Assert, Then
 
-    expect(messageOfErrorWithPrefixAndMessage).toBe(prefixMark + separatorBetweenPrefixAndMessage + messageMark);
+    expect(messageOfErrorWithPrefixAndMessage).toBe(
+      prefixMark + separatorBetweenPrefixAndMessage + messageMark
+    );
     expect(messageOfErrorWithSpacedMessageAndPrefix).toBe(prefixMark);
     expect(messageOfErrorWithUndefinedMessageAndPrefix).toBe(prefixMark);
     expect(messageOfErrorWithOnlySpacedMessage).toBe('');

@@ -20,11 +20,16 @@ export class HelperText {
   public static querystring(template: string, values: unknown): string {
     const doNotTreatAsObject = (values: unknown): boolean =>
       values === undefined || values === null || values instanceof Date;
-    const doNotTreatAsString = (values: unknown): boolean => values === undefined || values === null;
+    const doNotTreatAsString = (values: unknown): boolean =>
+      values === undefined || values === null;
     let text = template;
     if (Array.isArray(values)) {
       for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
-        text = HelperText.replaceAll(text, `{${valueIndex}}`, values[valueIndex]);
+        text = HelperText.replaceAll(
+          text,
+          `{${valueIndex}}`,
+          values[valueIndex]
+        );
       }
     } else if (typeof values === 'object' && !doNotTreatAsObject(values)) {
       const objectValue = values as KeyValue;
@@ -56,7 +61,14 @@ export class HelperText {
    * @param replacement Texto para substituição.
    * @returns Texto de saída com as substituições.
    */
-  public static replaceAll(value: string, search: string, replacement: string): string {
-    return value.replace(new RegExp(HelperText.escapeRegExp(search), 'g'), replacement);
+  public static replaceAll(
+    value: string,
+    search: string,
+    replacement: string
+  ): string {
+    return value.replace(
+      new RegExp(HelperText.escapeRegExp(search), 'g'),
+      replacement
+    );
   }
 }

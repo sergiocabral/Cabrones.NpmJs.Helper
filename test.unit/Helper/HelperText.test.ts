@@ -15,7 +15,22 @@ describe('Classe HelperText', () => {
   test('escapeRegExp deve escapar uma string para expressão regular', () => {
     // Arrange, Given
 
-    const regexSymbols = ['.', '*', '+', '?', '^', '$', '{', '}', '(', ')', '|', '[', ']', '\\'];
+    const regexSymbols = [
+      '.',
+      '*',
+      '+',
+      '?',
+      '^',
+      '$',
+      '{',
+      '}',
+      '(',
+      ')',
+      '|',
+      '[',
+      ']',
+      '\\'
+    ];
     const regexSymbolsEscaped = [];
 
     // Act, When
@@ -27,7 +42,11 @@ describe('Classe HelperText', () => {
     // Assert, Then
 
     expect(regexSymbols.length).toBe(regexSymbolsEscaped.length);
-    for (let i = 0; i < regexSymbols.length && i < regexSymbolsEscaped.length; i++) {
+    for (
+      let i = 0;
+      i < regexSymbols.length && i < regexSymbolsEscaped.length;
+      i++
+    ) {
       expect(regexSymbolsEscaped[i]).not.toBe(regexSymbols[i]);
       expect(regexSymbolsEscaped[i]).toBe('\\' + regexSymbols[i]);
     }
@@ -42,7 +61,11 @@ describe('Classe HelperText', () => {
 
     // Act, When
 
-    const replacedText = HelperText.replaceAll(initialText, search, replacement);
+    const replacedText = HelperText.replaceAll(
+      initialText,
+      search,
+      replacement
+    );
 
     // Assert, Then
 
@@ -76,7 +99,8 @@ describe('Classe HelperText', () => {
         property1: Math.random(),
         property2: Math.random()
       };
-      const inputTemplate = 'My random values are: {property1}, {property2}, {property3}, {property4}';
+      const inputTemplate =
+        'My random values are: {property1}, {property2}, {property3}, {property4}';
       const expectedOutputText = `My random values are: ${randomValues.property1}, ${randomValues.property2}, {property3}, {property4}`;
 
       // Act, When
@@ -129,7 +153,10 @@ describe('Classe HelperText', () => {
 
       // Act, When
 
-      const outputForUndefined = HelperText.querystring(inputTemplate, valueAsUndefined);
+      const outputForUndefined = HelperText.querystring(
+        inputTemplate,
+        valueAsUndefined
+      );
       const outputForNull = HelperText.querystring(inputTemplate, valueAsNull);
 
       // Assert, Then

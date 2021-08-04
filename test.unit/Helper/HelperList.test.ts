@@ -30,8 +30,10 @@ describe('Classe HelperList', () => {
 
     // Assert, Then
 
-    const sampleOfItem1 = sample.filter(item => item === item1).length / sampleLength;
-    const sampleOfItem2 = sample.filter(item => item === item2).length / sampleLength;
+    const sampleOfItem1 =
+      sample.filter(item => item === item1).length / sampleLength;
+    const sampleOfItem2 =
+      sample.filter(item => item === item2).length / sampleLength;
     const reason = Math.round(sampleOfItem1 / sampleOfItem2);
 
     expect(reason).toBe(1);

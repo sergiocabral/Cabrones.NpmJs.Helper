@@ -142,8 +142,14 @@ describe('Class LogWriterToConsoleLevel', () => {
       // Act, When
 
       for (const name of Object.keys(correlationExpected)) {
-        const functionName = name as 'error' | 'warn' | 'info' | 'log' | 'debug';
-        correlationVerified[functionName] = sut.getConsoleFunction(functionName);
+        const functionName = name as
+          | 'error'
+          | 'warn'
+          | 'info'
+          | 'log'
+          | 'debug';
+        correlationVerified[functionName] =
+          sut.getConsoleFunction(functionName);
       }
 
       // Assert, Then
@@ -198,9 +204,9 @@ describe('Class LogWriterToConsoleLevel', () => {
 
       const sut = new LogWriterToConsole(message.level);
 
-      const expectedOutputMessage = `${message.timestamp.toLocaleString()} [${LogLevel[message.level]}] ${
-        message.message
-      }`;
+      const expectedOutputMessage = `${message.timestamp.toLocaleString()} [${
+        LogLevel[message.level]
+      }] ${message.message}`;
 
       // Act, When
 

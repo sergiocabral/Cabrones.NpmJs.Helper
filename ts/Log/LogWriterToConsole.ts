@@ -11,7 +11,9 @@ export class LogWriterToConsole extends LogWriter {
    * @param functionName Nome da função de log.
    * @protected
    */
-  public getConsoleFunction(functionName: 'error' | 'warn' | 'info' | 'log' | 'debug'): (message: string) => void {
+  public getConsoleFunction(
+    functionName: 'error' | 'warn' | 'info' | 'log' | 'debug'
+  ): (message: string) => void {
     switch (functionName) {
       case 'error':
         return console.error;

@@ -9,7 +9,11 @@ export class GenericError extends Error {
    * @param prefix Prefixo para exibir na mensagem de erro.
    * @protected
    */
-  public constructor(message?: string, public innerError?: Error | GenericError, prefix = 'GenericError') {
+  public constructor(
+    message?: string,
+    public innerError?: Error | GenericError,
+    prefix = 'GenericError'
+  ) {
     super(
       [prefix, message ?? '']
         .map(text => text.trim())

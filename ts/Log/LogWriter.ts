@@ -43,8 +43,11 @@ export abstract class LogWriter implements ILogWriter {
   ): void {
     level = level ?? this.defaultLogLevel;
     if (level < this.minimumLevel) return;
-    messageTemplate = typeof messageTemplate === 'string' ? messageTemplate : messageTemplate();
-    values = !HelperObject.isFunction(values) ? values : (values as () => unknown)();
+    messageTemplate =
+      typeof messageTemplate === 'string' ? messageTemplate : messageTemplate();
+    values = !HelperObject.isFunction(values)
+      ? values
+      : (values as () => unknown)();
     const message = HelperText.querystring(messageTemplate, values);
     const timestamp = new Date();
     const logMessage: ILogMessage = { message, timestamp, level, section };
@@ -58,5 +61,9 @@ export abstract class LogWriter implements ILogWriter {
    * @param values
    * @protected
    */
-  protected abstract write(message: ILogMessage, messageTemplate: string, values?: unknown): void;
+  protected abstract write(
+    message: ILogMessage,
+    messageTemplate: string,
+    values?: unknown
+  ): void;
 }

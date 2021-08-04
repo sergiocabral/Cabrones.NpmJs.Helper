@@ -16,6 +16,8 @@ export class HelperObject {
    * @param variable Variável.
    */
   public static isFunction(variable: unknown): boolean {
-    return Boolean(variable) && {}.toString.call(variable) === '[object Function]';
+    return (
+      Boolean(variable) && {}.toString.call(variable) === '[object Function]'
+    );
   }
 }

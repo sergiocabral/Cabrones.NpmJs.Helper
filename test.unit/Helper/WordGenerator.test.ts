@@ -35,8 +35,12 @@ describe('Classe WordGenerator', () => {
 
     expect(consonants.includes(firstLetter)).toBe(true);
     expect(vowels.includes(lastLetter)).toBe(true);
-    expect(OneSyllable.length).toBeGreaterThanOrEqual(expectedSyllableMinimumLength);
-    expect(OneSyllable.length).toBeLessThanOrEqual(expectedSyllableMaximumLength);
+    expect(OneSyllable.length).toBeGreaterThanOrEqual(
+      expectedSyllableMinimumLength
+    );
+    expect(OneSyllable.length).toBeLessThanOrEqual(
+      expectedSyllableMaximumLength
+    );
   });
 
   test('getWord deve pode especificar inicial maiúscula', () => {
@@ -52,7 +56,9 @@ describe('Classe WordGenerator', () => {
     const asUppercaseFirstLetter = asUppercase[0];
     const asLowercaseFirstLetter = asLowercase[0];
 
-    expect(asUppercaseFirstLetter).not.toBe(asUppercaseFirstLetter.toLowerCase());
+    expect(asUppercaseFirstLetter).not.toBe(
+      asUppercaseFirstLetter.toLowerCase()
+    );
     expect(asLowercaseFirstLetter).toBe(asLowercaseFirstLetter.toLowerCase());
   });
 
@@ -67,8 +73,10 @@ describe('Classe WordGenerator', () => {
     const expectedSyllablesMinimumLength = 2;
     const expectedSyllablesMaximumLength = 3;
     const expectedWordLength =
-      expectedSyllablesMinimumLength * (syllablesCount * (1 - expectePercentOfThreeLetter)) +
-      expectedSyllablesMaximumLength * (syllablesCount * expectePercentOfThreeLetter);
+      expectedSyllablesMinimumLength *
+        (syllablesCount * (1 - expectePercentOfThreeLetter)) +
+      expectedSyllablesMaximumLength *
+        (syllablesCount * expectePercentOfThreeLetter);
 
     // Act, When
 
@@ -78,7 +86,11 @@ describe('Classe WordGenerator', () => {
 
     const wordLengthDeviation = word.length / expectedWordLength;
 
-    expect(wordLengthDeviation).toBeGreaterThanOrEqual(1 - acceptablePercentDeviation);
-    expect(wordLengthDeviation).toBeLessThanOrEqual(1 + acceptablePercentDeviation);
+    expect(wordLengthDeviation).toBeGreaterThanOrEqual(
+      1 - acceptablePercentDeviation
+    );
+    expect(wordLengthDeviation).toBeLessThanOrEqual(
+      1 + acceptablePercentDeviation
+    );
   });
 });

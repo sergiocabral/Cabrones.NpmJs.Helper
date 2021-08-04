@@ -32,7 +32,10 @@ String.prototype.querystring = function (values: unknown): string {
 };
 
 if (!String.prototype.replaceAll) {
-  String.prototype.replaceAll = function (search: string, replacement: string): string {
+  String.prototype.replaceAll = function (
+    search: string,
+    replacement: string
+  ): string {
     return HelperText.replaceAll(String(this), search, replacement);
   };
 }

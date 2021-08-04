@@ -1,8 +1,18 @@
-import { HelperText, ILogMessage, KeyValue, LogLevel, LogWriter } from '../../ts';
+import {
+  HelperText,
+  ILogMessage,
+  KeyValue,
+  LogLevel,
+  LogWriter
+} from '../../ts';
 
 class LogWriterToTest extends LogWriter {
   public mockWrite = jest.fn();
-  protected write(message: ILogMessage, messageTemplate: string, values?: unknown): void {
+  protected write(
+    message: ILogMessage,
+    messageTemplate: string,
+    values?: unknown
+  ): void {
     this.mockWrite(message, messageTemplate, values);
   }
 }
@@ -112,7 +122,10 @@ describe('Class LogWriter', () => {
 
         // Act, When
 
-        const sut = new LogWriterToTest(LogWriter.minimumLevel, definedDefaultLogLevel);
+        const sut = new LogWriterToTest(
+          LogWriter.minimumLevel,
+          definedDefaultLogLevel
+        );
 
         // Assert, Then
 
@@ -237,7 +250,8 @@ describe('Class LogWriter', () => {
         expect(sut.mockWrite.mock.calls.length).toBe(1);
 
         const timestamp = sut.mockWrite.mock.calls[0][0].timestamp as Date;
-        const intervalSinceLastCall = new Date().getTime() - timestamp.getTime();
+        const intervalSinceLastCall =
+          new Date().getTime() - timestamp.getTime();
         const oneSecond = 1000;
         expect(intervalSinceLastCall).toBeLessThan(oneSecond);
       });
@@ -268,7 +282,10 @@ describe('Class LogWriter', () => {
 
         const inputMessageTemplate = new Date().toDateString() + ' {value}';
         const inputValues = { value: Math.random().toString() };
-        const expectedMessage = HelperText.querystring(inputMessageTemplate, inputValues);
+        const expectedMessage = HelperText.querystring(
+          inputMessageTemplate,
+          inputValues
+        );
 
         const sut = new LogWriterToTest();
 
