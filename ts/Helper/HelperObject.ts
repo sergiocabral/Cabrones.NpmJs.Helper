@@ -1,8 +1,8 @@
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+
 /**
  * Utilitários para objetos, classes, etc.
  */
-import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-
 export class HelperObject {
   /**
    * Construtor proibido.
@@ -19,5 +19,20 @@ export class HelperObject {
     return (
       Boolean(variable) && {}.toString.call(variable) === '[object Function]'
     );
+  }
+
+  /**
+   * Retorna um nome identificador do tipo de uma instância.
+   * @param instance Instância.
+   * @returns Nome.
+   */
+  public static getName(instance: unknown): string {
+    if (typeof instance === 'object' && instance !== null) {
+      return instance?.constructor?.name;
+    } else if (typeof instance === 'function') {
+      return instance?.name;
+    } else {
+      return String(instance);
+    }
   }
 }

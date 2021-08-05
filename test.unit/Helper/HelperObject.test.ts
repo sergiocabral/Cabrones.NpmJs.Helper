@@ -1,3 +1,5 @@
+// noinspection JSPrimitiveTypeWrapperUsage
+
 import { HelperObject, InvalidExecutionError } from '../../ts';
 
 describe('Classe HelperObject', () => {
@@ -30,5 +32,91 @@ describe('Classe HelperObject', () => {
     expect(checkForFunction).toBe(true);
     expect(checkForConstructor).toBe(true);
     expect(checkForValue).toBe(false);
+  });
+  describe('getName() deve obter o nome descritivo do tipo de uma instância', () => {
+    test('tipo primitivo retorna o próprio valor', () => {
+      // Arrange, Given
+
+      const primitiveString = Math.random().toString();
+      const primitiveNumber = Math.random();
+      const primitiveBoolean = false;
+
+      // Act, When
+
+      const nameOfPrimitiveString = HelperObject.getName(primitiveString);
+      const nameOfPrimitiveNumber = HelperObject.getName(primitiveNumber);
+      const nameOfPrimitiveBoolean = HelperObject.getName(primitiveBoolean);
+
+      // Assert, Then
+
+      expect(nameOfPrimitiveString).toBe(String(primitiveString));
+      expect(nameOfPrimitiveNumber).toBe(String(primitiveNumber));
+      expect(nameOfPrimitiveBoolean).toBe(String(primitiveBoolean));
+    });
+    test('tipo object retorna o nome do construtor', () => {
+      // Arrange, Given
+
+      const objectDate = new Date();
+      const objectBoolean = new Boolean();
+      const objectString = new String();
+
+      // Act, When
+
+      const nameOfObjectDate = HelperObject.getName(objectDate);
+      const nameOfObjectBoolean = HelperObject.getName(objectBoolean);
+      const nameOfObjectString = HelperObject.getName(objectString);
+
+      // Assert, Then
+
+      expect(nameOfObjectDate).toBe('Date');
+      expect(nameOfObjectBoolean).toBe('Boolean');
+      expect(nameOfObjectString).toBe('String');
+    });
+    test('tipo function retorna o nome da função', () => {
+      // Arrange, Given
+
+      const functionFunction = function NameOfFunction() {};
+      const functionConstructor = Boolean;
+
+      // Act, When
+
+      const nameOfFunctionFunction = HelperObject.getName(functionFunction);
+      const nameOfFunctionConstructor =
+        HelperObject.getName(functionConstructor);
+
+      // Assert, Then
+
+      expect(nameOfFunctionFunction).toBe('NameOfFunction');
+      expect(nameOfFunctionConstructor).toBe('Boolean');
+    });
+    test('tipo null ou undefined retorna o o próprio nome', () => {
+      // Arrange, Given
+
+      const typeUndefined = undefined;
+      const typeNull = null;
+
+      // Act, When
+
+      const nameOfTypeUndefined = HelperObject.getName(typeUndefined);
+      const nameOfTypeNull = HelperObject.getName(typeNull);
+
+      // Assert, Then
+
+      expect(nameOfTypeUndefined).toBe('undefined');
+      expect(nameOfTypeNull).toBe('null');
+    });
+    test('tipo json retorna Object', () => {
+      // Arrange, Given
+
+      const json = {};
+
+      // Act, When
+
+      const nameOfJson = HelperObject.getName(json);
+
+      // Assert, Then
+
+      expect(nameOfJson).toBe('Object');
+    });
   });
 });
