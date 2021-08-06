@@ -31,8 +31,7 @@ export class HelperObject {
       return instance.constructor.name;
     } else if (typeof instance === 'function') {
       return instance.name;
-    } else {
-      return String(instance);
     }
+    return String(instance);
   }
 }
