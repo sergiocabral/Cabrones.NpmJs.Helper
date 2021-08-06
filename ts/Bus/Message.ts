@@ -21,7 +21,7 @@ export abstract class Message implements IMessage {
    * @returns Instância com dados da inscrição.
    */
   public static subscribe<TMessage extends Message>(
-    messageType: new () => TMessage,
+    messageType: new (...args: any[]) => TMessage,
     listener: MessageListener<TMessage>
   ): MessageSubscription<TMessage> {
     const subscription = new MessageSubscription<TMessage>(

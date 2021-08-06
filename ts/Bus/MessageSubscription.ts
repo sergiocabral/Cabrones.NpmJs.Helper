@@ -12,7 +12,7 @@ export class MessageSubscription<TMessage extends IMessage> {
    * @param listener Função chamada quando uma mensagem é emitida.
    */
   public constructor(
-    public readonly messageType: new () => TMessage,
+    public readonly messageType: new (...args: any[]) => TMessage,
     public readonly listener: MessageListener<TMessage>
   ) {
     this.messageName = HelperObject.getName(messageType);
