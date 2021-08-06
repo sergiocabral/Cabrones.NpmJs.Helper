@@ -1,3 +1,7 @@
+import { DispatchedMessage } from './Bus/DispatchedMessage';
+import { Message } from './Bus/Message';
+import { MessageListener } from './Bus/MessageListener';
+import { MessageSubscription } from './Bus/MessageSubscription';
 import { EmptyError } from './Error/EmptyError';
 import { GenericError } from './Error/GenericError';
 import { InvalidArgumentError } from './Error/InvalidArgumentError';
@@ -27,6 +31,10 @@ import './Helper/Prototype/Array';
 import './Helper/Prototype/String';
 
 export {
+  DispatchedMessage,
+  Message,
+  MessageListener,
+  MessageSubscription,
   EmptyError,
   GenericError,
   InvalidArgumentError,

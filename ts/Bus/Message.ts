@@ -20,14 +20,19 @@ export abstract class Message {
    * @returns Instância com dados da inscrição.
    */
   public static subscribe<TMessage extends Message>(
-    messageType: new() => TMessage,
+    messageType: new () => TMessage,
     listener: MessageListener<TMessage>
   ): MessageSubscription<TMessage> {
-    const subscription = new MessageSubscription<TMessage>(messageType, listener);
+    const subscription = new MessageSubscription<TMessage>(
+      messageType,
+      listener
+    );
     if (this.subscriptions.filter(v => v.equals(subscription)).length) {
       throw new InvalidExecutionError('Duplicate message subscription.');
     }
-    this.subscriptions.push(subscription as unknown as MessageSubscription<Message>);
+    this.subscriptions.push(
+      subscription as unknown as MessageSubscription<Message>
+    );
     return subscription;
   }
 
@@ -35,7 +40,9 @@ export abstract class Message {
    * Cancela uma inscrição.
    * @param capture Instância com dados da inscrição.
    */
-  public static unsubscribe<TMessage extends Message = Message>(capture: MessageSubscription<TMessage>): void {
+  public static unsubscribe<TMessage extends Message = Message>(
+    capture: MessageSubscription<TMessage>
+  ): void {
     if (
       this.subscriptions.filter((existentCapture, index, source) => {
         if (existentCapture.equals(capture)) {
@@ -51,10 +58,19 @@ export abstract class Message {
   }
 
   /**
+   * Cancela todas as inscrições registradas.
+   */
+  public static unsubscribeAll(): void {
+    this.subscriptions.length = 0;
+  }
+
+  /**
    * Resolve o nome identificador de um uma mensagem.
    * @param message
    */
-  public static getName<TMessage extends Message>(message: TMessage | (new() => TMessage)): string {
+  public static getName<TMessage extends Message>(
+    message: TMessage | (new () => TMessage)
+  ): string {
     return HelperObject.getName(message);
   }
 
@@ -66,8 +82,8 @@ export abstract class Message {
   /**
    * Envia a mensagem para o serviço mensageiro notificar os listeners.
    */
-  public send(): Promise<DispatchedMessage<this>> {
-    return Message.send<this>(this);
+  public async send(): Promise<DispatchedMessage<this>> {
+    return await Message.send<this>(this);
   }
 
   /**

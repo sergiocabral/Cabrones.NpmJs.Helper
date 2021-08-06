@@ -1,9 +1,7 @@
-import { KeyValue} from "../../ts";
-import { Message } from "../../ts/Bus/Message";
-import { MessageSubscription } from "../../ts/Bus/MessageSubscription";
+import { KeyValue, Message, MessageSubscription } from '../../ts';
 
-class TestMessage1 extends Message { }
-class TestMessage2 extends TestMessage1 { }
+class TestMessage1 extends Message {}
+class TestMessage2 extends TestMessage1 {}
 
 describe('Class MessageSubscription', () => {
   const originals: KeyValue<any> = {};
@@ -19,7 +17,10 @@ describe('Class MessageSubscription', () => {
   test('ao criar deve definir o nome identificador da mensagem', () => {
     // Arrange, Given
 
-    const sut = new MessageSubscription(TestMessage1, async (_: TestMessage1): Promise<void> => { });
+    const sut = new MessageSubscription(
+      TestMessage1,
+      async (_: TestMessage1): Promise<void> => {}
+    );
 
     // Act, When
 
@@ -27,7 +28,7 @@ describe('Class MessageSubscription', () => {
 
     // Assert, Then
 
-    expect(messageName).toBe("TestMessage1");
+    expect(messageName).toBe('TestMessage1');
   });
   test('notifyListener deve repassar a chamada para o listener cadastrado', () => {
     // Arrange, Given
@@ -48,12 +49,18 @@ describe('Class MessageSubscription', () => {
   test('equals deve avaliar a igualdade de duas instâncias', () => {
     // Arrange, Given
 
-    const listener = async (_: TestMessage1): Promise<void> => { };
+    const listener = async (_: TestMessage1): Promise<void> => {};
     const sut = new MessageSubscription(TestMessage1, listener);
     const sutEquals = new MessageSubscription(TestMessage1, listener);
-    const sutDiffListener = new MessageSubscription(TestMessage1, async (_: TestMessage1): Promise<void> => { });
+    const sutDiffListener = new MessageSubscription(
+      TestMessage1,
+      async (_: TestMessage1): Promise<void> => {}
+    );
     const sutDiffMessage = new MessageSubscription(TestMessage2, listener);
-    const sutDiffMessageAndListener = new MessageSubscription(TestMessage2, async (_: TestMessage1): Promise<void> => { });
+    const sutDiffMessageAndListener = new MessageSubscription(
+      TestMessage2,
+      async (_: TestMessage1): Promise<void> => {}
+    );
 
     // Act, When
 
@@ -75,7 +82,10 @@ describe('Class MessageSubscription', () => {
     const mockUnsubscribe = jest.fn();
     Message.unsubscribe = mockUnsubscribe;
 
-    const sut = new MessageSubscription(TestMessage1, async (_: TestMessage1): Promise<void> => { });
+    const sut = new MessageSubscription(
+      TestMessage1,
+      async (_: TestMessage1): Promise<void> => {}
+    );
 
     // Act, When
 
@@ -86,4 +96,4 @@ describe('Class MessageSubscription', () => {
     expect(mockUnsubscribe).toBeCalledTimes(1);
     expect(mockUnsubscribe.mock.calls[0][0]).toBe(sut);
   });
-})
+});

@@ -11,7 +11,7 @@ export class MessageSubscription<TMessage extends Message> {
    * @param listener Função chamada quando uma mensagem é emitida.
    */
   public constructor(
-    public readonly messageType: new() => TMessage,
+    public readonly messageType: new () => TMessage,
     public readonly listener: MessageListener<TMessage>
   ) {
     this.messageName = Message.getName<TMessage>(messageType);
@@ -34,9 +34,11 @@ export class MessageSubscription<TMessage extends Message> {
    * Compara duas instância para determinar igualdade.
    * @param other
    */
-  public equals<TOtherMessage extends Message>(other: MessageSubscription<TOtherMessage>): boolean {
+  public equals<TOtherMessage extends Message>(
+    other: MessageSubscription<TOtherMessage>
+  ): boolean {
     return (
-      this.listener as MessageListener<Message> === other.listener &&
+      (this.listener as MessageListener<Message>) === other.listener &&
       Message.getName(this.messageType) === Message.getName(other.messageType)
     );
   }

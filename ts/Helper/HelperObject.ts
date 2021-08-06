@@ -28,9 +28,9 @@ export class HelperObject {
    */
   public static getName(instance: unknown): string {
     if (typeof instance === 'object' && instance !== null) {
-      return instance?.constructor?.name;
+      return instance.constructor.name;
     } else if (typeof instance === 'function') {
-      return instance?.name;
+      return instance.name;
     } else {
       return String(instance);
     }
