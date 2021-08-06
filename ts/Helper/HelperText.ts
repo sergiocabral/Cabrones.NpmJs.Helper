@@ -71,4 +71,31 @@ export class HelperText {
       replacement
     );
   }
+
+  /**
+   * Extrai de uma linha de comando os arquivos em list.
+   * @param commandLine
+   */
+  public static getCommandArguments(commandLine: string): string[] {
+    const charZero = String.fromCharCode(0);
+    const regexQuoted = /(?<=^|\s)(['"]).*?\1(?=\s|$)/g;
+    const intoQuotes = commandLine.match(regexQuoted);
+    if (intoQuotes) {
+      intoQuotes.forEach(
+        match =>
+          (commandLine = commandLine.replace(
+            match,
+            match.replace(/\s/g, charZero)
+          ))
+      );
+    }
+    const regexStartAndEndWithQuote = /^(["']).*\1$/;
+    return commandLine
+      .split(/\s+/)
+      .map(argument =>
+        regexStartAndEndWithQuote.test(argument)
+          ? argument.substr(1, argument.length - 2).replace(/\0/g, ' ')
+          : argument
+      );
+  }
 }

@@ -165,4 +165,65 @@ describe('Classe HelperText', () => {
       expect(outputForNull).toBe(inputTemplate);
     });
   });
+  describe('getCommandArguments() deve separar comandos em lista', () => {
+    test('comandos separados por espaços simples', () => {
+      // Arrange, Given
+
+      const commandLine = 'arg1 arg2 arg3';
+
+      // Act, When
+
+      const args = HelperText.getCommandArguments(commandLine);
+
+      // Assert, Then
+
+      expect(args).toEqual(['arg1', 'arg2', 'arg3']);
+    });
+    test('comandos separados por espaços com aspas simples', () => {
+      // Arrange, Given
+
+      const commandLine = "arg1 'arg2a arg2b arg2c' arg3";
+
+      // Act, When
+
+      const args = HelperText.getCommandArguments(commandLine);
+
+      // Assert, Then
+
+      expect(args).toEqual(['arg1', 'arg2a arg2b arg2c', 'arg3']);
+    });
+    test('comandos separados por espaços com aspas duplas', () => {
+      // Arrange, Given
+
+      const commandLine = 'arg1 "arg2a arg2b arg2c" arg3';
+
+      // Act, When
+
+      const args = HelperText.getCommandArguments(commandLine);
+
+      // Assert, Then
+
+      expect(args).toEqual(['arg1', 'arg2a arg2b arg2c', 'arg3']);
+    });
+    test('comandos separados com aspas atravessadas (errada)', () => {
+      // Arrange, Given
+
+      const commandLine = "arg1 \"arg2a arg2b arg2c' arg3 'arg4";
+
+      // Act, When
+
+      const args = HelperText.getCommandArguments(commandLine);
+
+      // Assert, Then
+
+      expect(args).toEqual([
+        'arg1',
+        '"arg2a',
+        'arg2b',
+        "arg2c'",
+        'arg3',
+        "'arg4"
+      ]);
+    });
+  });
 });
