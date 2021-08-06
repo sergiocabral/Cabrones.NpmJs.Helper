@@ -5,4 +5,4 @@ import { Message } from './Message';
  */
 export type MessageListener<TMessage extends Message> = (
   message: TMessage
-) => Promise<void>;
+) => Promise<void> | void;
