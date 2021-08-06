@@ -11,7 +11,7 @@ export abstract class Message {
   /**
    * Lista de inscrições.
    */
-  private static subscriptions: MessageSubscription[] = [];
+  private static subscriptions: MessageSubscription<Message>[] = [];
 
   /**
    * Se registrar para ouvir uma mensagem.
@@ -19,23 +19,23 @@ export abstract class Message {
    * @param listener Função a ser chamada quando a mensagem for emitida. Lembrar de usar .bind(this)
    * @returns Instância com dados da inscrição.
    */
-  public static subscribe(
-    messageType: typeof Message,
-    listener: MessageListener
-  ): MessageSubscription {
-    const capture = new MessageSubscription(messageType, listener);
-    if (this.subscriptions.filter(v => v.equals(capture)).length) {
-      throw new InvalidExecutionError('Duplicate messageType capture.');
+  public static subscribe<TMessage extends Message>(
+    messageType: new() => TMessage,
+    listener: MessageListener<TMessage>
+  ): MessageSubscription<TMessage> {
+    const subscription = new MessageSubscription<TMessage>(messageType, listener);
+    if (this.subscriptions.filter(v => v.equals(subscription)).length) {
+      throw new InvalidExecutionError('Duplicate message subscription.');
     }
-    this.subscriptions.push(capture);
-    return capture;
+    this.subscriptions.push(subscription as unknown as MessageSubscription<Message>);
+    return subscription;
   }
 
   /**
    * Cancela uma inscrição.
    * @param capture Instância com dados da inscrição.
    */
-  public static unsubscribe(capture: MessageSubscription): void {
+  public static unsubscribe<TMessage extends Message = Message>(capture: MessageSubscription<TMessage>): void {
     if (
       this.subscriptions.filter((existentCapture, index, source) => {
         if (existentCapture.equals(capture)) {
@@ -54,7 +54,7 @@ export abstract class Message {
    * Resolve o nome identificador de um uma mensagem.
    * @param message
    */
-  public static getName(message: typeof Message | Message): string {
+  public static getName<TMessage extends Message>(message: TMessage | (new() => TMessage)): string {
     return HelperObject.getName(message);
   }
 

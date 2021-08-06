@@ -4,17 +4,17 @@ import { MessageListener } from './MessageListener';
 /**
  * Conjunto de informações sobre a inscrição referente a uma mensagem.
  */
-export class MessageSubscription {
+export class MessageSubscription<TMessage extends Message> {
   /**
    * Construtor.
    * @param messageType Mensagem
    * @param listener Função chamada quando uma mensagem é emitida.
    */
   public constructor(
-    public readonly messageType: typeof Message,
-    public readonly listener: MessageListener
+    public readonly messageType: new() => TMessage,
+    public readonly listener: MessageListener<TMessage>
   ) {
-    this.messageName = Message.getName(messageType);
+    this.messageName = Message.getName<TMessage>(messageType);
   }
 
   /**
@@ -26,7 +26,7 @@ export class MessageSubscription {
    * Notifica o listener com uma mensagem.
    * @param message Mensagem.
    */
-  public async notifyListener(message: Message): Promise<void> {
+  public async notifyListener(message: TMessage): Promise<void> {
     await this.listener(message);
   }
 
@@ -34,9 +34,9 @@ export class MessageSubscription {
    * Compara duas instância para determinar igualdade.
    * @param other
    */
-  public equals(other: MessageSubscription): boolean {
+  public equals<TOtherMessage extends Message>(other: MessageSubscription<TOtherMessage>): boolean {
     return (
-      this.listener === other.listener &&
+      this.listener as MessageListener<Message> === other.listener &&
       Message.getName(this.messageType) === Message.getName(other.messageType)
     );
   }
