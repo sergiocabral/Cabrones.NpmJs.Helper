@@ -76,24 +76,4 @@ describe('Class MessageSubscription', () => {
     expect(checkDiffMessage).toBe(false);
     expect(checkDiffMessageAndListener).toBe(false);
   });
-  test('unsubscribe deve solicitar ao mensageiro o cancelamento da inscrição', () => {
-    // Arrange, Given
-
-    const mockUnsubscribe = jest.fn();
-    Message.unsubscribe = mockUnsubscribe;
-
-    const sut = new MessageSubscription(
-      TestMessage1,
-      async (_: TestMessage1): Promise<void> => {}
-    );
-
-    // Act, When
-
-    sut.unsubscribe();
-
-    // Assert, Then
-
-    expect(mockUnsubscribe).toBeCalledTimes(1);
-    expect(mockUnsubscribe.mock.calls[0][0]).toBe(sut);
-  });
 });

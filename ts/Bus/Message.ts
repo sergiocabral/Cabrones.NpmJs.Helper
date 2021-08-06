@@ -1,17 +1,18 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { HelperObject } from '../Helper/HelperObject';
 import { DispatchedMessage } from './DispatchedMessage';
+import { IMessage } from './IMessage';
 import { MessageSubscription } from './MessageSubscription';
 import { MessageListener } from './MessageListener';
 
 /**
  * Serviço mensageiro e classe abstrata de mensagem para o bus.
  */
-export abstract class Message {
+export abstract class Message implements IMessage {
   /**
    * Lista de inscrições.
    */
-  private static subscriptions: MessageSubscription<Message>[] = [];
+  private static subscriptions: MessageSubscription<IMessage>[] = [];
 
   /**
    * Se registrar para ouvir uma mensagem.
@@ -31,7 +32,7 @@ export abstract class Message {
       throw new InvalidExecutionError('Duplicate message subscription.');
     }
     this.subscriptions.push(
-      subscription as unknown as MessageSubscription<Message>
+      subscription as unknown as MessageSubscription<IMessage>
     );
     return subscription;
   }
@@ -65,19 +66,9 @@ export abstract class Message {
   }
 
   /**
-   * Resolve o nome identificador de um uma mensagem.
-   * @param message
-   */
-  public static getName<TMessage extends Message>(
-    message: TMessage | (new () => TMessage)
-  ): string {
-    return HelperObject.getName(message);
-  }
-
-  /**
    * Nome identificador da mensagem.
    */
-  public readonly name: string = Message.getName(this);
+  public readonly name: string = HelperObject.getName(this);
 
   /**
    * Envia a mensagem para o serviço mensageiro notificar os listeners.

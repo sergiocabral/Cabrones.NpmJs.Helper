@@ -1,10 +1,11 @@
-import { Message } from './Message';
+import { HelperObject } from '../Helper/HelperObject';
+import { IMessage } from './IMessage';
 import { MessageListener } from './MessageListener';
 
 /**
  * Conjunto de informações sobre a inscrição referente a uma mensagem.
  */
-export class MessageSubscription<TMessage extends Message> {
+export class MessageSubscription<TMessage extends IMessage> {
   /**
    * Construtor.
    * @param messageType Mensagem
@@ -14,7 +15,7 @@ export class MessageSubscription<TMessage extends Message> {
     public readonly messageType: new () => TMessage,
     public readonly listener: MessageListener<TMessage>
   ) {
-    this.messageName = Message.getName<TMessage>(messageType);
+    this.messageName = HelperObject.getName(messageType);
   }
 
   /**
@@ -34,19 +35,13 @@ export class MessageSubscription<TMessage extends Message> {
    * Compara duas instância para determinar igualdade.
    * @param other
    */
-  public equals<TOtherMessage extends Message>(
+  public equals<TOtherMessage extends IMessage>(
     other: MessageSubscription<TOtherMessage>
   ): boolean {
     return (
-      (this.listener as MessageListener<Message>) === other.listener &&
-      Message.getName(this.messageType) === Message.getName(other.messageType)
+      (this.listener as MessageListener<IMessage>) === other.listener &&
+      HelperObject.getName(this.messageType) ===
+        HelperObject.getName(other.messageType)
     );
-  }
-
-  /**
-   * Cancela a inscrição.
-   */
-  public unsubscribe(): void {
-    Message.unsubscribe(this);
   }
 }
