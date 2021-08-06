@@ -1,12 +1,12 @@
 import { KeyValue, Message, MessageSubscription } from '../../ts';
 
 class TestMessage1 extends Message {
-  public constructor (_arg1: string, _arg2: number) {
+  public constructor(_arg1: string, _arg2: number) {
     super();
   }
 }
 class TestMessage2 extends Message {
-  public constructor (_arg1: string, _arg2: number) {
+  public constructor(_arg1: string, _arg2: number) {
     super();
   }
 }
@@ -42,7 +42,7 @@ describe('Class MessageSubscription', () => {
     // Arrange, Given
 
     const listener = jest.fn();
-    const message = new TestMessage1("", 1);
+    const message = new TestMessage1('', 1);
     const sut = new MessageSubscription(TestMessage1, listener);
 
     // Act, When

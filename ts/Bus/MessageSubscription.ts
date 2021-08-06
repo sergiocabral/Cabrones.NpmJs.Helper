@@ -12,6 +12,7 @@ export class MessageSubscription<TMessage extends IMessage> {
    * @param listener Função chamada quando uma mensagem é emitida.
    */
   public constructor(
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     public readonly messageType: new (...args: any[]) => TMessage,
     public readonly listener: MessageListener<TMessage>
   ) {

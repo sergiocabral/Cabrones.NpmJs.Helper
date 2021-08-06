@@ -6,12 +6,12 @@ import {
 } from '../../ts';
 
 class TestMessage1 extends Message {
-  public constructor (_arg1: string, _arg2: number) {
+  public constructor(_arg1: string, _arg2: number) {
     super();
   }
 }
 class TestMessage2 extends Message {
-  public constructor (_arg1: string, _arg2: number) {
+  public constructor(_arg1: string, _arg2: number) {
     super();
   }
 }
@@ -34,7 +34,7 @@ describe('Class Message', () => {
     test('após criado deve ter definido o nome', () => {
       // Arrange, Given
 
-      const sut = new TestMessage1("", 1);
+      const sut = new TestMessage1('', 1);
 
       // Act, When
 
@@ -50,7 +50,7 @@ describe('Class Message', () => {
       const mockSend = jest.fn();
       (Message as any).send = mockSend;
 
-      const sut = new TestMessage1("", 1);
+      const sut = new TestMessage1('', 1);
 
       // Act, When
 
@@ -70,7 +70,7 @@ describe('Class Message', () => {
       Message.subscribe(TestMessage1, mockListener);
       Message.subscribe(TestMessage2, mockListener);
 
-      const message = new TestMessage1("", 1);
+      const message = new TestMessage1('', 1);
 
       // Act, When
 
@@ -104,7 +104,7 @@ describe('Class Message', () => {
       // Act, When
 
       Message.unsubscribe(subscription);
-      await new TestMessage1("", 1).send();
+      await new TestMessage1('', 1).send();
 
       // Assert, Then
 
@@ -132,7 +132,7 @@ describe('Class Message', () => {
       const subscription1 = Message.subscribe(TestMessage1, mockListener);
       Message.subscribe(TestMessage2, mockListener);
 
-      const message = new TestMessage2("", 1);
+      const message = new TestMessage2('', 1);
 
       // Act, When
 
@@ -154,8 +154,8 @@ describe('Class Message', () => {
       // Act, When
 
       Message.unsubscribeAll();
-      await new TestMessage1("", 1).send();
-      await new TestMessage2("", 1).send();
+      await new TestMessage1('', 1).send();
+      await new TestMessage2('', 1).send();
 
       // Assert, Then
 
@@ -169,7 +169,7 @@ describe('Class Message', () => {
       Message.subscribe(TestMessage1, mockListener1);
       Message.subscribe(TestMessage1, mockListener2);
 
-      const message = new TestMessage1("", 1);
+      const message = new TestMessage1('', 1);
 
       // Act, When
 
@@ -185,7 +185,7 @@ describe('Class Message', () => {
     test('send() uma mensagem sem inscrição deve poder ser enviada sem falhar', async () => {
       // Arrange, Given
 
-      const message = new TestMessage1("", 1);
+      const message = new TestMessage1('', 1);
 
       // Act, When
 
@@ -199,7 +199,7 @@ describe('Class Message', () => {
     test('send() deve retornar a própria mensagem enviada', async () => {
       // Arrange, Given
 
-      const message = new TestMessage1("", 1);
+      const message = new TestMessage1('', 1);
 
       // Act, When
 
@@ -219,7 +219,7 @@ describe('Class Message', () => {
 
       // Act, When
 
-      const response = await new TestMessage1("", 1).send();
+      const response = await new TestMessage1('', 1).send();
 
       // Assert, Then
 

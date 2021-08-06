@@ -21,6 +21,7 @@ export abstract class Message implements IMessage {
    * @returns Instância com dados da inscrição.
    */
   public static subscribe<TMessage extends Message>(
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     messageType: new (...args: any[]) => TMessage,
     listener: MessageListener<TMessage>
   ): MessageSubscription<TMessage> {
