@@ -119,4 +119,20 @@ describe('Classe HelperObject', () => {
       expect(nameOfJson).toBe('Object');
     });
   });
+  test('eval() deve avaliar um código JavaScript', () => {
+    // Arrange, Given
+
+    const date = new Date();
+    const dateAsString = date.toISOString();
+    const code = `new Date("${dateAsString}").getTime();`;
+    const expectedDateTime = date.getTime();
+
+    // Act, When
+
+    const dateTime = HelperObject.eval(code);
+
+    // Assert, Then
+
+    expect(dateTime).toBe(expectedDateTime);
+  });
 });

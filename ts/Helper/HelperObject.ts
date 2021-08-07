@@ -34,4 +34,13 @@ export class HelperObject {
     }
     return String(instance);
   }
+
+  /**
+   * Mesmo que eval.
+   * @param code Código a ser avaliado.
+   */
+  public static eval(code: string): unknown {
+    const eval2 = eval;
+    return eval2(code);
+  }
 }
