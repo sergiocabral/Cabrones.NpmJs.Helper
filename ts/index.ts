@@ -15,6 +15,7 @@ import { NotImplementedError } from './Error/NotImplementedError';
 import { NotReadyError } from './Error/NotReadyError';
 import { RequestError } from './Error/RequestError';
 import { ShouldNeverHappenError } from './Error/ShouldNeverHappenError';
+import { HelperDate } from './Helper/HelperDate';
 import { HelperList } from './Helper/HelperList';
 import { HelperNumeric } from './Helper/HelperNumeric';
 import { HelperObject } from './Helper/HelperObject';
@@ -48,6 +49,7 @@ export {
   NotReadyError,
   RequestError,
   ShouldNeverHappenError,
+  HelperDate,
   HelperList,
   HelperNumeric,
   HelperObject,

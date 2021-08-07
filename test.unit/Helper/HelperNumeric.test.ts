@@ -1,6 +1,21 @@
-import { KeyValue, HelperNumeric, InvalidArgumentError } from '../../ts';
+import {
+  KeyValue,
+  HelperNumeric,
+  InvalidArgumentError,
+  InvalidExecutionError
+} from '../../ts';
 
 describe('Classe HelperNumeric', () => {
+  test('Não deve permitir instanciar', () => {
+    // Arrange, Given
+    // Act, When
+
+    const instantiate = () => new HelperNumeric();
+
+    // Assert, Then
+
+    expect(instantiate).toThrowError(InvalidExecutionError);
+  });
   describe('random() deve retorna um número aleatório', () => {
     test('pode retornar comprimento maior que o range de números', () => {
       // Arrange, Given

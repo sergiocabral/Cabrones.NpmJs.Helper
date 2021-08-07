@@ -1,4 +1,5 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 
 /**
  * Informações numéricas.
@@ -13,6 +14,13 @@ type NumberData = {
  * Utilitários para manipulação de números.
  */
 export class HelperNumeric {
+  /**
+   * Construtor proibido.
+   */
+  public constructor() {
+    throw new InvalidExecutionError('This is a static class.');
+  }
+
   /**
    * Retorna um número inteiro aleatório
    * @param length Dígitos inteiros
