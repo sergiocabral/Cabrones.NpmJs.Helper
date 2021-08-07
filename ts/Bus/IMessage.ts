@@ -9,5 +9,11 @@ export interface IMessage {
   /**
    * Envia a mensagem para o serviço mensageiro notificar os listeners.
    */
-  send(): Promise<DispatchedMessage<this>>;
+  send(): DispatchedMessage<this>;
+
+  /**
+   * Envia a mensagem para o serviço mensageiro notificar os listeners.
+   * De forma assíncrona.
+   */
+  sendAsync(): Promise<DispatchedMessage<this>>;
 }

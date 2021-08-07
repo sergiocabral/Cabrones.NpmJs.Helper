@@ -23,11 +23,13 @@ describe('Class Message', () => {
     Message.unsubscribeAll();
     originals['Message.unsubscribe'] = Message.unsubscribe;
     originals['Message.send'] = (Message as any).send;
+    originals['Message.sendAsync'] = (Message as any).sendAsync;
   });
 
   afterEach(() => {
     Message.unsubscribe = originals['Message.unsubscribe'];
     (Message as any).send = originals['Message.send'];
+    (Message as any).sendAsync = originals['Message.sendAsync'];
   });
 
   describe('Testes da instância', () => {
@@ -44,7 +46,7 @@ describe('Class Message', () => {
 
       expect(messageName).toBe('TestMessage1');
     });
-    test('send() deve repassar a chamada para a função estática da classe', async () => {
+    test('send() deve repassar a chamada para a função estática da classe', () => {
       // Arrange, Given
 
       const mockSend = jest.fn();
@@ -54,16 +56,33 @@ describe('Class Message', () => {
 
       // Act, When
 
-      await sut.send();
+      sut.send();
 
       // Assert, Then
 
       expect(mockSend).toBeCalledTimes(1);
       expect(mockSend.mock.calls[0][0]).toBe(sut);
     });
+    test('sendAsync() deve repassar a chamada para a função estática da classe', () => {
+      // Arrange, Given
+
+      const mockSendAsync = jest.fn();
+      (Message as any).sendAsync = mockSendAsync;
+
+      const sut = new TestMessage1('', 1);
+
+      // Act, When
+
+      sut.sendAsync();
+
+      // Assert, Then
+
+      expect(mockSendAsync).toBeCalledTimes(1);
+      expect(mockSendAsync.mock.calls[0][0]).toBe(sut);
+    });
   });
   describe('Testes estáticos da classe', () => {
-    test('subscribe() deve inscrever para ouvir mensagens', async () => {
+    test('subscribe() deve inscrever para ouvir mensagens', () => {
       // Arrange, Given
 
       const mockListener = jest.fn();
@@ -74,7 +93,7 @@ describe('Class Message', () => {
 
       // Act, When
 
-      await message.send();
+      message.send();
 
       // Assert, Then
 
@@ -95,7 +114,7 @@ describe('Class Message', () => {
       expect(subscribe).not.toThrow();
       expect(subscribe).toThrowError(InvalidExecutionError);
     });
-    test('unsubscribe() deve cancelar uma inscrição', async () => {
+    test('unsubscribe() deve cancelar uma inscrição', () => {
       // Arrange, Given
 
       const mockListener = jest.fn();
@@ -104,7 +123,7 @@ describe('Class Message', () => {
       // Act, When
 
       Message.unsubscribe(subscription);
-      await new TestMessage1('', 1).send();
+      new TestMessage1('', 1).send();
 
       // Assert, Then
 
@@ -125,7 +144,7 @@ describe('Class Message', () => {
       expect(unsubscribe).not.toThrow();
       expect(unsubscribe).toThrowError(InvalidExecutionError);
     });
-    test('unsubscribe() deve cancelar apenas a inscrição solicitada', async () => {
+    test('unsubscribe() deve cancelar apenas a inscrição solicitada', () => {
       // Arrange, Given
 
       const mockListener = jest.fn();
@@ -137,14 +156,14 @@ describe('Class Message', () => {
       // Act, When
 
       Message.unsubscribe(subscription1);
-      await message.send();
+      message.send();
 
       // Assert, Then
 
       expect(mockListener).toBeCalledTimes(1);
       expect(mockListener.mock.calls[0][0]).toBe(message);
     });
-    test('unsubscribeAll() deve cancelar todas as inscrições já registradas', async () => {
+    test('unsubscribeAll() deve cancelar todas as inscrições já registradas', () => {
       // Arrange, Given
 
       const mockListener = jest.fn();
@@ -154,14 +173,14 @@ describe('Class Message', () => {
       // Act, When
 
       Message.unsubscribeAll();
-      await new TestMessage1('', 1).send();
-      await new TestMessage2('', 1).send();
+      new TestMessage1('', 1).send();
+      new TestMessage2('', 1).send();
 
       // Assert, Then
 
       expect(mockListener).toBeCalledTimes(0);
     });
-    test('send() deve ser possível ouvir a mesma mensagem mais de uma vez', async () => {
+    test('send() deve ser possível ouvir a mesma mensagem mais de uma vez', () => {
       // Arrange, Given
 
       const mockListener1 = jest.fn();
@@ -173,7 +192,7 @@ describe('Class Message', () => {
 
       // Act, When
 
-      await message.send();
+      message.send();
 
       // Assert, Then
 
@@ -182,48 +201,70 @@ describe('Class Message', () => {
       expect(mockListener2).toBeCalledTimes(1);
       expect(mockListener2.mock.calls[0][0]).toBe(message);
     });
-    test('send() uma mensagem sem inscrição deve poder ser enviada sem falhar', async () => {
+    test('send() uma mensagem sem inscrição deve poder ser enviada sem falhar', () => {
       // Arrange, Given
 
       const message = new TestMessage1('', 1);
 
       // Act, When
 
-      const send = async () => await message.send();
+      const send = () => message.send();
 
       // Assert, Then
 
       expect(send).not.toThrow();
-      expect((await send()).rounds).toBe(0);
+      expect(send().rounds).toBe(0);
     });
-    test('send() deve retornar a própria mensagem enviada', async () => {
+    test('send() deve retornar a própria mensagem enviada', () => {
       // Arrange, Given
 
       const message = new TestMessage1('', 1);
 
       // Act, When
 
-      const response = await message.send();
+      const response = message.send();
 
       // Assert, Then
 
       expect(response.message).toBe(message);
     });
-    test('send() deve retornar o total de vezes que a mensagem foi ouvida', async () => {
+    test('send() deve retornar o total de vezes que a mensagem foi ouvida', () => {
       // Arrange, Given
 
       const randomTimes = HelperNumeric.between(5, 10);
       for (let i = 0; i < randomTimes; i++) {
-        Message.subscribe(TestMessage1, async () => {});
+        Message.subscribe(TestMessage1, () => {});
       }
 
       // Act, When
 
-      const response = await new TestMessage1('', 1).send();
+      const response = new TestMessage1('', 1).send();
 
       // Assert, Then
 
       expect(response.rounds).toBe(randomTimes);
+    });
+    test('sendAsync() deve ser assíncrono', async () => {
+      // Arrange, Given
+
+      let calledCount = 0;
+      const asyncFunction = async () => {};
+      Message.subscribe(TestMessage1, async () => {
+        await asyncFunction();
+        await asyncFunction();
+        calledCount++;
+      });
+
+      // Act, When
+
+      await new TestMessage1('', 1).sendAsync();
+      await new TestMessage1('', 1).sendAsync();
+      new TestMessage1('', 1).sendAsync();
+      new TestMessage1('', 1).sendAsync();
+
+      // Assert, Then
+
+      expect(calledCount).toBe(2);
     });
   });
 });

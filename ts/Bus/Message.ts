@@ -74,23 +74,42 @@ export abstract class Message implements IMessage {
   /**
    * Envia a mensagem para o serviço mensageiro notificar os listeners.
    */
-  public async send(): Promise<DispatchedMessage<this>> {
-    return await Message.send<this>(this);
+  public send(): DispatchedMessage<this> {
+    return Message.send<this>(this);
+  }
+
+  /**
+   * Envia a mensagem para o serviço mensageiro notificar os listeners.
+   * De forma assíncrona.
+   */
+  public async sendAsync(): Promise<DispatchedMessage<this>> {
+    return await Message.sendAsync<this>(this);
   }
 
   /**
    * Envia a mensagem para o serviço mensageiro notificar os listeners.
    * @param message Mensagem
    */
-  private static async send<TMessage extends Message>(
+  private static send<TMessage extends Message>(
     message: TMessage
-  ): Promise<DispatchedMessage<TMessage>> {
+  ): DispatchedMessage<TMessage> {
     const captures = this.subscriptions.filter(
       capture => capture.messageName === message.name
     );
     for (const capture of captures) {
-      await capture.notifyListener(message);
+      capture.notifyListener(message);
     }
     return { rounds: captures.length, message: message };
+  }
+
+  /**
+   * Envia a mensagem para o serviço mensageiro notificar os listeners.
+   * De forma assíncrona.
+   * @param message Mensagem
+   */
+  private static async sendAsync<TMessage extends Message>(
+    message: TMessage
+  ): Promise<DispatchedMessage<TMessage>> {
+    return await new Promise(resolve => resolve(Message.send(message)));
   }
 }
