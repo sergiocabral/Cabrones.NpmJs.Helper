@@ -1,4 +1,4 @@
-import { HelperDate, HelperList, KeyValue } from "../../../ts";
+import { HelperDate, KeyValue } from "../../../ts";
 
 describe('Prototype para Date', () => {
   const originals: KeyValue<any> = {};
