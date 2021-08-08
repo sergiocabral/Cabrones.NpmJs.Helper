@@ -1,5 +1,6 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { DateTimeFormat } from './DateTimeFormat';
+import { IDateTimeFormat } from "./IDateTimeFormat";
 
 /**
  * Utilitários para manipulação de datas.
@@ -66,7 +67,7 @@ export class HelperDate {
    * @param format Configurações de formatação.
    * @returns Data formatada como texto.
    */
-  public static format(value: Date, format?: DateTimeFormat): string {
+  public static format(value: Date, format?: IDateTimeFormat): string {
     const formatFullFill = DateTimeFormat.get(format);
 
     switch (formatFullFill.mask) {
@@ -89,7 +90,7 @@ export class HelperDate {
     const z = value.getMilliseconds().toString().padStart(3, '0');
     let D = 0;
     let labelD = '';
-    if ((formatFullFill.mask as string).indexOf('D') >= 0) {
+    if (formatFullFill.mask.indexOf('D') >= 0) {
       D =
         (new Date(y + '-' + M + '-' + d).getTime() -
           new Date('1970-01-01').getTime()) /
@@ -99,13 +100,13 @@ export class HelperDate {
         24;
       if (D === 0) labelD = '';
       else if (Math.abs(D) === 1) {
-        labelD = formatFullFill.day as string;
+        labelD = formatFullFill.day;
       } else {
-        labelD = formatFullFill.days as string;
+        labelD = formatFullFill.days;
       }
     }
 
-    return (formatFullFill.mask as string)
+    return formatFullFill.mask
       .replaceAll('y', y)
       .replaceAll('M', M)
       .replaceAll('d', d)

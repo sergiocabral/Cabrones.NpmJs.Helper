@@ -4,6 +4,7 @@ import {
   InvalidArgumentError,
   InvalidExecutionError
 } from '../../ts';
+import { INumericFormat } from '../../ts/Helper/INumericFormat';
 
 describe('Classe HelperNumeric', () => {
   test('Não deve permitir instanciar', () => {
@@ -330,5 +331,124 @@ describe('Classe HelperNumeric', () => {
     // Assert, Then
 
     expect(sortedAgain.join(',')).toBe(sortedList.join(','));
+  });
+  describe('format() deve formatar um número para string', () => {
+    test('quantidade de dígitos', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { digits: 5 };
+
+      // Act, When
+
+      const text = HelperNumeric.format(0, format);
+
+      // Assert, Then
+
+      expect(text).toBe('0.00000');
+    });
+    test('ponto decimal', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { decimal: '#' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(0, format);
+
+      // Assert, Then
+
+      expect(text).toBe('0#00');
+    });
+    test('ponto decimal e separador de milhar não informados', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { decimal: '', miles: '' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(1000.23, format);
+
+      // Assert, Then
+
+      expect(text).toBe('100023');
+    });
+    test('ponto decimal não informado e separador de milhar informado', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { decimal: '', miles: '#' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(1000.23, format);
+
+      // Assert, Then
+
+      expect(text).toBe('1#00023');
+    });
+    test('ponto decimal informado e separador de milhar não informado', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { decimal: '#', miles: '' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(1000.23, format);
+
+      // Assert, Then
+
+      expect(text).toBe('1000#23');
+    });
+    test('separador de milhar', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { miles: '#' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(1000, format);
+
+      // Assert, Then
+
+      expect(text).toBe('1#000.00');
+    });
+    test('sinal de positivo', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { showPositive: true };
+
+      // Act, When
+
+      const text = HelperNumeric.format(1, format);
+
+      // Assert, Then
+
+      expect(text).toBe('+1.00');
+    });
+    test('usando prefixo', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { prefix: '#' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(0, format);
+
+      // Assert, Then
+
+      expect(text).toBe('#0.00');
+    });
+    test('usando sufixo', () => {
+      // Arrange, Given
+
+      const format: INumericFormat = { suffix: '#' };
+
+      // Act, When
+
+      const text = HelperNumeric.format(0, format);
+
+      // Assert, Then
+
+      expect(text).toBe('0.00#');
+    });
   });
 });

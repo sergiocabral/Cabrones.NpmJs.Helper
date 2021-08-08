@@ -23,14 +23,14 @@ export class NumericFormat implements INumericFormat {
    * @param format Configurações de formatação.
    * @returns Conjunto de formatação totalmente preenchido.
    */
-  public static get(format?: INumericFormat): INumericFormat {
+  public static get(format?: INumericFormat): NumericFormat {
     return Object.assign({}, new NumericFormat(), format);
   }
 
   /**
    * Dígitos decimais.
    */
-  public digits?: number = NumericFormat.digits;
+  public digits: number = NumericFormat.digits;
 
   /**
    * Valor padrão para digits.
@@ -40,7 +40,7 @@ export class NumericFormat implements INumericFormat {
   /**
    * Caracter usado como vírgula.
    */
-  public decimal?: string = NumericFormat.decimal;
+  public decimal: string = NumericFormat.decimal;
 
   /**
    * Valor padrão para decimal.
@@ -50,7 +50,7 @@ export class NumericFormat implements INumericFormat {
   /**
    * Valor padrão para separador de milhares.
    */
-  public miles?: string = NumericFormat.miles;
+  public miles: string = NumericFormat.miles;
 
   /**
    * Valor padrão para separador de milhares.
@@ -60,7 +60,7 @@ export class NumericFormat implements INumericFormat {
   /**
    * Exibe o sinal de positivo sempre.
    */
-  public showPositive?: boolean = NumericFormat.showPositive;
+  public showPositive: boolean = NumericFormat.showPositive;
 
   /**
    * Valor padrão para showPositive.
@@ -70,7 +70,7 @@ export class NumericFormat implements INumericFormat {
   /**
    * Texto anexado no início do resultado.
    */
-  public prefix?: string = NumericFormat.prefix;
+  public prefix: string = NumericFormat.prefix;
 
   /**
    * Valor padrão para prefix.
@@ -80,7 +80,7 @@ export class NumericFormat implements INumericFormat {
   /**
    * Texto anexado no final do resultado.
    */
-  public suffix?: string = NumericFormat.suffix;
+  public suffix: string = NumericFormat.suffix;
 
   /**
    * Valor padrão para suffix.

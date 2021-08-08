@@ -1,5 +1,6 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+import { INumericFormat } from "./INumericFormat";
 import { NumericFormat } from './NumericFormat';
 
 /**
@@ -253,23 +254,22 @@ export class HelperNumeric {
    * @param format Opcional. Configurações de formatação.
    * @returns Número formatado como texto.
    */
-  public static format(value: number, format?: NumericFormat): string {
+  public static format(value: number, format?: INumericFormat): string {
     const formatFullFill = NumericFormat.get(format);
 
     let result: string = value.toFixed(formatFullFill.digits);
-    if (formatFullFill.decimal !== '.')
-      result = result.replace('.', formatFullFill.decimal as string);
     if (formatFullFill.miles) {
-      const decimal = formatFullFill.decimal ? formatFullFill.decimal : '.';
+      const decimal = '.';
       const integer = result.substr(0, (result + decimal).indexOf(decimal));
       const decimals = result.substr(integer.length);
       result =
         integer.replace(/\B(?=(\d{3})+(?!\d))/g, formatFullFill.miles) +
         decimals;
     }
+    if (formatFullFill.decimal !== '.') {
+      result = result.replace('.', formatFullFill.decimal);
+    }
     if (formatFullFill.showPositive && value >= 0) result = '+' + result;
-    return `${formatFullFill.prefix ?? ''}${result}${
-      formatFullFill.suffix ?? ''
-    }`;
+    return `${formatFullFill.prefix}${result}${formatFullFill.suffix}`;
   }
 }

@@ -23,7 +23,7 @@ export class DateTimeFormat implements IDateTimeFormat {
    * @param format Configurações de formatação.
    * @returns Conjunto de formatação totalmente preenchido.
    */
-  public static get(format?: IDateTimeFormat): IDateTimeFormat {
+  public static get(format?: IDateTimeFormat): DateTimeFormat {
     return Object.assign({}, new DateTimeFormat(), format);
   }
 
@@ -43,7 +43,7 @@ export class DateTimeFormat implements IDateTimeFormat {
    * Nomes de máscara:
    *   running = D h:m:s
    */
-  public mask?: string | 'running' = DateTimeFormat.mask;
+  public mask: string | 'running' = DateTimeFormat.mask;
 
   /**
    * Valor padrão para mask.
@@ -53,7 +53,7 @@ export class DateTimeFormat implements IDateTimeFormat {
   /**
    * Texto usado para contabilizar 1 dia (singular).
    */
-  public day?: string = DateTimeFormat.day;
+  public day: string = DateTimeFormat.day;
 
   /**
    * Valor padrão para day.
@@ -63,7 +63,7 @@ export class DateTimeFormat implements IDateTimeFormat {
   /**
    * Texto usado para contabilizar 2 ou mais dias (plural).
    */
-  public days?: string = DateTimeFormat.days;
+  public days: string = DateTimeFormat.days;
 
   /**
    * Valor padrão para days.
@@ -73,7 +73,7 @@ export class DateTimeFormat implements IDateTimeFormat {
   /**
    * Exibe sem timezone.
    */
-  public useUTC?: boolean = DateTimeFormat.useUTC;
+  public useUTC: boolean = DateTimeFormat.useUTC;
 
   /**
    * Valor padrão para utc.
