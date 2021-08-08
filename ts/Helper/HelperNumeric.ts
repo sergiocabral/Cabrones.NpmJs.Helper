@@ -1,5 +1,6 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+import { NumericFormat } from './NumericFormat';
 
 /**
  * Informações numéricas.
@@ -245,4 +246,30 @@ export class HelperNumeric {
     if (number1 > number2) return +1;
     return 0;
   };
+
+  /**
+   * Formata a exibição de um número.
+   * @param value Valor.
+   * @param format Opcional. Configurações de formatação.
+   * @returns Número formatado como texto.
+   */
+  public static format(value: number, format?: NumericFormat): string {
+    const formatFullFill = NumericFormat.get(format);
+
+    let result: string = value.toFixed(formatFullFill.digits);
+    if (formatFullFill.decimal !== '.')
+      result = result.replace('.', formatFullFill.decimal as string);
+    if (formatFullFill.miles) {
+      const decimal = formatFullFill.decimal ? formatFullFill.decimal : '.';
+      const integer = result.substr(0, (result + decimal).indexOf(decimal));
+      const decimals = result.substr(integer.length);
+      result =
+        integer.replace(/\B(?=(\d{3})+(?!\d))/g, formatFullFill.miles) +
+        decimals;
+    }
+    if (formatFullFill.showPositive && value >= 0) result = '+' + result;
+    return `${formatFullFill.prefix ?? ''}${result}${
+      formatFullFill.suffix ?? ''
+    }`;
+  }
 }
