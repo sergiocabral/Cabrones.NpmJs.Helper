@@ -12,11 +12,61 @@ declare global {
      * @returns Data formatada como texto.
      */
     format(format?: DateTimeFormat): string;
+
+    /**
+     * Adiciona tempo a uma data: milissegundos
+     * @param milliseconds milissegundos
+     */
+    addMilliseconds(milliseconds: number): Date;
+
+    /**
+     * Adiciona tempo a uma data: segundos
+     * @param seconds segundos
+     */
+    addSeconds(seconds: number): Date;
+
+    /**
+     * Adiciona tempo a uma data: minutos
+     * @param minutes minutos
+     */
+    addMinutes(minutes: number): Date;
+
+    /**
+     * Adiciona tempo a uma data: horas
+     * @param hours horas
+     */
+    addHours(hours: number): Date;
+
+    /**
+     * Adiciona tempo a uma data: dias
+     * @param days dias
+     */
+    addDays(days: number): Date;
   }
 }
 
 Date.prototype.format = function (format?: DateTimeFormat): string {
   return HelperDate.format(this, format);
+};
+
+Date.prototype.addMilliseconds = function (milliseconds: number): Date {
+  return HelperDate.addMilliseconds(milliseconds, this);
+};
+
+Date.prototype.addSeconds = function (seconds: number): Date {
+  return HelperDate.addSeconds(seconds, this);
+};
+
+Date.prototype.addMinutes = function (minutes: number): Date {
+  return HelperDate.addMinutes(minutes, this);
+};
+
+Date.prototype.addHours = function (hours: number): Date {
+  return HelperDate.addHours(hours, this);
+};
+
+Date.prototype.addDays = function (days: number): Date {
+  return HelperDate.addDays(days, this);
 };
 
 export {};

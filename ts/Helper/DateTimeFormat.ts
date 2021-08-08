@@ -1,3 +1,6 @@
+//TODO: Teste 100% para HelperNumeric + HelperDate
+//TODO: Logger usar formatação de data
+
 /**
  * Configurações de formatação de data.
  */
@@ -38,12 +41,12 @@ export class DateTimeFormat {
    * Nomes de máscara:
    *   running = D h:m:s
    */
-  public mask?: string = DateTimeFormat.mask;
+  public mask?: string | 'running' = DateTimeFormat.mask;
 
   /**
    * Valor padrão para mask.
    */
-  public static mask = 'M/d/y h:m:s';
+  public static mask: string | 'running' = 'M/d/y h:m:s';
 
   /**
    * Texto usado para contabilizar 1 dia (singular).
