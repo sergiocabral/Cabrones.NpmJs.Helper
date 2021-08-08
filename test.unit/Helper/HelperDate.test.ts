@@ -1,4 +1,5 @@
 import { HelperDate, InvalidExecutionError, KeyValue } from '../../ts';
+import { IDateTimeFormat } from '../../ts/Helper/IDateTimeFormat';
 
 describe('Classe HelperDate', () => {
   const originals: KeyValue<any> = {};
@@ -181,6 +182,98 @@ describe('Classe HelperDate', () => {
       // Assert, Then
 
       expect(date).toEqual(expectedDate);
+    });
+  });
+  describe('format() formata data como texto', () => {
+    test('mask define a máscara', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { mask: 'y#M#d#h#m#s#z' };
+      const date = new Date(2121, 11, 11, 11, 11, 11, 111);
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('2121#12#11#11#11#11#111');
+    });
+    test('mask como running para 0 dias', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { mask: 'running' };
+      const date = new Date(0).addMinutes(new Date().getTimezoneOffset());
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('00:00:00');
+    });
+    test('mask como running para 1 dia', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { mask: 'running' };
+      const date = new Date(0)
+        .addMinutes(new Date().getTimezoneOffset())
+        .addDays(1);
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('1 day 00:00:00');
+    });
+    test('mask como running para 1 dias', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { mask: 'running' };
+      const date = new Date(0)
+        .addMinutes(new Date().getTimezoneOffset())
+        .addDays(2);
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('2 days 00:00:00');
+    });
+    test('mask como running para 1 dias', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { mask: 'running' };
+      const date = new Date(0)
+        .addMinutes(new Date().getTimezoneOffset())
+        .addDays(2);
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('2 days 00:00:00');
+    });
+    test('usando UTC', () => {
+      // Arrange, Given
+
+      const config: IDateTimeFormat = { useUTC: true };
+      const date = new Date(0);
+
+      // Act, When
+
+      const text = HelperDate.format(date, config);
+
+      // Assert, Then
+
+      expect(text).toEqual('01/01/1970 00:00:00');
     });
   });
 });

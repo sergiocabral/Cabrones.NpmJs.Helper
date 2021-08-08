@@ -1,6 +1,6 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { INumericFormat } from "./INumericFormat";
+import { INumericFormat } from './INumericFormat';
 import { NumericFormat } from './NumericFormat';
 
 /**

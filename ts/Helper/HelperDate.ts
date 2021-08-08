@@ -1,6 +1,6 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { DateTimeFormat } from './DateTimeFormat';
-import { IDateTimeFormat } from "./IDateTimeFormat";
+import { IDateTimeFormat } from './IDateTimeFormat';
 
 /**
  * Utilitários para manipulação de datas.
