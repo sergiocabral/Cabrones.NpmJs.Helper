@@ -1,19 +1,21 @@
 //TODO: Teste 100% para HelperNumeric + HelperDate
 //TODO: Logger usar formatação de data
 
+import { IDateTimeFormat } from './IDateTimeFormat';
+
 /**
  * Configurações de formatação de data.
  */
-export class DateTimeFormat {
+export class DateTimeFormat implements IDateTimeFormat {
   /**
    * Define os valores padrão para a formatação.
    * @param format Object com formatação.
    */
-  public static defaults(format: DateTimeFormat): void {
-    if (format?.mask) DateTimeFormat.mask = format.mask;
-    if (format?.day) DateTimeFormat.day = format.day;
-    if (format?.days) DateTimeFormat.days = format.days;
-    if (format?.useUTC) DateTimeFormat.useUTC = format.useUTC;
+  public static defaults(format: IDateTimeFormat): void {
+    if (format?.mask !== undefined) DateTimeFormat.mask = format.mask;
+    if (format?.day !== undefined) DateTimeFormat.day = format.day;
+    if (format?.days !== undefined) DateTimeFormat.days = format.days;
+    if (format?.useUTC !== undefined) DateTimeFormat.useUTC = format.useUTC;
   }
 
   /**
@@ -21,7 +23,7 @@ export class DateTimeFormat {
    * @param format Configurações de formatação.
    * @returns Conjunto de formatação totalmente preenchido.
    */
-  public static get(format?: DateTimeFormat): DateTimeFormat {
+  public static get(format?: IDateTimeFormat): IDateTimeFormat {
     return Object.assign({}, new DateTimeFormat(), format);
   }
 

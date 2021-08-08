@@ -1,18 +1,21 @@
+import { INumericFormat } from './INumericFormat';
+
 /**
  * Configurações de formatação de número.
  */
-export class NumericFormat {
+export class NumericFormat implements INumericFormat {
   /**
    * Define os valores padrão para a formatação.
    * @param format Object com formatação.
    */
-  public static defaults(format: NumericFormat): void {
-    if (format?.digits) NumericFormat.digits = format.digits;
-    if (format?.decimal) NumericFormat.decimal = format.decimal;
-    if (format?.miles) NumericFormat.miles = format.miles;
-    if (format?.showPositive) NumericFormat.showPositive = format.showPositive;
-    if (format?.prefix) NumericFormat.prefix = format.prefix;
-    if (format?.suffix) NumericFormat.suffix = format.suffix;
+  public static defaults(format: INumericFormat): void {
+    if (format?.digits !== undefined) NumericFormat.digits = format.digits;
+    if (format?.decimal !== undefined) NumericFormat.decimal = format.decimal;
+    if (format?.miles !== undefined) NumericFormat.miles = format.miles;
+    if (format?.showPositive !== undefined)
+      NumericFormat.showPositive = format.showPositive;
+    if (format?.prefix !== undefined) NumericFormat.prefix = format.prefix;
+    if (format?.suffix !== undefined) NumericFormat.suffix = format.suffix;
   }
 
   /**
@@ -20,7 +23,7 @@ export class NumericFormat {
    * @param format Configurações de formatação.
    * @returns Conjunto de formatação totalmente preenchido.
    */
-  public static get(format?: NumericFormat): NumericFormat {
+  public static get(format?: INumericFormat): INumericFormat {
     return Object.assign({}, new NumericFormat(), format);
   }
 
