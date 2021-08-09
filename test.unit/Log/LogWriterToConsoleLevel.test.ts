@@ -1,9 +1,4 @@
-import {
-  KeyValue,
-  LogLevel,
-  LogWriter,
-  LogWriterToConsole
-} from '../../ts';
+import { KeyValue, LogLevel, LogWriter, LogWriterToConsole } from '../../ts';
 
 describe('Class LogWriterToConsoleLevel', () => {
   const originals: KeyValue<any> = {};

@@ -1,5 +1,4 @@
-import { KeyValue } from '../../ts';
-import { NumericFormat } from '../../ts/Helper/NumericFormat';
+import { KeyValue, NumericFormat } from '../../ts';
 
 describe('Classe NumericFormat', () => {
   const originals: KeyValue<any> = {};

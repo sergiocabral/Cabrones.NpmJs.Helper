@@ -1,5 +1,4 @@
-import { KeyValue } from '../../ts';
-import { DateTimeFormat } from '../../ts/Helper/DateTimeFormat';
+import { KeyValue, DateTimeFormat } from '../../ts';
 
 describe('Classe DateTimeFormat', () => {
   const originals: KeyValue<any> = {};
