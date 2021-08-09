@@ -34,9 +34,7 @@ export class LogWriterToConsole extends LogWriter {
    * @protected
    */
   protected override write(message: ILogMessage): void {
-    const text = `${message.timestamp.toLocaleString()} [${
-      LogLevel[message.level] + (message.section ? ': ' + message.section : '')
-    }] ${message.message}`;
+    const text = this.factoryMessage(message);
 
     let log;
     switch (message.level) {

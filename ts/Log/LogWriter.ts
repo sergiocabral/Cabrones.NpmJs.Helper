@@ -55,6 +55,31 @@ export abstract class LogWriter implements ILogWriter {
   }
 
   /**
+   * Função para personalizar a exibição de uma mensagem de log.
+   */
+  public customFactoryMessage?: (message: ILogMessage) => string;
+
+  /**
+   * Construção do texto da mensagem de log.
+   * @param message
+   * @private
+   */
+  public static factoryMessage(message: ILogMessage): string {
+    return `${message.timestamp.format({ mask: 'y-M-d h:m:s.z' })} [${
+      LogLevel[message.level] + (message.section ? ': ' + message.section : '')
+    }] ${message.message}`;
+  }
+
+  /**
+   * Construção do texto da mensagem de log.
+   * @param message
+   * @private
+   */
+  protected factoryMessage(message: ILogMessage): string {
+    return (this.customFactoryMessage ?? LogWriter.factoryMessage)(message);
+  }
+
+  /**
    * Escreve o log de fato.
    * @param message
    * @param messageTemplate

@@ -1,5 +1,5 @@
 import { HelperNumeric } from '../HelperNumeric';
-import { NumericFormat } from '../NumericFormat';
+import { INumericFormat } from '../INumericFormat';
 
 declare global {
   /**
@@ -11,11 +11,11 @@ declare global {
      * @param format Opcional. Configurações de formatação.
      * @returns Número formatado como texto.
      */
-    format(format?: NumericFormat): string;
+    format(format?: INumericFormat): string;
   }
 }
 
-Number.prototype.format = function (format?: NumericFormat): string {
+Number.prototype.format = function (format?: INumericFormat): string {
   return HelperNumeric.format(Number(this), format);
 };
 

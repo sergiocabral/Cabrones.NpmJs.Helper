@@ -7,12 +7,14 @@ import {
 } from '../../ts';
 
 class LogWriterToTest extends LogWriter {
+  public customFactoryMessage?: (message: ILogMessage) => string;
   public mockWrite = jest.fn();
   protected write(
     message: ILogMessage,
     messageTemplate: string,
     values?: unknown
   ): void {
+    super.factoryMessage(message);
     this.mockWrite(message, messageTemplate, values);
   }
 }
@@ -58,6 +60,106 @@ describe('Class LogWriter', () => {
       // Assert, Then
 
       expect(initialDefaultLogLevel).toBe(expectedDefaultLogLevel);
+    });
+    describe('Formatação da mensagem', () => {
+      test('Exibir data, level, seção e mensagem', () => {
+        // Arrange, Given
+
+        const message: ILogMessage = {
+          timestamp: new Date(),
+          level: LogLevel.Verbose,
+          section: Math.random().toString(),
+          message: Math.random().toString()
+        };
+
+        const expectedOutputMessage = `${message.timestamp.format({
+          mask: 'y-M-d h:m:s.z'
+        })} [${LogLevel[message.level] + ': ' + message.section}] ${
+          message.message
+        }`;
+
+        // Act, When
+
+        const outputMessage = LogWriter.factoryMessage(message);
+
+        // Assert, Then
+
+        expect(outputMessage).toBe(expectedOutputMessage);
+      });
+      test('Exibir data, level e mensagem (sem seção)', () => {
+        // Arrange, Given
+
+        const message: ILogMessage = {
+          timestamp: new Date(),
+          level: LogLevel.Verbose,
+          section: '',
+          message: Math.random().toString()
+        };
+
+        const expectedOutputMessage = `${message.timestamp.format({
+          mask: 'y-M-d h:m:s.z'
+        })} [${LogLevel[message.level]}] ${message.message}`;
+
+        // Act, When
+
+        const outputMessage = LogWriter.factoryMessage(message);
+
+        // Assert, Then
+
+        expect(outputMessage).toBe(expectedOutputMessage);
+      });
+      test('Deve usar o construtor padrão de mensagem se nenhum for especificado', () => {
+        // Arrange, Given
+
+        const message = `${Math.random().toString()} {0}`;
+        const values = [Math.random()];
+        const logLevel = LogLevel.Critical;
+        const section = Math.random().toString();
+
+        const mockFactoryMessage = jest.fn();
+        LogWriter.factoryMessage = mockFactoryMessage;
+        const sut = new LogWriterToTest();
+
+        // Act, When
+
+        sut.post(message, values, logLevel, section);
+
+        // Assert, Then
+
+        expect(mockFactoryMessage).toBeCalledTimes(1);
+        const logMessage = mockFactoryMessage.mock.calls[0][0] as ILogMessage;
+        expect(logMessage.message).toBe(message.querystring(values));
+        expect(logMessage.level).toBe(logLevel);
+        expect(logMessage.section).toBe(section);
+      });
+      test('Deve usar o construtor customizado se especificado', () => {
+        // Arrange, Given
+
+        const message = `${Math.random().toString()} {0}`;
+        const values = [Math.random()];
+        const logLevel = LogLevel.Critical;
+        const section = Math.random().toString();
+
+        const mockFactoryMessage = jest.fn();
+        const mockCustomFactoryMessage = jest.fn();
+        const sut = new LogWriterToTest();
+        LogWriter.factoryMessage = mockFactoryMessage;
+        sut.customFactoryMessage = mockCustomFactoryMessage;
+
+        // Act, When
+
+        sut.post(message, values, logLevel, section);
+
+        // Assert, Then
+
+        expect(mockFactoryMessage).toBeCalledTimes(0);
+        expect(mockCustomFactoryMessage).toBeCalledTimes(1);
+        const logMessage = mockCustomFactoryMessage.mock
+          .calls[0][0] as ILogMessage;
+        expect(logMessage.message).toBe(message.querystring(values));
+        expect(logMessage.level).toBe(logLevel);
+        expect(logMessage.section).toBe(section);
+      });
     });
   });
 

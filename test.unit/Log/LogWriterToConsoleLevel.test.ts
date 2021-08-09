@@ -1,9 +1,15 @@
-import { ILogMessage, KeyValue, LogLevel, LogWriterToConsole } from '../../ts';
+import {
+  KeyValue,
+  LogLevel,
+  LogWriter,
+  LogWriterToConsole
+} from '../../ts';
 
 describe('Class LogWriterToConsoleLevel', () => {
   const originals: KeyValue<any> = {};
 
   beforeEach(() => {
+    originals['LogWriter.factoryMessage'] = LogWriter.factoryMessage;
     originals['console.debug'] = console.debug;
     originals['console.log'] = console.log;
     originals['console.info'] = console.info;
@@ -12,11 +18,29 @@ describe('Class LogWriterToConsoleLevel', () => {
   });
 
   afterEach(() => {
+    LogWriter.factoryMessage = originals['LogWriter.factoryMessage'];
     console.debug = originals['console.debug'];
     console.log = originals['console.log'];
     console.info = originals['console.info'];
     console.warn = originals['console.warn'];
     console.error = originals['console.error'];
+  });
+
+  test('Escreve mensagem usando o construtor de mensagens padrão', () => {
+    // Arrange, Given
+
+    const mockFactoryMessage = jest.fn();
+    LogWriter.factoryMessage = mockFactoryMessage;
+
+    const sut = new LogWriterToConsole(LogLevel.Verbose);
+
+    // Act, When
+
+    sut.post(Math.random().toString());
+
+    // Assert, Then
+
+    expect(mockFactoryMessage).toBeCalledTimes(1);
   });
 
   describe('Usar função de escrita correspondente ao level', () => {
@@ -157,65 +181,6 @@ describe('Class LogWriterToConsoleLevel', () => {
       for (const name of Object.keys(correlationExpected)) {
         expect(correlationVerified[name]).toBe(correlationExpected[name]);
       }
-    });
-  });
-
-  describe('Formatação da mensagem', () => {
-    test('Exibir data, level, seção e mensagem', () => {
-      // Arrange, Given
-
-      const mockWrite = jest.fn();
-      console.debug = mockWrite;
-
-      const message: ILogMessage = {
-        timestamp: new Date(),
-        level: LogLevel.Verbose,
-        section: Math.random().toString(),
-        message: Math.random().toString()
-      };
-
-      const sut = new LogWriterToConsole(message.level);
-
-      const expectedOutputMessage = `${message.timestamp.toLocaleString()} [${
-        LogLevel[message.level] + ': ' + message.section
-      }] ${message.message}`;
-
-      // Act, When
-
-      sut.post(message.message, undefined, message.level, message.section);
-
-      // Assert, Then
-
-      expect(mockWrite.mock.calls.length).toBe(1);
-      expect(mockWrite.mock.calls[0][0]).toBe(expectedOutputMessage);
-    });
-    test('Exibir data, level e mensagem (sem seção)', () => {
-      // Arrange, Given
-
-      const mockWrite = jest.fn();
-      console.debug = mockWrite;
-
-      const message: ILogMessage = {
-        timestamp: new Date(),
-        level: LogLevel.Verbose,
-        section: '',
-        message: Math.random().toString()
-      };
-
-      const sut = new LogWriterToConsole(message.level);
-
-      const expectedOutputMessage = `${message.timestamp.toLocaleString()} [${
-        LogLevel[message.level]
-      }] ${message.message}`;
-
-      // Act, When
-
-      sut.post(message.message, undefined, message.level, message.section);
-
-      // Assert, Then
-
-      expect(mockWrite.mock.calls.length).toBe(1);
-      expect(mockWrite.mock.calls[0][0]).toBe(expectedOutputMessage);
     });
   });
 });

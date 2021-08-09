@@ -1,5 +1,5 @@
-import { DateTimeFormat } from '../DateTimeFormat';
 import { HelperDate } from '../HelperDate';
+import { IDateTimeFormat } from '../IDateTimeFormat';
 
 declare global {
   /**
@@ -11,7 +11,7 @@ declare global {
      * @param format Opcional. Configurações de formatação.
      * @returns Data formatada como texto.
      */
-    format(format?: DateTimeFormat): string;
+    format(format?: IDateTimeFormat): string;
 
     /**
      * Adiciona tempo a uma data: milissegundos
@@ -45,7 +45,7 @@ declare global {
   }
 }
 
-Date.prototype.format = function (format?: DateTimeFormat): string {
+Date.prototype.format = function (format?: IDateTimeFormat): string {
   return HelperDate.format(this, format);
 };
 

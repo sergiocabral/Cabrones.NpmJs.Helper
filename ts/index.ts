@@ -15,11 +15,15 @@ import { NotImplementedError } from './Error/NotImplementedError';
 import { NotReadyError } from './Error/NotReadyError';
 import { RequestError } from './Error/RequestError';
 import { ShouldNeverHappenError } from './Error/ShouldNeverHappenError';
+import { DateTimeFormat } from './Helper/DateTimeFormat';
 import { HelperDate } from './Helper/HelperDate';
 import { HelperList } from './Helper/HelperList';
 import { HelperNumeric } from './Helper/HelperNumeric';
 import { HelperObject } from './Helper/HelperObject';
 import { HelperText } from './Helper/HelperText';
+import { IDateTimeFormat } from './Helper/IDateTimeFormat';
+import { INumericFormat } from './Helper/INumericFormat';
+import { NumericFormat } from './Helper/NumericFormat';
 import { WordGenerator } from './Helper/WordGenerator';
 import { ILogMessage } from './Log/ILogMessage';
 import { ILogWriter } from './Log/ILogWriter';
@@ -51,11 +55,15 @@ export {
   NotReadyError,
   RequestError,
   ShouldNeverHappenError,
+  DateTimeFormat,
   HelperDate,
   HelperList,
   HelperNumeric,
   HelperObject,
   HelperText,
+  IDateTimeFormat,
+  INumericFormat,
+  NumericFormat,
   WordGenerator,
   ILogMessage,
   ILogWriter,

@@ -1,3 +1,4 @@
+import { ILogMessage } from './ILogMessage';
 import { LogLevel } from './LogLevel';
 
 /**
@@ -17,4 +18,9 @@ export interface ILogWriter {
     level?: LogLevel,
     section?: string
   ): void;
+
+  /**
+   * Função para personalizar a exibição de uma mensagem de log.
+   */
+  customFactoryMessage?: (message: ILogMessage) => string;
 }
