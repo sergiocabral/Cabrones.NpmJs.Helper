@@ -1,6 +1,4 @@
-//TODO: Teste 100% para HelperNumeric + HelperDate
-//TODO: Logger usar formatação de data
-
+import { DateTimeFormatMask } from './DateTimeFormatMask';
 import { IDateTimeFormat } from './IDateTimeFormat';
 
 /**
@@ -42,13 +40,14 @@ export class DateTimeFormat implements IDateTimeFormat {
    *
    * Nomes de máscara:
    *   running = D h:m:s
+   *   universal = y-M-d h:m:s.z
    */
-  public mask: string | 'running' = DateTimeFormat.mask;
+  public mask: DateTimeFormatMask = DateTimeFormat.mask;
 
   /**
    * Valor padrão para mask.
    */
-  public static mask: string | 'running' = 'M/d/y h:m:s';
+  public static mask: DateTimeFormatMask = 'M/d/y h:m:s';
 
   /**
    * Texto usado para contabilizar 1 dia (singular).

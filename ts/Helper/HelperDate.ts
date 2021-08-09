@@ -74,6 +74,9 @@ export class HelperDate {
       case 'running':
         formatFullFill.mask = 'D h:m:s';
         break;
+      case 'universal':
+        formatFullFill.mask = 'y-M-d h:m:s.z';
+        break;
     }
 
     if (formatFullFill.useUTC) {

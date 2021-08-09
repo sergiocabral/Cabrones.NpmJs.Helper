@@ -1,3 +1,5 @@
+import { DateTimeFormatMask } from './DateTimeFormatMask';
+
 /**
  * Configurações de formatação de data.
  */
@@ -17,8 +19,9 @@ export interface IDateTimeFormat {
    *
    * Nomes de máscara:
    *   running = D h:m:s
+   *   universal = y-M-d h:m:s.z
    */
-  mask?: string | 'running';
+  mask?: DateTimeFormatMask;
 
   /**
    * Texto usado para contabilizar 1 dia (singular).

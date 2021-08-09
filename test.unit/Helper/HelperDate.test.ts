@@ -1,5 +1,9 @@
-import { HelperDate, InvalidExecutionError, KeyValue } from '../../ts';
-import { IDateTimeFormat } from '../../ts/Helper/IDateTimeFormat';
+import {
+  HelperDate,
+  InvalidExecutionError,
+  KeyValue,
+  IDateTimeFormat
+} from '../../ts';
 
 describe('Classe HelperDate', () => {
   const originals: KeyValue<any> = {};
@@ -229,7 +233,7 @@ describe('Classe HelperDate', () => {
 
       expect(text).toEqual('1 day 00:00:00');
     });
-    test('mask como running para 1 dias', () => {
+    test('mask como running para 2 dias', () => {
       // Arrange, Given
 
       const config: IDateTimeFormat = { mask: 'running' };
@@ -245,13 +249,11 @@ describe('Classe HelperDate', () => {
 
       expect(text).toEqual('2 days 00:00:00');
     });
-    test('mask como running para 1 dias', () => {
+    test('mask como universal', () => {
       // Arrange, Given
 
-      const config: IDateTimeFormat = { mask: 'running' };
-      const date = new Date(0)
-        .addMinutes(new Date().getTimezoneOffset())
-        .addDays(2);
+      const config: IDateTimeFormat = { mask: 'universal' };
+      const date = new Date(2007, 7, 7, 7, 7, 7, 7);
 
       // Act, When
 
@@ -259,7 +261,7 @@ describe('Classe HelperDate', () => {
 
       // Assert, Then
 
-      expect(text).toEqual('2 days 00:00:00');
+      expect(text).toEqual('2007-08-07 07:07:07.007');
     });
     test('usando UTC', () => {
       // Arrange, Given

@@ -16,6 +16,7 @@ import { NotReadyError } from './Error/NotReadyError';
 import { RequestError } from './Error/RequestError';
 import { ShouldNeverHappenError } from './Error/ShouldNeverHappenError';
 import { DateTimeFormat } from './Helper/DateTimeFormat';
+import { DateTimeFormatMask } from './Helper/DateTimeFormatMask';
 import { HelperDate } from './Helper/HelperDate';
 import { HelperList } from './Helper/HelperList';
 import { HelperNumeric } from './Helper/HelperNumeric';
@@ -56,6 +57,7 @@ export {
   RequestError,
   ShouldNeverHappenError,
   DateTimeFormat,
+  DateTimeFormatMask,
   HelperDate,
   HelperList,
   HelperNumeric,

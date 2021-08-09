@@ -2,9 +2,9 @@ import {
   KeyValue,
   HelperNumeric,
   InvalidArgumentError,
-  InvalidExecutionError
+  InvalidExecutionError,
+  INumericFormat
 } from '../../ts';
-import { INumericFormat } from '../../ts/Helper/INumericFormat';
 
 describe('Classe HelperNumeric', () => {
   test('Não deve permitir instanciar', () => {
