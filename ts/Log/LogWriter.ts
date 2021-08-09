@@ -65,7 +65,7 @@ export abstract class LogWriter implements ILogWriter {
    * @private
    */
   public static factoryMessage(message: ILogMessage): string {
-    return `${message.timestamp.format({ mask: 'y-M-d h:m:s.z' })} [${
+    return `${message.timestamp.format({ mask: 'universal' })} [${
       LogLevel[message.level] + (message.section ? ': ' + message.section : '')
     }] ${message.message}`;
   }

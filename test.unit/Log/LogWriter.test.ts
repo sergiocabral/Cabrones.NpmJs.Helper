@@ -73,7 +73,7 @@ describe('Class LogWriter', () => {
         };
 
         const expectedOutputMessage = `${message.timestamp.format({
-          mask: 'y-M-d h:m:s.z'
+          mask: 'universal'
         })} [${LogLevel[message.level] + ': ' + message.section}] ${
           message.message
         }`;
@@ -97,7 +97,7 @@ describe('Class LogWriter', () => {
         };
 
         const expectedOutputMessage = `${message.timestamp.format({
-          mask: 'y-M-d h:m:s.z'
+          mask: 'universal'
         })} [${LogLevel[message.level]}] ${message.message}`;
 
         // Act, When
