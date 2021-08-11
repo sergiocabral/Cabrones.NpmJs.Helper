@@ -90,9 +90,9 @@ describe('Classe WordGenerator', () => {
   test('deve poder mudar o universo de caracteres', () => {
     // Arrange, Given
 
-    const sut = new WordGenerator();
-    sut.consonants = ['b'];
-    sut.vowels = ['a'];
+    const consonants = ['b'];
+    const vowels = ['a'];
+    const sut = new WordGenerator(consonants, vowels);
     const expectedAllWords = sut.consonants[0] + sut.vowels[0];
 
     // Act, When

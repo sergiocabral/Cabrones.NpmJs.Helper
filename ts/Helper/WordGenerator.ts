@@ -6,12 +6,24 @@ import { HelperList } from './HelperList';
 
 export class WordGenerator {
   /**
+   *
+   * @param consonants Consoantes para conectar com vogais.
+   * @param vowels Lista de vogais.
+   */
+  public constructor(consonants?: string[], vowels?: string[]) {
+    this.consonants = consonants
+      ? consonants
+      : Array<string>().concat(WordGenerator.consonants);
+    this.vowels = vowels
+      ? vowels
+      : Array<string>().concat(WordGenerator.vowels);
+  }
+
+  /**
    * Consoantes para conectar com vogais.
    * @private
    */
-  public consonants: string[] = Array<string>().concat(
-    WordGenerator.consonants
-  );
+  public consonants: string[];
 
   /**
    * Consoantes para conectar com vogais.
@@ -56,7 +68,7 @@ export class WordGenerator {
    * Lista de vogais.
    * @private
    */
-  public vowels: string[] = Array<string>().concat(WordGenerator.vowels);
+  public vowels: string[];
 
   /**
    * Lista de vogais.
