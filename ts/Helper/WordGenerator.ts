@@ -23,13 +23,13 @@ export class WordGenerator {
    * Consoantes para conectar com vogais.
    * @private
    */
-  public consonants: string[];
+  public readonly consonants: string[];
 
   /**
    * Consoantes para conectar com vogais.
    * @private
    */
-  private static consonants: string[] = [
+  private static readonly consonants: string[] = [
     'b',
     'c',
     'd',
@@ -68,13 +68,13 @@ export class WordGenerator {
    * Lista de vogais.
    * @private
    */
-  public vowels: string[];
+  public readonly vowels: string[];
 
   /**
    * Lista de vogais.
    * @private
    */
-  private static vowels: string[] = ['a', 'e', 'i', 'o', 'u', 'y'];
+  private static readonly vowels: string[] = ['a', 'e', 'i', 'o', 'u', 'y'];
 
   /**
    * Retorna uma consoante aleatória.
