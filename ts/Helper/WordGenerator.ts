@@ -1,4 +1,3 @@
-import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { HelperList } from './HelperList';
 
 /**
@@ -7,11 +6,12 @@ import { HelperList } from './HelperList';
 
 export class WordGenerator {
   /**
-   * Construtor proibido.
+   * Consoantes para conectar com vogais.
+   * @private
    */
-  constructor() {
-    throw new InvalidExecutionError('This is a static class.');
-  }
+  public consonants: string[] = Array<string>().concat(
+    WordGenerator.consonants
+  );
 
   /**
    * Consoantes para conectar com vogais.
@@ -19,38 +19,44 @@ export class WordGenerator {
    */
   private static consonants: string[] = [
     'b',
-    //'c',
+    'c',
     'd',
-    //'f',
+    'f',
     'g',
-    //'h',
-    //'j',
-    //'k',
+    'h',
+    'j',
+    'k',
     'l',
-    //'m',
+    'm',
     'n',
-    //'p',
-    //'q',
+    'p',
+    'q',
     'r',
     's',
     't',
     'v',
     'w',
-    //'x',
+    'x',
     'z',
     'br',
-    //'cr',
-    //'fr',
+    'cr',
+    'fr',
     'gr',
     'kr',
-    //'pr',
-    //'tr',
-    //'vr',
-    //'ch',
+    'pr',
+    'tr',
+    'vr',
+    'ch',
     'dh',
     'lh',
     'nh'
   ];
+
+  /**
+   * Lista de vogais.
+   * @private
+   */
+  public vowels: string[] = Array<string>().concat(WordGenerator.vowels);
 
   /**
    * Lista de vogais.
@@ -62,7 +68,7 @@ export class WordGenerator {
    * Retorna uma consoante aleatória.
    * @private
    */
-  private static get consonant(): string {
+  private get consonant(): string {
     return HelperList.getRandom(this.consonants);
   }
 
@@ -70,23 +76,26 @@ export class WordGenerator {
    * Retorna uma vogal aleatória.
    * @private
    */
-  private static get vowel(): string {
+  private get vowel(): string {
     return HelperList.getRandom(this.vowels);
   }
 
   /**
    * Retorna uma sílaba pronunciável.
    */
-  private static get syllable(): string {
+  private get syllable(): string {
     const consonant = this.consonant;
     const vowel = this.vowel;
     let otherVowel = '';
 
-    const twentyPerCent = Math.random() * 100 < 20;
-    if (twentyPerCent) {
-      do {
-        otherVowel = this.vowel;
-      } while (otherVowel === vowel);
+    const hasMultiplesVowel = this.vowels.length > 1;
+    if (hasMultiplesVowel) {
+      const twentyPerCent = Math.random() * 100 < 20;
+      if (twentyPerCent) {
+        do {
+          otherVowel = this.vowel;
+        } while (otherVowel === vowel);
+      }
     }
 
     return consonant + vowel + otherVowel;
@@ -95,7 +104,7 @@ export class WordGenerator {
   /**
    * Retorna uma palavra pronunciável.
    */
-  public static getWord(syllablesCount = 3, firstLetterUpper = true): string {
+  public getWord(syllablesCount = 3, firstLetterUpper = true): string {
     const syllables: string[] = [];
     while (syllables.length < syllablesCount) {
       syllables.push(this.syllable);

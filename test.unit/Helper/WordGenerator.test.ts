@@ -1,4 +1,4 @@
-import { InvalidExecutionError, WordGenerator } from '../../ts';
+import { WordGenerator } from '../../ts';
 
 describe('Classe WordGenerator', () => {
   const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
@@ -7,26 +7,16 @@ describe('Classe WordGenerator', () => {
     .map((value, index) => String.fromCharCode('a'.charCodeAt(0) + index))
     .filter(letter => !vowels.includes(letter));
 
-  test('Não deve permitir instanciar', () => {
-    // Arrange, Given
-    // Act, When
-
-    const instantiate = () => new WordGenerator();
-
-    // Assert, Then
-
-    expect(instantiate).toThrowError(InvalidExecutionError);
-  });
-
   test('getWord deve usar sílabas pronunciáveis', () => {
     // Arrange, Given
 
+    const sut = new WordGenerator();
     const expectedSyllableMinimumLength = 2;
     const expectedSyllableMaximumLength = 4;
 
     // Act, When
 
-    const OneSyllable = WordGenerator.getWord(1, false);
+    const OneSyllable = sut.getWord(1, false);
 
     // Assert, Then
 
@@ -48,8 +38,9 @@ describe('Classe WordGenerator', () => {
 
     // Act, When
 
-    const asUppercase = WordGenerator.getWord(1, true);
-    const asLowercase = WordGenerator.getWord(1, false);
+    const sut = new WordGenerator();
+    const asUppercase = sut.getWord(1, true);
+    const asLowercase = sut.getWord(1, false);
 
     // Assert, Then
 
@@ -64,6 +55,8 @@ describe('Classe WordGenerator', () => {
 
   test('getWord deve poder especificar o total de sílabas', () => {
     // Arrange, Given
+
+    const sut = new WordGenerator();
 
     const syllablesCount = Math.floor(Math.random() * 100);
 
@@ -80,7 +73,7 @@ describe('Classe WordGenerator', () => {
 
     // Act, When
 
-    const word = WordGenerator.getWord(syllablesCount);
+    const word = sut.getWord(syllablesCount);
 
     // Assert, Then
 
@@ -92,5 +85,28 @@ describe('Classe WordGenerator', () => {
     expect(wordLengthDeviation).toBeLessThanOrEqual(
       1 + acceptablePercentDeviation
     );
+  });
+
+  test('deve poder mudar o universo de caracteres', () => {
+    // Arrange, Given
+
+    const sut = new WordGenerator();
+    sut.consonants = ['b'];
+    sut.vowels = ['a'];
+    const expectedAllWords = sut.consonants[0] + sut.vowels[0];
+
+    // Act, When
+
+    const count = 100;
+    const words: Record<string, number> = {};
+    for (let i = 0; i < count; i++) {
+      const word = sut.getWord(1, false);
+      words[word] = words[word] === undefined ? 1 : words[word] + 1;
+    }
+
+    // Assert, Then
+
+    expect(Object.keys(words)).toEqual([expectedAllWords]);
+    expect(words[expectedAllWords]).toBe(count);
   });
 });
