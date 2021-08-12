@@ -135,4 +135,29 @@ describe('Classe HelperObject', () => {
 
     expect(dateTime).toBe(expectedDateTime);
   });
+  test('toText() deve converter um objeto qualquer em texto', () => {
+    // Arrange, Given
+
+    const instanceWithRecursive = {
+      text: "Hello World",
+      number: 123,
+      boolean: true,
+      date: new Date(2011,11,11,11,11,11,11),
+      recursive1: null as any,
+      inner: {
+        recursive2: null as any,
+      },
+      func: function () { return "func return"; }
+    }
+    instanceWithRecursive.recursive1 = instanceWithRecursive;
+    instanceWithRecursive.inner.recursive2 = instanceWithRecursive;
+
+    // Act, When
+
+    const text = HelperObject.toText(instanceWithRecursive);
+
+    // Assert, Then
+
+    expect(text).toBeDefined();
+  })
 });

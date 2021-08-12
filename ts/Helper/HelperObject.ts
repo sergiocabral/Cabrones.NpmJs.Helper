@@ -43,4 +43,28 @@ export class HelperObject {
     const eval2 = eval;
     return eval2(code);
   }
+
+  /**
+   * Converte qualquer objeto em string
+   * @param instance Instância.
+   * @param space Espaçamento da identação.
+   */
+  public static toText(
+    instance: unknown,
+    space: undefined | string | number = '  '
+  ): string {
+    const objects: unknown[] = [];
+
+    const replacer = (key: string, value: unknown): unknown => {
+      if (typeof value === 'object' && value !== null) {
+        if (objects.findIndex(object => object === value) >= 0) {
+          return ({}).toString();
+        }
+        objects.push(value);
+      }
+      return value;
+    };
+
+    return JSON.stringify(instance, replacer, space);
+  }
 }
