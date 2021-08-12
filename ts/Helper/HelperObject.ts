@@ -58,7 +58,7 @@ export class HelperObject {
     const replacer = (key: string, value: unknown): unknown => {
       if (typeof value === 'object' && value !== null) {
         if (objects.findIndex(object => object === value) >= 0) {
-          return ({}).toString();
+          return {}.toString();
         }
         objects.push(value);
       }
