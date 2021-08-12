@@ -139,16 +139,18 @@ describe('Classe HelperObject', () => {
     // Arrange, Given
 
     const instanceWithRecursive = {
-      text: "Hello World",
+      text: 'Hello World',
       number: 123,
       boolean: true,
-      date: new Date(2011,11,11,11,11,11,11),
+      date: new Date(2011, 11, 11, 11, 11, 11, 11),
       recursive1: null as any,
       inner: {
-        recursive2: null as any,
+        recursive2: null as any
       },
-      func: function () { return "func return"; }
-    }
+      func: function () {
+        return 'func return';
+      }
+    };
     instanceWithRecursive.recursive1 = instanceWithRecursive;
     instanceWithRecursive.inner.recursive2 = instanceWithRecursive;
 
@@ -159,5 +161,5 @@ describe('Classe HelperObject', () => {
     // Assert, Then
 
     expect(text).toBeDefined();
-  })
+  });
 });
