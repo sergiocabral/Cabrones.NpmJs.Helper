@@ -38,4 +38,18 @@ describe('Classe HelperList', () => {
 
     expect(reason).toBe(1);
   });
+  test('unique() deve retorna uma lista com elementos únicos', () => {
+    // Arrange, Given
+
+    const list = ['a', 'b', 'c', 'a'];
+    const expectedList = ['a', 'b', 'c'];
+
+    // Act, When
+
+    const filteredList = HelperList.unique(list);
+
+    // Assert, Then
+
+    expect(filteredList).toEqual(expectedList);
+  })
 });

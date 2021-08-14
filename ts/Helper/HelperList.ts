@@ -21,4 +21,12 @@ export class HelperList {
       Math.floor(Math.random() * array.length * 10) % array.length;
     return array[randomIndex];
   }
+
+  /**
+   * Retorna o mesmo array com valores únicos.
+   * @param array Lista.
+   */
+  public static unique<T>(array: T[]): T[] {
+    return array.filter((value, index) => array.indexOf(value) === index);
+  }
 }
