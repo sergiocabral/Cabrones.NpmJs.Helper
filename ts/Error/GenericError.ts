@@ -21,9 +21,7 @@ export class GenericError extends Error {
         .join(': ')
     );
     this.firstError =
-      (innerError as GenericError)?.firstError
-      ?? innerError
-      ?? this;
+      (innerError as GenericError)?.firstError ?? innerError ?? this;
   }
 
   /**
