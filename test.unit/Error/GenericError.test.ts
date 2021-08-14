@@ -82,6 +82,20 @@ describe('Classe GenericError', function () {
     }
   });
 
+  test('O primeiro Error originador é a própria instância se houve apenas uma', () => {
+    // Arrange, Given
+
+    const error = new GenericError();
+
+    // Act, When
+
+    const firstError = error.firstError;
+
+    // Assert, Then
+
+    expect(firstError).toBe(error);
+  });
+
   test('Descrição do erro não deve ter espaços em branco sobrando', () => {
     // Arrange, Given
 

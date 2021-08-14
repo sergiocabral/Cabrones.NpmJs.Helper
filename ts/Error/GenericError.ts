@@ -20,7 +20,10 @@ export class GenericError extends Error {
         .filter(text => text.length)
         .join(': ')
     );
-    this.firstError = (innerError as GenericError)?.firstError ?? innerError;
+    this.firstError =
+      (innerError as GenericError)?.firstError
+      ?? innerError
+      ?? this;
   }
 
   /**
