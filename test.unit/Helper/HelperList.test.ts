@@ -51,5 +51,5 @@ describe('Classe HelperList', () => {
     // Assert, Then
 
     expect(filteredList).toEqual(expectedList);
-  })
+  });
 });
