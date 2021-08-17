@@ -24,6 +24,18 @@ declare global {
      * @returns Texto escapado.
      */
     escapeRegExp(): string;
+
+    /**
+     * Remove acentuação do texto.
+     * @returns Texto sem acentos.
+     */
+    removeAccents(): string;
+
+    /**
+     * Converte um texto para representação de slug.
+     * @returns Texto no formato slug.
+     */
+    slugify(): string;
   }
 }
 
@@ -42,6 +54,14 @@ if (!String.prototype.replaceAll) {
 
 String.prototype.escapeRegExp = function (): string {
   return HelperText.escapeRegExp(String(this));
+};
+
+String.prototype.removeAccents = function (): string {
+  return HelperText.removeAccents(String(this));
+};
+
+String.prototype.slugify = function (): string {
+  return HelperText.slugify(String(this));
 };
 
 export {};

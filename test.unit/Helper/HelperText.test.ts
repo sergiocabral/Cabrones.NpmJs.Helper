@@ -226,4 +226,34 @@ describe('Classe HelperText', () => {
       ]);
     });
   });
+
+  test('removeAccents deve remover acentos', () => {
+    // Arrange, Given
+
+    const input = 'Um, dois, três: Ação!';
+    const expectedOutput = 'Um, dois, tres: Acao!';
+
+    // Act, When
+
+    const output = HelperText.removeAccents(input);
+
+    // Assert, Then
+
+    expect(output).toBe(expectedOutput);
+  });
+
+  test('slugify deve converter texto em slug', () => {
+    // Arrange, Given
+
+    const input = '  Um, dois, três:   ---   [Ação]!  ';
+    const expectedOutput = 'um-dois-tres-acao';
+
+    // Act, When
+
+    const output = HelperText.slugify(input);
+
+    // Assert, Then
+
+    expect(output).toBe(expectedOutput);
+  });
 });
