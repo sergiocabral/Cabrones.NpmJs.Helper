@@ -168,7 +168,7 @@ describe('Classe GenericError', function () {
 
     const throwError = () => {
       throw new GenericError('error', anyValueTye);
-    }
+    };
 
     // Assert, Then
 
