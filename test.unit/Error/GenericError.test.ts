@@ -159,4 +159,23 @@ describe('Classe GenericError', function () {
     expect(messageOfErrorWithOnlyMessage).toBe(messageMark);
     expect(messageOfErrorWithEmptyPrefixAndMessage).toBe('');
   });
+  test('Deve poder receber como innerError qualquer tipo de valor', () => {
+    // Arrange, Given
+
+    const anyValueTye = new Date();
+
+    // Act, When
+
+    const throwError = () => {
+      throw new GenericError('error', anyValueTye);
+    }
+
+    // Assert, Then
+
+    try {
+      throwError();
+    } catch (error) {
+      expect((error as GenericError).innerError).toBe(anyValueTye);
+    }
+  });
 });

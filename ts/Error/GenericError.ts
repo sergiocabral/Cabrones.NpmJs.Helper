@@ -11,7 +11,7 @@ export class GenericError extends Error {
    */
   public constructor(
     message?: string,
-    public innerError?: Error | GenericError,
+    public innerError?: Error | GenericError | unknown,
     prefix = 'GenericError'
   ) {
     super(
@@ -27,5 +27,5 @@ export class GenericError extends Error {
   /**
    * Primeiro erro da pilha.
    */
-  public firstError?: Error;
+  public firstError?: Error | unknown;
 }
