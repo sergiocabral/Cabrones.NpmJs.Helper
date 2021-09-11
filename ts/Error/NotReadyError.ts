@@ -10,7 +10,10 @@ export class NotReadyError extends GenericError {
    * @param innerError Erro original.
    * @protected
    */
-  public constructor(message?: string, public innerError?: Error | GenericError | unknown) {
+  public constructor(
+    message?: string,
+    public innerError?: Error | GenericError | unknown
+  ) {
     super(message, innerError, 'NotReadyError');
   }
 }
