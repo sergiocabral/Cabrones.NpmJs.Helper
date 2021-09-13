@@ -61,5 +61,14 @@ export abstract class Configuration {
   /**
    * Lista de erros presentes na configuração atual
    */
-  public abstract errors(): string[];
+  public errors(): string[] {
+    const errors = Array<string>();
+    const instance = this as Record<string, unknown>;
+    for (const key of Object.keys(instance)) {
+      if (instance[key] instanceof Configuration) {
+        errors.push(...(instance[key] as Configuration).errors());
+      }
+    }
+    return errors;
+  }
 }

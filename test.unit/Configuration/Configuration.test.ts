@@ -5,6 +5,8 @@ const propertyDefaultValueDate = new Date();
 const propertyDefaultValueString = Math.random().toString();
 const errorConfigurationTestB = [Math.random().toString()];
 
+class ConfigurationTestC extends Configuration {}
+
 class ConfigurationTestB extends Configuration {
   propertyString = propertyDefaultValueString;
   errors(): string[] {
@@ -16,9 +18,6 @@ class ConfigurationTestA extends Configuration {
   propertyNumber = propertyDefaultValueNumber;
   propertyDate = propertyDefaultValueDate;
   propertyConfiguration = new ConfigurationTestB();
-  errors(): string[] {
-    return [];
-  }
 }
 
 describe('Class Configuration', () => {
@@ -261,5 +260,32 @@ describe('Class Configuration', () => {
 
     expect(snapshot1).toBe(snapshot2);
     expect(snapshot1).not.toContain('null');
+  });
+  test('A lista de erros por padrão é vazia', () => {
+    // Arrange, Given
+
+    const instance = new ConfigurationTestC();
+
+    // Act, When
+
+    const errors = instance.errors();
+
+    // Assert, Then
+
+    expect(errors.length).toBe(0);
+  });
+  test('A lista de erros acumula erros de propriedades tipo Configuration', () => {
+    // Arrange, Given
+
+    const instance = new ConfigurationTestA();
+
+    // Act, When
+
+    const errors = instance.errors();
+
+    // Assert, Then
+
+    expect(errors).toEqual(errorConfigurationTestB);
+    expect(errors).not.toBe(errorConfigurationTestB);
   });
 });
