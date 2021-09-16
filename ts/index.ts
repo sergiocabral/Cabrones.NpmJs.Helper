@@ -36,6 +36,7 @@ import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
 import './Helper/Prototype/Array';
 import './Helper/Prototype/Date';
+import './Helper/Prototype/JSON';
 import './Helper/Prototype/Number';
 import './Helper/Prototype/String';
 
