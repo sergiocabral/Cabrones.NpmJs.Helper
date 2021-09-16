@@ -1,4 +1,4 @@
-import { HelperObject, KeyValue } from "../../../ts";
+import { HelperObject, KeyValue } from '../../../ts';
 
 describe('Prototype para JSON', () => {
   const originals: KeyValue<any> = {};
