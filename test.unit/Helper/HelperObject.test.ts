@@ -1,6 +1,6 @@
 // noinspection JSPrimitiveTypeWrapperUsage,JSUnusedLocalSymbols
 
-import { HelperObject, InvalidExecutionError } from '../../ts';
+import { HelperObject, InvalidExecutionError, KeyValue } from '../../ts';
 
 abstract class ClassBase {
   public propertyBase: string = 'valueBase';
@@ -14,6 +14,20 @@ class ClassReal extends ClassBase {
 }
 
 describe('Classe HelperObject', () => {
+  const originals: KeyValue<any> = {};
+
+  beforeEach(() => {
+    originals['HelperObject.getMembers'] = HelperObject.getMembers;
+    originals['HelperObject.getFunctionSignature'] =
+      HelperObject.getFunctionSignature;
+  });
+
+  afterEach(() => {
+    HelperObject.getMembers = originals['HelperObject.getMembers'];
+    HelperObject.getFunctionSignature =
+      originals['HelperObject.getFunctionSignature'];
+  });
+
   test('Não deve permitir instanciar', () => {
     // Arrange, Given
     // Act, When
@@ -377,5 +391,203 @@ describe('Classe HelperObject', () => {
     // Assert, Then
 
     expect(signature).toBe('(arg1, arg2 = 10)');
+  });
+  test('describe() deve usar HelperObject.getMembers para obter lista de propriedades', () => {
+    // Arrange, Given
+
+    const mockGetMembers = jest.fn(
+      (instance: unknown, deep: boolean, ignoreObjectMembers: boolean) =>
+        new Map<string, string>()
+    );
+    HelperObject.getMembers = mockGetMembers;
+
+    const arg1 = Math.random();
+    const arg2 = Math.floor(Math.random() * 10) % 2 === 0;
+    const arg3 = Math.floor(Math.random() * 10) % 2 === 0;
+
+    // Act, When
+
+    HelperObject.describe(arg1, arg2, arg3);
+
+    // Assert, Then
+
+    expect(mockGetMembers).toBeCalledTimes(1);
+    expect(mockGetMembers.mock.calls[0][0]).toBe(arg1);
+    expect(mockGetMembers.mock.calls[0][1]).toBe(arg2);
+    expect(mockGetMembers.mock.calls[0][2]).toBe(arg3);
+  });
+  test('describe() deve usar HelperObject.getFunctionSignature para obter assinatura de funções', () => {
+    // Arrange, Given
+
+    const mockGetFunctionSignature = jest.fn((func: unknown) => '()');
+    HelperObject.getFunctionSignature = mockGetFunctionSignature;
+
+    const instance = {
+      func: () => {}
+    };
+
+    // Act, When
+
+    HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(mockGetFunctionSignature).toBeCalledTimes(1);
+    expect(mockGetFunctionSignature.mock.calls[0][0]).toBe(instance.func);
+  });
+  test('describe() descreve instância vazia', () => {
+    // Arrange, Given
+
+    const instance = {};
+
+    const labelProperties = 'Properties';
+    const labelMethods = 'Methods';
+    const noneListed = 'none listed';
+    const lineSeparator = '\n';
+    const expectedDescribed = [
+      `${labelProperties}: ${noneListed}`,
+      `${labelMethods}: ${noneListed}`
+    ].join(lineSeparator);
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(described).toBe(expectedDescribed);
+  });
+  test('describe() lista os membros em ordem alfabética', () => {
+    // Arrange, Given
+
+    const instance = {
+      propZ: 'Z',
+      propA: 'A',
+      funcZ: () => {},
+      funcA: () => {}
+    };
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(described.indexOf('propA')).toBeGreaterThanOrEqual(0);
+    expect(described.indexOf('propA')).toBeLessThan(described.indexOf('propZ'));
+    expect(described.indexOf('funcA')).toBeGreaterThanOrEqual(0);
+    expect(described.indexOf('funcA')).toBeLessThan(described.indexOf('funcZ'));
+  });
+  test('describe() lista propriedades com seus tipos', () => {
+    // Arrange, Given
+
+    const instance = {
+      property: 'value'
+    };
+
+    const labelProperties = 'Properties';
+    const lineSeparator = '\n';
+    const expectedDescribed = [
+      `${labelProperties}:`,
+      `- ${Object.keys(instance)[0]} : ${typeof Object.values(instance)[0]}`
+    ].join(lineSeparator);
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(described.includes(expectedDescribed)).toBe(true);
+  });
+  test('describe() lista métodos com suas assinaturas', () => {
+    // Arrange, Given
+
+    const instance = {
+      func: function MyFunction(arg1: string, arg2: number = 10) {}
+    };
+
+    const regexFunctionName = /^[^(]*/;
+    const labelMethods = 'Methods';
+    const lineSeparator = '\n';
+    const expectedDescribed = [
+      `${labelMethods}:`,
+      `- ${HelperObject.getFunctionSignature(
+        Object.values(instance)[0]
+      ).replace(regexFunctionName, Object.keys(instance)[0])}`
+    ].join(lineSeparator);
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(described.includes(expectedDescribed)).toBe(true);
+  });
+  test('describe() deve usa o nome da função na instância e não o nome original da função', () => {
+    // Arrange, Given
+
+    const instance = {
+      nameIntoInstance: function OriginalName(
+        arg1: string,
+        arg2: number = 10
+      ) {}
+    };
+    const expectedName = Object.keys(instance)[0];
+    const notExpectedName = instance.nameIntoInstance.name;
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(expectedName?.length).toBeGreaterThan(0);
+    expect(notExpectedName?.length).toBeGreaterThan(0);
+    expect(described.includes(expectedName)).toBe(true);
+    expect(described.includes(notExpectedName)).toBe(false);
+  });
+  test('describe() lista primeiro propriedades e depois métodos', () => {
+    // Arrange, Given
+
+    const labelProperties = 'Properties';
+    const labelMethods = 'Methods';
+
+    // Act, When
+
+    const described = HelperObject.describe({});
+
+    // Assert, Then
+
+    expect(described.indexOf(labelProperties)).toBeGreaterThanOrEqual(0);
+    expect(described.indexOf(labelProperties)).toBeLessThan(
+      described.indexOf(labelMethods)
+    );
+  });
+  test('describe() lista os membros de uma instância', () => {
+    // Arrange, Given
+
+    const instance = {
+      memberDate: new Date(2011, 11, 11, 11, 11, 11, 11),
+      memberText: 'Hello World',
+      funcArrow: (arg1: number = 20) => {},
+      funcFunction: function OtherName(arg1: number = 20) {}
+    };
+
+    // Act, When
+
+    const described = HelperObject.describe(instance);
+
+    // Assert, Then
+
+    expect(described).toBe(
+      `Properties:
+- memberDate : object
+- memberText : string
+Methods:
+- funcArrow(arg1 = 20)
+- funcFunction(arg1 = 20)`
+    );
   });
 });

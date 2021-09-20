@@ -96,8 +96,8 @@ export class HelperObject {
    */
   public static getMembers(
     instance: unknown,
-    deep: boolean = false,
-    ignoreObjectMembers: boolean = false
+    deep = false,
+    ignoreObjectMembers = false
   ): Map<string, string> {
     const members = new Map<string, string>();
     let current = instance as Record<string, unknown>;
@@ -124,7 +124,52 @@ export class HelperObject {
     const asText = String(func);
     const regexFunctionSignature = /[^(\s]*\([^)]*\)/;
     return Array<string>().concat(
-      asText.match(regexFunctionSignature) as []
+      regexFunctionSignature.exec(asText) as RegExpExecArray
     )[0];
+  }
+
+  /**
+   * Descreve um objeto com suas propriedades e métodos.
+   * @param instance
+   * @param deep Navega até o último nível da herança.
+   * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+   */
+  public static describe(
+    instance: unknown,
+    deep = false,
+    ignoreObjectMembers = false
+  ): string {
+    const members = this.getMembers(instance, deep, ignoreObjectMembers);
+    const properties = Array<string>();
+    const methods = Array<string>();
+
+    for (const member of members) {
+      const name = member[0];
+      const type = member[1];
+      if (type === 'function') {
+        const func = (instance as Record<string, unknown>)[name];
+        let signature = this.getFunctionSignature(func);
+        const regexFunctionName = /^[^(]*/;
+        signature = signature.replace(regexFunctionName, name);
+        methods.push(signature);
+      } else {
+        properties.push(`${name} : ${type}`);
+      }
+    }
+
+    properties.sort();
+    methods.sort();
+
+    const result = Array<string>();
+    const addSection = (name: string, items: string[]): void => {
+      result.push(name + (items.length ? ':' : ': none listed'));
+      if (items.length > 0) {
+        result.push(...items.map(property => `- ${property}`));
+      }
+    };
+    addSection('Properties', properties);
+    addSection('Methods', methods);
+
+    return result.join('\n');
   }
 }
