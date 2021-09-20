@@ -211,7 +211,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, false, true);
+    const members = HelperObject.getMembers(instance, false, false);
 
     // Assert, Then
 
@@ -232,13 +232,13 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, false, true);
+    const members = HelperObject.getMembers(instance, false, false);
 
     // Assert, Then
 
     expect(members.size).toBe(0);
   });
-  test('getMembers() deve usar como padrão deep=true e ignoreObjectMembers=false', () => {
+  test('getMembers() deve usar como padrão deep=true e includeObjectMembers=true', () => {
     // Arrange, Given
 
     const instance = new Date();
@@ -259,36 +259,36 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, true, false);
+    const members = HelperObject.getMembers(instance, true, true);
 
     // Assert, Then
 
     expect(members.size).toBeGreaterThan(0);
   });
-  test('getMembers() retorna vazio se instância é vazia e usar deep=true e ignoreObjectMembers=true', () => {
+  test('getMembers() retorna vazio se instância é vazia e usar deep=true e includeObjectMembers=false', () => {
     // Arrange, Given
 
     const instance = {};
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, true, true);
+    const members = HelperObject.getMembers(instance, true, false);
 
     // Assert, Then
 
     expect(members.size).toBe(0);
   });
-  test('getMembers() retorna propriedades da instância exceto de Object se deep=true e ignoreObjectMembers=true', () => {
+  test('getMembers() retorna propriedades da instância exceto de Object se deep=true e includeObjectMembers=false', () => {
     // Arrange, Given
 
     const object = new Object();
-    const objectMembers = HelperObject.getMembers(object, true, false);
+    const objectMembers = HelperObject.getMembers(object, true, true);
 
     const instance = new Date();
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, true, true);
+    const members = HelperObject.getMembers(instance, true, false);
 
     // Assert, Then
 
@@ -304,7 +304,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const members = HelperObject.getMembers(instance, true, false);
+    const members = HelperObject.getMembers(instance, true, true);
 
     // Assert, Then
 
@@ -410,7 +410,7 @@ describe('Classe HelperObject', () => {
     // Arrange, Given
 
     const mockGetMembers = jest.fn(
-      (instance: unknown, deep: boolean, ignoreObjectMembers: boolean) =>
+      (instance: unknown, deep: boolean, includeObjectMembers: boolean) =>
         new Map<string, string>()
     );
     HelperObject.getMembers = mockGetMembers;
@@ -430,17 +430,17 @@ describe('Classe HelperObject', () => {
     expect(mockGetMembers.mock.calls[0][1]).toBe(arg2);
     expect(mockGetMembers.mock.calls[0][2]).toBe(arg3);
   });
-  test('describe() deve usar por padrão deep=true e ignoreObjectMembers=false', () => {
+  test('describe() deve usar por padrão deep=true e includeObjectMembers=true', () => {
     // Arrange, Given
 
     const mockGetMembers = jest.fn(
-      (instance: unknown, deep: boolean, ignoreObjectMembers: boolean) =>
+      (instance: unknown, deep: boolean, includeObjectMembers: boolean) =>
         new Map<string, string>()
     );
     HelperObject.getMembers = mockGetMembers;
 
     const expectedArg2 = true;
-    const expectedArg3 = false;
+    const expectedArg3 = true;
 
     // Act, When
 
@@ -464,7 +464,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    HelperObject.describe(instance, false, true);
+    HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -487,7 +487,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -505,7 +505,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -530,7 +530,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -555,7 +555,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -575,7 +575,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 
@@ -592,7 +592,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe({}, false, true);
+    const described = HelperObject.describe({}, false, false);
 
     // Assert, Then
 
@@ -619,7 +619,7 @@ describe('Classe HelperObject', () => {
 
     const filter = (name: string, type: string): boolean =>
       !name.includes('ignore') && !ignoreTypes.includes(type);
-    const described = HelperObject.describe(instance, true, false, filter);
+    const described = HelperObject.describe(instance, true, true, filter);
 
     // Assert, Then
 
@@ -642,7 +642,7 @@ describe('Classe HelperObject', () => {
 
     // Act, When
 
-    const described = HelperObject.describe(instance, false, true);
+    const described = HelperObject.describe(instance, false, false);
 
     // Assert, Then
 

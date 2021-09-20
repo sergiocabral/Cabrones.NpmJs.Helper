@@ -83,7 +83,7 @@ export class HelperObject {
    */
   private static get objectMembers(): Map<string, string> {
     if (this.objectMembersValue === undefined) {
-      this.objectMembersValue = this.getMembers({}, true, false);
+      this.objectMembersValue = this.getMembers({}, true, true);
     }
     return this.objectMembersValue;
   }
@@ -92,18 +92,18 @@ export class HelperObject {
    * Retorna a lista de membros (propriedades e funções) de uma instância e seu respectivo tipo.
    * @param instance
    * @param deep Navega até o último nível da herança.
-   * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+   * @param includeObjectMembers Inclui os membros presentes no tipo base Object.
    */
   public static getMembers(
     instance: unknown,
     deep = true,
-    ignoreObjectMembers = false
+    includeObjectMembers = true
   ): Map<string, string> {
     const members = new Map<string, string>();
     let current = instance as Record<string, unknown>;
     do {
       Object.getOwnPropertyNames(current).forEach(member => {
-        if (!ignoreObjectMembers || !this.objectMembers.has(member)) {
+        if (includeObjectMembers || !this.objectMembers.has(member)) {
           members.set(member, typeof current[member]);
         }
       });
@@ -132,16 +132,16 @@ export class HelperObject {
    * Descreve um objeto com suas propriedades e métodos.
    * @param instance
    * @param deep Navega até o último nível da herança.
-   * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+   * @param includeObjectMembers Inclui os membros presentes no tipo base Object.
    * @param filter Função para filtrar membros que serão listados.
    */
   public static describe(
     instance: unknown,
     deep = true,
-    ignoreObjectMembers = false,
+    includeObjectMembers = true,
     filter?: (name: string, type: string) => boolean
   ): string {
-    const members = this.getMembers(instance, deep, ignoreObjectMembers);
+    const members = this.getMembers(instance, deep, includeObjectMembers);
     const properties = Array<string>();
     const methods = Array<string>();
 
