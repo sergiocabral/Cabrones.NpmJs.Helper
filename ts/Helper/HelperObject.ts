@@ -83,7 +83,7 @@ export class HelperObject {
    */
   private static get objectMembers(): Map<string, string> {
     if (this.objectMembersValue === undefined) {
-      this.objectMembersValue = this.getMembers({}, true);
+      this.objectMembersValue = this.getMembers({}, true, false);
     }
     return this.objectMembersValue;
   }
