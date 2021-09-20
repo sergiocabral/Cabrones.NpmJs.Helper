@@ -96,7 +96,7 @@ export class HelperObject {
    */
   public static getMembers(
     instance: unknown,
-    deep = false,
+    deep = true,
     ignoreObjectMembers = false
   ): Map<string, string> {
     const members = new Map<string, string>();
@@ -136,7 +136,7 @@ export class HelperObject {
    */
   public static describe(
     instance: unknown,
-    deep = false,
+    deep = true,
     ignoreObjectMembers = false
   ): string {
     const members = this.getMembers(instance, deep, ignoreObjectMembers);

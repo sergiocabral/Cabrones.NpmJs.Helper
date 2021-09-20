@@ -1,3 +1,5 @@
+// noinspection JSUnusedLocalSymbols
+
 import { HelperObject, KeyValue } from '../../../ts';
 
 describe('Prototype para JSON', () => {
@@ -5,20 +7,54 @@ describe('Prototype para JSON', () => {
 
   beforeEach(() => {
     originals['HelperObject.toText'] = HelperObject.toText;
+    originals['HelperObject.describe'] = HelperObject.describe;
   });
 
   afterEach(() => {
     HelperObject.toText = originals['HelperObject.toText'];
+    HelperObject.describe = originals['HelperObject.describe'];
   });
 
   describe('Funções devem corresponder a mesma função em HelperObject', () => {
     test('toText', () => {
       // Arrange, Given
-      const func = (HelperObject.toText = jest.fn());
+
+      const func = (HelperObject.toText = jest.fn(
+        (instance: unknown, space?: undefined | string | number) => ''
+      ));
+      const arg1 = Math.random();
+      const arg2 = Math.random().toString();
+
       // Act, When
-      JSON.stringify2({});
+
+      JSON.stringify2(arg1, arg2);
+
       // Assert, Then
+
       expect(func).toBeCalledTimes(1);
+      expect(func.mock.calls[0][0]).toBe(arg1);
+      expect(func.mock.calls[0][1]).toBe(arg2);
+    });
+    test('describe', () => {
+      // Arrange, Given
+
+      const func = (HelperObject.describe = jest.fn(
+        (instance: unknown, deep = true, ignoreObjectMembers = false) => ''
+      ));
+      const arg1 = Math.random();
+      const arg2 = Math.floor(Math.random() * 10) % 2 === 0;
+      const arg3 = Math.floor(Math.random() * 10) % 2 === 0;
+
+      // Act, When
+
+      JSON.describe(arg1, arg2, arg3);
+
+      // Assert, Then
+
+      expect(func).toBeCalledTimes(1);
+      expect(func.mock.calls[0][0]).toBe(arg1);
+      expect(func.mock.calls[0][1]).toBe(arg2);
+      expect(func.mock.calls[0][2]).toBe(arg3);
     });
   });
 });
