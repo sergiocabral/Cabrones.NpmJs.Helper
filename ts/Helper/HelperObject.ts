@@ -73,7 +73,8 @@ export class HelperObject {
    * Usado com getMembers() quando ignoreObjectMembers=true
    * @private
    */
-  private static objectMembersValue: Map<string, string> | undefined = undefined;
+  private static objectMembersValue: Map<string, string> | undefined =
+    undefined;
 
   /**
    * Para carregar uma única vez a lista de membros do tipo Object.
@@ -111,5 +112,19 @@ export class HelperObject {
       (current = Object.getPrototypeOf(current) as Record<string, unknown>)
     );
     return members;
+  }
+
+  /**
+   * Obtém a assinatura de uma função
+   * @param func Referência para a função.
+   */
+  public static getFunctionSignature(func: unknown): string {
+    if (!this.isFunction(func)) return '';
+
+    const asText = String(func);
+    const regexFunctionSignature = /[^(\s]*\([^)]*\)/;
+    return Array<string>().concat(
+      asText.match(regexFunctionSignature) as []
+    )[0];
   }
 }

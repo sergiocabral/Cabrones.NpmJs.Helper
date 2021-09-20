@@ -1,4 +1,4 @@
-// noinspection JSPrimitiveTypeWrapperUsage
+// noinspection JSPrimitiveTypeWrapperUsage,JSUnusedLocalSymbols
 
 import { HelperObject, InvalidExecutionError } from '../../ts';
 
@@ -7,10 +7,10 @@ abstract class ClassBase {
   public propertyOverride: string = 'propertyOverrideBase';
   public abstract propertyAbstract: string;
 }
-class ClassReal extends ClassBase{
-  public override propertyOverride: string = 'propertyOverrideReal';
-  public propertyAbstract: string = 'valueAbstract';
-  public propertyReal: string = 'propertyReal';
+class ClassReal extends ClassBase {
+  public override propertyOverride: string = 'valueOverrideReal';
+  public propertyAbstract: string = 'valueAbstractReal';
+  public propertyReal: string = 'valueReal';
 }
 
 describe('Classe HelperObject', () => {
@@ -284,5 +284,98 @@ describe('Classe HelperObject', () => {
     expect(members.has('propertyOverride')).toBe(true);
     expect(members.has('propertyAbstract')).toBe(true);
     expect(members.has('propertyReal')).toBe(true);
+  });
+  test('getFunctionSignature() retorna vazio para algo que não seja função', () => {
+    // Arrange, Given
+
+    const noFunctions: unknown[] = ['string', {}, new Date(), null, undefined];
+
+    for (const noFunction of noFunctions) {
+      // Act, When
+
+      const signature = HelperObject.getFunctionSignature(noFunction);
+
+      // Assert, Then
+
+      expect(signature).toBe('');
+    }
+  });
+  test('getFunctionSignature() retorna a assinatura para native function sem parâmetros', () => {
+    // Arrange, Given
+
+    const func = {}.toString;
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('toString()');
+  });
+  test('getFunctionSignature() retorna a assinatura para function sem parâmetros', () => {
+    // Arrange, Given
+
+    const func = function MyFunctionName() {};
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('MyFunctionName()');
+  });
+  test('getFunctionSignature() retorna a assinatura para arrow function sem parâmetros', () => {
+    // Arrange, Given
+
+    const func = () => {};
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('()');
+  });
+  test('getFunctionSignature() retorna a assinatura para native function com parâmetros', () => {
+    // Arrange, Given
+
+    const func = {}.hasOwnProperty;
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('hasOwnProperty()');
+  });
+  test('getFunctionSignature() retorna a assinatura para function com parâmetros', () => {
+    // Arrange, Given
+
+    const func = function MyFunctionName(arg1: string, arg2: number = 10) {};
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('MyFunctionName(arg1, arg2 = 10)');
+  });
+  test('getFunctionSignature() retorna a assinatura para arrow function com parâmetros', () => {
+    // Arrange, Given
+
+    const func = (arg1: string, arg2: number = 10) => {};
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(func);
+
+    // Assert, Then
+
+    expect(signature).toBe('(arg1, arg2 = 10)');
   });
 });
