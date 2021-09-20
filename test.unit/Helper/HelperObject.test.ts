@@ -601,6 +601,35 @@ describe('Classe HelperObject', () => {
       described.indexOf(labelMethods)
     );
   });
+  test('describe() deve poder filtrar membros por nome e tipo', () => {
+    // Arrange, Given
+
+    const ignoreTypes = ['boolean', 'number'];
+    const instance = {
+      stringValue: 'string',
+      booleanValue: true,
+      numberValue: 123,
+      ignoreProperty: 'value',
+      acceptProperty: 'value',
+      ignoreMethod: () => {},
+      acceptMethod: () => {}
+    };
+
+    // Act, When
+
+    const filter = (name: string, type: string): boolean =>
+      !name.includes('ignore') && !ignoreTypes.includes(type);
+    const described = HelperObject.describe(instance, true, false, filter);
+
+    // Assert, Then
+
+    expect(described.includes('ignore')).toBe(false);
+    expect(described.includes('accept')).toBe(true);
+    expect(described.includes('string')).toBe(true);
+    for (const ignoreType of ignoreTypes) {
+      expect(described.includes(ignoreType)).toBe(false);
+    }
+  });
   test('describe() lista os membros de uma instância', () => {
     // Arrange, Given
 
