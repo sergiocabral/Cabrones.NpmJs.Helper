@@ -17,11 +17,13 @@ declare global {
      * @param instance
      * @param deep Navega até o último nível da herança.
      * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+     * @param filter Função para filtrar membros que serão listados
      */
     describe(
       instance: unknown,
       deep?: boolean,
-      ignoreObjectMembers?: boolean
+      ignoreObjectMembers?: boolean,
+      filter?: (name: string, type: string) => boolean
     ): string;
   }
 }
@@ -35,9 +37,10 @@ JSON.stringify2 = function (
 JSON.describe = function (
   instance: unknown,
   deep = true,
-  ignoreObjectMembers = false
+  ignoreObjectMembers = false,
+  filter?: (name: string, type: string) => boolean
 ): string {
-  return HelperObject.describe(instance, deep, ignoreObjectMembers);
+  return HelperObject.describe(instance, deep, ignoreObjectMembers, filter);
 };
 
 export {};

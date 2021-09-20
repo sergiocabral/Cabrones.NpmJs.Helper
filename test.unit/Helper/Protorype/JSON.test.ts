@@ -39,15 +39,21 @@ describe('Prototype para JSON', () => {
       // Arrange, Given
 
       const func = (HelperObject.describe = jest.fn(
-        (instance: unknown, deep = true, ignoreObjectMembers = false) => ''
+        (
+          instance: unknown,
+          deep = true,
+          ignoreObjectMembers = false,
+          filter?: (name: string, type: string) => boolean
+        ) => ''
       ));
       const arg1 = Math.random();
       const arg2 = Math.floor(Math.random() * 10) % 2 === 0;
       const arg3 = Math.floor(Math.random() * 10) % 2 === 0;
+      const arg4 = () => false;
 
       // Act, When
 
-      JSON.describe(arg1, arg2, arg3);
+      JSON.describe(arg1, arg2, arg3, arg4);
 
       // Assert, Then
 
@@ -55,6 +61,7 @@ describe('Prototype para JSON', () => {
       expect(func.mock.calls[0][0]).toBe(arg1);
       expect(func.mock.calls[0][1]).toBe(arg2);
       expect(func.mock.calls[0][2]).toBe(arg3);
+      expect(func.mock.calls[0][3]).toBe(arg4);
     });
   });
 });
