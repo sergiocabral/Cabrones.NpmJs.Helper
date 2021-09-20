@@ -120,12 +120,17 @@ export class HelperObject {
    */
   public static getFunctionSignature(func: unknown): string {
     if (!this.isFunction(func)) return '';
-
     const asText = String(func);
     const regexFunctionSignature = /[^(\s]*\([^)]*\)/;
-    return Array<string>().concat(
+    let signature = Array<string>().concat(
       regexFunctionSignature.exec(asText) as RegExpExecArray
     )[0];
+    const nativeCode = '[native code]';
+    if (asText.includes(nativeCode)) {
+      const regexArguments = /\([^)]*\)/;
+      signature = signature.replace(regexArguments, `(/* ${nativeCode} */)`);
+    }
+    return signature;
   }
 
   /**

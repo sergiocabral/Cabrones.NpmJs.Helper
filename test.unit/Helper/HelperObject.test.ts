@@ -332,6 +332,7 @@ describe('Classe HelperObject', () => {
     // Arrange, Given
 
     const func = {}.toString;
+    const nativeCodeFlag = '/* [native code] */';
 
     // Act, When
 
@@ -339,7 +340,7 @@ describe('Classe HelperObject', () => {
 
     // Assert, Then
 
-    expect(signature).toBe('toString()');
+    expect(signature).toBe(`toString(${nativeCodeFlag})`);
   });
   test('getFunctionSignature() retorna a assinatura para function sem parâmetros', () => {
     // Arrange, Given
@@ -371,6 +372,7 @@ describe('Classe HelperObject', () => {
     // Arrange, Given
 
     const func = {}.hasOwnProperty;
+    const nativeCodeFlag = '/* [native code] */';
 
     // Act, When
 
@@ -378,7 +380,7 @@ describe('Classe HelperObject', () => {
 
     // Assert, Then
 
-    expect(signature).toBe('hasOwnProperty()');
+    expect(signature).toBe(`hasOwnProperty(${nativeCodeFlag})`);
   });
   test('getFunctionSignature() retorna a assinatura para function com parâmetros', () => {
     // Arrange, Given
