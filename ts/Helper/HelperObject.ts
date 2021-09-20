@@ -67,4 +67,49 @@ export class HelperObject {
 
     return JSON.stringify(instance, replacer, space);
   }
+
+  /**
+   * Para carregar uma única vez a lista de membros do tipo Object.
+   * Usado com getMembers() quando ignoreObjectMembers=true
+   * @private
+   */
+  private static objectMembersValue: Map<string, string> | undefined = undefined;
+
+  /**
+   * Para carregar uma única vez a lista de membros do tipo Object.
+   * Usado com getMembers() quando ignoreObjectMembers=true
+   * @private
+   */
+  private static get objectMembers(): Map<string, string> {
+    if (this.objectMembersValue === undefined) {
+      this.objectMembersValue = this.getMembers({}, true);
+    }
+    return this.objectMembersValue;
+  }
+
+  /**
+   * Retorna a lista de membros (propriedades e funções) de uma instância e seu respectivo tipo.
+   * @param instance
+   * @param deep Navega até o último nível da herança.
+   * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+   */
+  public static getMembers(
+    instance: unknown,
+    deep: boolean = false,
+    ignoreObjectMembers: boolean = false
+  ): Map<string, string> {
+    const members = new Map<string, string>();
+    let current = instance as Record<string, unknown>;
+    do {
+      Object.getOwnPropertyNames(current).forEach(member => {
+        if (!ignoreObjectMembers || !this.objectMembers.has(member)) {
+          members.set(member, typeof current[member]);
+        }
+      });
+      if (!deep) break;
+    } while (
+      (current = Object.getPrototypeOf(current) as Record<string, unknown>)
+    );
+    return members;
+  }
 }

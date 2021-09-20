@@ -2,6 +2,17 @@
 
 import { HelperObject, InvalidExecutionError } from '../../ts';
 
+abstract class ClassBase {
+  public propertyBase: string = 'valueBase';
+  public propertyOverride: string = 'propertyOverrideBase';
+  public abstract propertyAbstract: string;
+}
+class ClassReal extends ClassBase{
+  public override propertyOverride: string = 'propertyOverrideReal';
+  public propertyAbstract: string = 'valueAbstract';
+  public propertyReal: string = 'propertyReal';
+}
+
 describe('Classe HelperObject', () => {
   test('Não deve permitir instanciar', () => {
     // Arrange, Given
@@ -161,5 +172,117 @@ describe('Classe HelperObject', () => {
     // Assert, Then
 
     expect(text).toBeDefined();
+  });
+  test('getMembers() deve retornar propriedades e métodos imediatos', () => {
+    // Arrange, Given
+
+    const instance = {
+      memberText: 'Hello World',
+      memberNumber: 123,
+      memberBoolean: true,
+      memberDate: new Date(2011, 11, 11, 11, 11, 11, 11),
+      memberRecursive1: null as any,
+      memberInner: {
+        recursive2: null as any
+      },
+      memberFuncFunction: function () {
+        return 'funcFunction return';
+      },
+      memberFuncArrow: () => {
+        return 'funcArrow return';
+      }
+    };
+    instance.memberRecursive1 = instance;
+    instance.memberInner.recursive2 = instance;
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance);
+
+    // Assert, Then
+
+    expect(members.size).toBe(8);
+    expect(members.get('memberText')).toBe('string');
+    expect(members.get('memberNumber')).toBe('number');
+    expect(members.get('memberBoolean')).toBe('boolean');
+    expect(members.get('memberDate')).toBe('object');
+    expect(members.get('memberRecursive1')).toBe('object');
+    expect(members.get('memberInner')).toBe('object');
+    expect(members.get('memberFuncFunction')).toBe('function');
+    expect(members.get('memberFuncArrow')).toBe('function');
+  });
+  test('getMembers() retorna vazio se instância é vazia', () => {
+    // Arrange, Given
+
+    const instance = {};
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance);
+
+    // Assert, Then
+
+    expect(members.size).toBe(0);
+  });
+  test('getMembers() retorna propriedades de Object se definir deep=true', () => {
+    // Arrange, Given
+
+    const instance = {};
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance, true);
+
+    // Assert, Then
+
+    expect(members.size).toBeGreaterThan(0);
+  });
+  test('getMembers() retorna vazio se instância é vazia e usar deep=true e ignoreObjectMembers=true', () => {
+    // Arrange, Given
+
+    const instance = {};
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance, true, true);
+
+    // Assert, Then
+
+    expect(members.size).toBe(0);
+  });
+  test('getMembers() retorna propriedades da instância exceto de Object se deep=true e ignoreObjectMembers=true', () => {
+    // Arrange, Given
+
+    const object = new Object();
+    const objectMembers = HelperObject.getMembers(object, true);
+
+    const instance = new Date();
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance, true, true);
+
+    // Assert, Then
+
+    expect(members.size).toBeGreaterThan(0);
+    for (const objectMember of objectMembers) {
+      expect(members.has(objectMember[0])).toBe(false);
+    }
+  });
+  test('getMembers() propriedades da heranças não são afetadas com deep=true', () => {
+    // Arrange, Given
+
+    const instance = new ClassReal();
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance);
+
+    // Assert, Then
+
+    expect(members.has('propertyBase')).toBe(true);
+    expect(members.has('propertyOverride')).toBe(true);
+    expect(members.has('propertyAbstract')).toBe(true);
+    expect(members.has('propertyReal')).toBe(true);
   });
 });
