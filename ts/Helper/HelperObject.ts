@@ -133,11 +133,13 @@ export class HelperObject {
    * @param instance
    * @param deep Navega até o último nível da herança.
    * @param ignoreObjectMembers Ignora os membros presentes no tipo base Object.
+   * @param filter Função para filtrar membros que serão listados.
    */
   public static describe(
     instance: unknown,
     deep = true,
-    ignoreObjectMembers = false
+    ignoreObjectMembers = false,
+    filter?: (name: string, type: string) => boolean
   ): string {
     const members = this.getMembers(instance, deep, ignoreObjectMembers);
     const properties = Array<string>();
@@ -146,6 +148,9 @@ export class HelperObject {
     for (const member of members) {
       const name = member[0];
       const type = member[1];
+
+      if (filter && !filter(name, type)) continue;
+
       if (type === 'function') {
         const func = (instance as Record<string, unknown>)[name];
         let signature = this.getFunctionSignature(func);
