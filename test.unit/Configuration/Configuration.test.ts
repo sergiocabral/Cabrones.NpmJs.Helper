@@ -39,7 +39,7 @@ describe('Class Configuration', () => {
       jest.advanceTimersByTime(1);
       error = undefined;
     } catch (e) {
-      error = e;
+      error = e as Error;
     }
 
     expect(error).not.toBeDefined();
@@ -61,7 +61,7 @@ describe('Class Configuration', () => {
       jest.advanceTimersByTime(1);
       error = undefined;
     } catch (e) {
-      error = e;
+      error = e as Error;
     }
 
     expect(error).toBeDefined();
@@ -84,7 +84,7 @@ describe('Class Configuration', () => {
       jest.advanceTimersByTime(1);
       error = undefined;
     } catch (e) {
-      error = e;
+      error = e as Error;
     }
 
     expect(error).not.toBeDefined();
