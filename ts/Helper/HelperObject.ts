@@ -197,7 +197,8 @@ export class HelperObject {
       } else {
         properties.push(
           `${name} : ${
-            type === constructor || constructor === ''
+            type.toLowerCase() === constructor.toLowerCase() ||
+            constructor === ''
               ? type
               : type + ', ' + constructor
           }`

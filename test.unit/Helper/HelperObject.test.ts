@@ -722,7 +722,7 @@ describe('Classe HelperObject', () => {
     expect(described).toBe(
       `Properties:
 - memberDate : object, Date
-- memberText : string, String
+- memberText : string
 - valueNull : object, null
 - valueUndefined : undefined
 Methods:
