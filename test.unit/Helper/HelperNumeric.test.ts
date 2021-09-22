@@ -332,6 +332,23 @@ describe('Classe HelperNumeric', () => {
 
     expect(sortedAgain.join(',')).toBe(sortedList.join(','));
   });
+  test('reverseCompare() deve permitir comparar de forma reversa uma lista numérica', () => {
+    // Arrange, Given
+
+    const sortedList = Array(100)
+      .fill(0)
+      .map((_: number, index: number) => 100 - index);
+
+    // Act, When
+
+    const sortedAgain = Array<number>()
+      .concat(sortedList)
+      .sort(HelperNumeric.reverseCompare);
+
+    // Assert, Then
+
+    expect(sortedAgain.join(',')).toBe(sortedList.join(','));
+  });
   describe('format() deve formatar um número para string', () => {
     test('quantidade de dígitos', () => {
       // Arrange, Given

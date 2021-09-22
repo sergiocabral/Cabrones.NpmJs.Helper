@@ -249,6 +249,17 @@ export class HelperNumeric {
   };
 
   /**
+   * Função para realizar ordenação numérica.
+   * @param number1
+   * @param number2
+   */
+  public static reverseCompare = (number1: number, number2: number): number => {
+    if (number1 < number2) return +1;
+    if (number1 > number2) return -1;
+    return 0;
+  };
+
+  /**
    * Formata a exibição de um número.
    * @param value Valor.
    * @param format Opcional. Configurações de formatação.
