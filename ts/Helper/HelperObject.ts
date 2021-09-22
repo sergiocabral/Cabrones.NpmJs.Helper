@@ -100,13 +100,28 @@ export class HelperObject {
     includeObjectMembers = true
   ): Map<string, [string, string]> {
     const members = new Map<string, [string, string]>();
+    let previous: Record<string, unknown> | undefined = undefined;
     let current = instance as Record<string, unknown>;
     do {
       Object.getOwnPropertyNames(current).forEach(member => {
         if (includeObjectMembers || !this.objectMembers.has(member)) {
+          let read = false;
           let value: unknown;
           try {
-            value = current[member];
+            if (current.__lookupGetter__) {
+              const getter = (
+                current.__lookupGetter__ as (
+                  propertyName: string
+                ) => undefined | (() => unknown)
+              )(member);
+              if (typeof getter === 'function') {
+                value = getter.bind(previous)();
+                read = true;
+              }
+            }
+            if (!read) {
+              value = current[member];
+            }
           } catch (e) {
             value = e;
           }
@@ -125,6 +140,7 @@ export class HelperObject {
         }
       });
       if (!deep) break;
+      previous = current;
     } while (
       (current = Object.getPrototypeOf(current) as Record<string, unknown>)
     );

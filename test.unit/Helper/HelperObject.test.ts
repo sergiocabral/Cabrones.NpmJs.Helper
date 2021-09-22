@@ -13,8 +13,12 @@ class ClassReal extends ClassBase {
   public propertyReal: string = 'valueReal';
 }
 class ClassWithErrorIntoProperty {
+  public thisValue = 123;
   public get tryReadMe(): string {
     throw new Error("you can't");
+  }
+  public get thisGetter(): number {
+    return this.thisValue;
   }
 }
 
@@ -363,6 +367,20 @@ describe('Classe HelperObject', () => {
 
     expect(members.get('tryReadMe')![0]).toBe('object');
     expect(members.get('tryReadMe')![1]).toBe('Error');
+  });
+  test('getMembers() deve fazer bind dos getter para o caso de usarem this', () => {
+    // Arrange, Given
+
+    const instance = new ClassWithErrorIntoProperty();
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance, true, true);
+
+    // Assert, Then
+
+    expect(members.get('thisGetter')![0]).toBe('number');
+    expect(members.get('thisGetter')![1]).toBe('Number');
   });
   test('getFunctionSignature() retorna vazio para algo que não seja função', () => {
     // Arrange, Given
