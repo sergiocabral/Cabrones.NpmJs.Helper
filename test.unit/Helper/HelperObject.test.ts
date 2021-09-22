@@ -12,6 +12,11 @@ class ClassReal extends ClassBase {
   public propertyAbstract: string = 'valueAbstractReal';
   public propertyReal: string = 'valueReal';
 }
+class ClassWithErrorIntoProperty {
+  public get tryReadMe(): string {
+    throw new Error("you can't");
+  }
+}
 
 describe('Classe HelperObject', () => {
   const originals: KeyValue<any> = {};
@@ -195,6 +200,8 @@ describe('Classe HelperObject', () => {
       memberNumber: 123,
       memberBoolean: true,
       memberDate: new Date(2011, 11, 11, 11, 11, 11, 11),
+      memberNull: null,
+      memberUndefined: undefined,
       memberRecursive1: null as any,
       memberInner: {
         recursive2: null as any
@@ -215,15 +222,27 @@ describe('Classe HelperObject', () => {
 
     // Assert, Then
 
-    expect(members.size).toBe(8);
-    expect(members.get('memberText')).toBe('string');
-    expect(members.get('memberNumber')).toBe('number');
-    expect(members.get('memberBoolean')).toBe('boolean');
-    expect(members.get('memberDate')).toBe('object');
-    expect(members.get('memberRecursive1')).toBe('object');
-    expect(members.get('memberInner')).toBe('object');
-    expect(members.get('memberFuncFunction')).toBe('function');
-    expect(members.get('memberFuncArrow')).toBe('function');
+    expect(members.size).toBe(10);
+    expect(members.get('memberText')![0]).toBe('string');
+    expect(members.get('memberText')![1]).toBe('String');
+    expect(members.get('memberNumber')![0]).toBe('number');
+    expect(members.get('memberNumber')![1]).toBe('Number');
+    expect(members.get('memberBoolean')![0]).toBe('boolean');
+    expect(members.get('memberBoolean')![1]).toBe('Boolean');
+    expect(members.get('memberDate')![0]).toBe('object');
+    expect(members.get('memberDate')![1]).toBe('Date');
+    expect(members.get('memberNull')![0]).toBe('object');
+    expect(members.get('memberNull')![1]).toBe('null');
+    expect(members.get('memberUndefined')![0]).toBe('undefined');
+    expect(members.get('memberUndefined')![1]).toBe('undefined');
+    expect(members.get('memberRecursive1')![0]).toBe('object');
+    expect(members.get('memberRecursive1')![1]).toBe('Object');
+    expect(members.get('memberInner')![0]).toBe('object');
+    expect(members.get('memberInner')![1]).toBe('Object');
+    expect(members.get('memberFuncFunction')![0]).toBe('function');
+    expect(members.get('memberFuncFunction')![1]).toBe('memberFuncFunction');
+    expect(members.get('memberFuncArrow')![0]).toBe('function');
+    expect(members.get('memberFuncArrow')![1]).toBe('memberFuncArrow');
   });
   test('getMembers() retorna vazio se instância é vazia', () => {
     // Arrange, Given
@@ -312,6 +331,33 @@ describe('Classe HelperObject', () => {
     expect(members.has('propertyOverride')).toBe(true);
     expect(members.has('propertyAbstract')).toBe(true);
     expect(members.has('propertyReal')).toBe(true);
+  });
+  test('getMembers() não deve falhar se a leitura do objeto falhar', () => {
+    // Arrange, Given
+
+    const instance = new ClassWithErrorIntoProperty();
+
+    // Act, When
+
+    const tryRead = () => HelperObject.getMembers(instance, true, true);
+
+    // Assert, Then
+
+    expect(tryRead).not.toThrow();
+  });
+  test('getMembers() exibe tipo Error se a leitura da propriedade falhar', () => {
+    // Arrange, Given
+
+    const instance = new ClassWithErrorIntoProperty();
+
+    // Act, When
+
+    const members = HelperObject.getMembers(instance, true, true);
+
+    // Assert, Then
+
+    expect(members.get('tryReadMe')![0]).toBe('object');
+    expect(members.get('tryReadMe')![1]).toBe('Error');
   });
   test('getFunctionSignature() retorna vazio para algo que não seja função', () => {
     // Arrange, Given
@@ -413,7 +459,7 @@ describe('Classe HelperObject', () => {
 
     const mockGetMembers = jest.fn(
       (instance: unknown, deep: boolean, includeObjectMembers: boolean) =>
-        new Map<string, string>()
+        new Map<string, [string, string]>()
     );
     HelperObject.getMembers = mockGetMembers;
 
@@ -437,7 +483,7 @@ describe('Classe HelperObject', () => {
 
     const mockGetMembers = jest.fn(
       (instance: unknown, deep: boolean, includeObjectMembers: boolean) =>
-        new Map<string, string>()
+        new Map<string, [string, string]>()
     );
     HelperObject.getMembers = mockGetMembers;
 
@@ -639,7 +685,9 @@ describe('Classe HelperObject', () => {
       memberDate: new Date(2011, 11, 11, 11, 11, 11, 11),
       memberText: 'Hello World',
       funcArrow: (arg1: number = 20) => {},
-      funcFunction: function OtherName(arg1: number = 20) {}
+      funcFunction: function OtherName(arg1: number = 20) {},
+      valueNull: null,
+      valueUndefined: undefined
     };
 
     // Act, When
@@ -650,8 +698,10 @@ describe('Classe HelperObject', () => {
 
     expect(described).toBe(
       `Properties:
-- memberDate : object
-- memberText : string
+- memberDate : object, Date
+- memberText : string, String
+- valueNull : object, null
+- valueUndefined : undefined
 Methods:
 - funcArrow(arg1 = 20)
 - funcFunction(arg1 = 20)`

@@ -73,7 +73,7 @@ export class HelperObject {
    * Usado com getMembers() quando ignoreObjectMembers=true
    * @private
    */
-  private static objectMembersValue: Map<string, string> | undefined =
+  private static objectMembersValue: Map<string, [string, string]> | undefined =
     undefined;
 
   /**
@@ -81,7 +81,7 @@ export class HelperObject {
    * Usado com getMembers() quando ignoreObjectMembers=true
    * @private
    */
-  private static get objectMembers(): Map<string, string> {
+  private static get objectMembers(): Map<string, [string, string]> {
     if (this.objectMembersValue === undefined) {
       this.objectMembersValue = this.getMembers({}, true, true);
     }
@@ -98,13 +98,28 @@ export class HelperObject {
     instance: unknown,
     deep = true,
     includeObjectMembers = true
-  ): Map<string, string> {
-    const members = new Map<string, string>();
+  ): Map<string, [string, string]> {
+    const members = new Map<string, [string, string]>();
     let current = instance as Record<string, unknown>;
     do {
       Object.getOwnPropertyNames(current).forEach(member => {
         if (includeObjectMembers || !this.objectMembers.has(member)) {
-          members.set(member, typeof current[member]);
+          let value: unknown;
+          try {
+            value = current[member];
+          } catch (e) {
+            value = e;
+          }
+          const type = typeof value;
+          const constructor =
+            value === null
+              ? 'null'
+              : value === undefined
+              ? 'undefined'
+              : type === 'function'
+              ? (value as () => void).name
+              : (value as HelperObject).constructor.name;
+          members.set(member, [type, constructor]);
         }
       });
       if (!deep) break;
@@ -152,7 +167,8 @@ export class HelperObject {
 
     for (const member of members) {
       const name = member[0];
-      const type = member[1];
+      const type = member[1][0];
+      const constructor = member[1][1];
 
       if (filter && !filter(name, type)) continue;
 
@@ -163,7 +179,13 @@ export class HelperObject {
         signature = signature.replace(regexFunctionName, name);
         methods.push(signature);
       } else {
-        properties.push(`${name} : ${type}`);
+        properties.push(
+          `${name} : ${
+            type === constructor || constructor === ''
+              ? type
+              : type + ', ' + constructor
+          }`
+        );
       }
     }
 
