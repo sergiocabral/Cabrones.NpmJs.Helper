@@ -118,7 +118,9 @@ export class HelperObject {
               ? 'undefined'
               : type === 'function'
               ? (value as () => void).name
-              : (value as HelperObject).constructor.name;
+              : typeof (value as HelperObject).constructor === 'function'
+              ? (value as HelperObject).constructor.name
+              : '';
           members.set(member, [type, constructor]);
         }
       });

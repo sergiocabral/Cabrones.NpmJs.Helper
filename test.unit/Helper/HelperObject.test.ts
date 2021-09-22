@@ -202,6 +202,9 @@ describe('Classe HelperObject', () => {
       memberDate: new Date(2011, 11, 11, 11, 11, 11, 11),
       memberNull: null,
       memberUndefined: undefined,
+      memberFakeConstructor: {
+        constructor: 'fake constructor'
+      },
       memberRecursive1: null as any,
       memberInner: {
         recursive2: null as any
@@ -222,7 +225,7 @@ describe('Classe HelperObject', () => {
 
     // Assert, Then
 
-    expect(members.size).toBe(10);
+    expect(members.size).toBe(11);
     expect(members.get('memberText')![0]).toBe('string');
     expect(members.get('memberText')![1]).toBe('String');
     expect(members.get('memberNumber')![0]).toBe('number');
@@ -235,6 +238,8 @@ describe('Classe HelperObject', () => {
     expect(members.get('memberNull')![1]).toBe('null');
     expect(members.get('memberUndefined')![0]).toBe('undefined');
     expect(members.get('memberUndefined')![1]).toBe('undefined');
+    expect(members.get('memberFakeConstructor')![0]).toBe('object');
+    expect(members.get('memberFakeConstructor')![1]).toBe('');
     expect(members.get('memberRecursive1')![0]).toBe('object');
     expect(members.get('memberRecursive1')![1]).toBe('Object');
     expect(members.get('memberInner')![0]).toBe('object');
