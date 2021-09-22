@@ -3,6 +3,7 @@
 import { HelperObject, InvalidExecutionError, KeyValue } from '../../ts';
 
 abstract class ClassBase {
+  public thisValue = 123;
   public propertyBase: string = 'valueBase';
   public propertyOverride: string = 'propertyOverrideBase';
   public abstract propertyAbstract: string;
@@ -12,8 +13,7 @@ class ClassReal extends ClassBase {
   public propertyAbstract: string = 'valueAbstractReal';
   public propertyReal: string = 'valueReal';
 }
-class ClassWithErrorIntoProperty {
-  public thisValue = 123;
+class ClassWithErrorIntoProperty extends ClassReal {
   public get tryReadMe(): string {
     throw new Error("you can't");
   }
