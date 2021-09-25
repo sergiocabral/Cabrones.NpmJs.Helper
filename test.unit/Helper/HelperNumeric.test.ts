@@ -318,36 +318,34 @@ describe('Classe HelperNumeric', () => {
   test('sortCompare() deve permitir comparar uma lista numérica', () => {
     // Arrange, Given
 
-    const sortedList = Array(100)
-      .fill(0)
-      .map((_: number, index: number) => index);
+    const unsortedList = [1, 0, 5, 0, 3];
 
     // Act, When
 
-    const sortedAgain = Array<number>()
-      .concat(sortedList)
+    const sortedList = Array<number>()
+      .concat(unsortedList)
       .sort(HelperNumeric.sortCompare);
 
     // Assert, Then
 
-    expect(sortedAgain.join(',')).toBe(sortedList.join(','));
+    expect(sortedList.join(',')).not.toBe(unsortedList.join(','));
+    expect(sortedList).toEqual([0, 0, 1, 3, 5]);
   });
   test('reverseCompare() deve permitir comparar de forma reversa uma lista numérica', () => {
     // Arrange, Given
 
-    const sortedList = Array(100)
-      .fill(0)
-      .map((_: number, index: number) => 100 - index);
+    const unsortedList = [1, 0, 5, 0, 3];
 
     // Act, When
 
-    const sortedAgain = Array<number>()
-      .concat(sortedList)
+    const sortedList = Array<number>()
+      .concat(unsortedList)
       .sort(HelperNumeric.reverseCompare);
 
     // Assert, Then
 
-    expect(sortedAgain.join(',')).toBe(sortedList.join(','));
+    expect(sortedList.join(',')).not.toBe(unsortedList.join(','));
+    expect(sortedList).toEqual([5, 3, 1, 0, 0]);
   });
   describe('format() deve formatar um número para string', () => {
     test('quantidade de dígitos', () => {

@@ -53,6 +53,20 @@ describe('Classe WordGenerator', () => {
     expect(asLowercaseFirstLetter).toBe(asLowercaseFirstLetter.toLowerCase());
   });
 
+  test('getWord deve retornar vazio se não houver silabas', () => {
+    // Arrange, Given
+
+    // Act, When
+
+    const sut = new WordGenerator([], []);
+
+    // Assert, Then
+
+    const word = sut.getWord();
+
+    expect(word).toBe('');
+  });
+
   test('getWord deve poder especificar o total de sílabas', () => {
     // Arrange, Given
 

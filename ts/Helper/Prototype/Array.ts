@@ -5,11 +5,11 @@ declare global {
    * Estender objetos tipo Array.
    */
   interface Array<T = unknown> {
-    getRandom(): T;
+    getRandom(): T | undefined;
   }
 }
 
-Array.prototype.getRandom = function <T = unknown>(): T {
+Array.prototype.getRandom = function <T = unknown>(): T | undefined {
   return HelperList.getRandom<T>(this);
 };
 

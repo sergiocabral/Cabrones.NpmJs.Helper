@@ -81,7 +81,7 @@ export class WordGenerator {
    * @private
    */
   private get consonant(): string {
-    return HelperList.getRandom(this.consonants);
+    return HelperList.getRandom(this.consonants) ?? '';
   }
 
   /**
@@ -89,7 +89,7 @@ export class WordGenerator {
    * @private
    */
   private get vowel(): string {
-    return HelperList.getRandom(this.vowels);
+    return HelperList.getRandom(this.vowels) ?? '';
   }
 
   /**
@@ -119,11 +119,13 @@ export class WordGenerator {
   public getWord(syllablesCount = 3, firstLetterUpper = true): string {
     const syllables: string[] = [];
     while (syllables.length < syllablesCount) {
-      syllables.push(this.syllable);
+      const syllable = this.syllable;
+      if (syllable === '') break;
+      syllables.push(syllable);
     }
     let word = syllables.join('');
     if (firstLetterUpper) {
-      word = word[0].toUpperCase() + word.substr(1);
+      word = (word[0]?.toUpperCase() ?? '') + word.substr(1);
     }
     return word;
   }

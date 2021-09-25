@@ -16,7 +16,7 @@ export class HelperList {
    * @param array Lista.
    * @returns Item aleatório.
    */
-  public static getRandom<T>(array: T[]): T {
+  public static getRandom<T>(array: T[]): T | undefined {
     const randomIndex =
       Math.floor(Math.random() * array.length * 10) % array.length;
     return array[randomIndex];
