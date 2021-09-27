@@ -755,4 +755,74 @@ Methods:
 - funcFunction(arg1 = 20)`
     );
   });
+  describe('setProperty e getProperty', () => {
+    test('setProperty deve poder definir uma nova propriedade', () => {
+      // Arrange, Given
+
+      const instance = {};
+      const propertyName = Math.random().toString();
+      const propertyValue = Math.random();
+
+      // Act, When
+
+      HelperObject.setProperty(instance, propertyName, propertyValue);
+
+      // Assert, Then
+
+      expect(Object.keys(instance)[0]).toBe(propertyName);
+      expect(Object.values(instance)[0]).toBe(propertyValue);
+    });
+    test('setProperty deve poder substituir uma propriedade', () => {
+      // Arrange, Given
+
+      const originalValue = Math.random();
+      const newValue = Math.random();
+      const instance = {
+        value: originalValue
+      };
+
+      // Act, When
+
+      HelperObject.setProperty(instance, 'value', newValue);
+
+      // Assert, Then
+
+      expect(instance.value).not.toBe(originalValue);
+      expect(instance.value).toBe(newValue);
+    });
+    test('setProperty deve retornar a mesma instância de entrada', () => {
+      // Arrange, Given
+
+      const inputInstance = {};
+
+      // Act, When
+
+      const outputInstance = HelperObject.setProperty(
+        inputInstance,
+        'any',
+        'any'
+      );
+
+      // Assert, Then
+
+      expect(outputInstance).toBe(inputInstance);
+    });
+    test('getProperty deve retornar uma propriedade de uma instância', () => {
+      // Arrange, Given
+
+      const instance = {
+        value: Symbol()
+      };
+
+      // Act, When
+
+      const existentValue = HelperObject.getProperty(instance, 'value');
+      const nonExistentValue = HelperObject.getProperty(instance, 'value2');
+
+      // Assert, Then
+
+      expect(existentValue).toBe(instance.value);
+      expect(nonExistentValue).not.toBeDefined();
+    });
+  });
 });

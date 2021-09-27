@@ -234,4 +234,34 @@ export class HelperObject {
 
     return result.join('\n');
   }
+
+  /**
+   * Define um valor de propriedade em uma instância.
+   * @param instance Instância.
+   * @param name Nome da propriedade.
+   * @param value Valor da propriedade.
+   */
+  public static setProperty<
+    TInstance,
+    TProperty extends string | number | symbol,
+    TValue
+  >(instance: TInstance, name: TProperty, value: TValue): TInstance {
+    const instanceAsRecord = instance as unknown as Record<TProperty, TValue>;
+    instanceAsRecord[name] = value;
+    return instance;
+  }
+
+  /**
+   * Define um valor de propriedade em uma instância.
+   * @param instance Instância.
+   * @param name Nome da propriedade.
+   */
+  public static getProperty<
+    TInstance,
+    TProperty extends string | number | symbol,
+    TValue
+  >(instance: TInstance, name: TProperty): TValue | undefined {
+    const instanceAsRecord = instance as unknown as Record<TProperty, TValue>;
+    return instanceAsRecord[name];
+  }
 }
