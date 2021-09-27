@@ -707,7 +707,7 @@ describe('Classe HelperObject', () => {
     const instance = {
       'composite: name': 'from composite name',
       'composite: arrow': () => {},
-      'composite: function': function(){}
+      'composite: function': function () {}
     };
 
     // Act, When
