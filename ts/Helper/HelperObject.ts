@@ -244,7 +244,7 @@ export class HelperObject {
   public static setProperty<
     TValue,
     TInstance,
-    TProperty extends string | number | symbol,
+    TProperty extends string | number | symbol
   >(instance: TInstance, name: TProperty, value: TValue): TInstance {
     const instanceAsRecord = instance as unknown as Record<TProperty, TValue>;
     instanceAsRecord[name] = value;
@@ -259,7 +259,7 @@ export class HelperObject {
   public static getProperty<
     TValue,
     TInstance,
-    TProperty extends string | number | symbol,
+    TProperty extends string | number | symbol
   >(instance: TInstance, name: TProperty): TValue | undefined {
     const instanceAsRecord = instance as unknown as Record<TProperty, TValue>;
     return instanceAsRecord[name];
