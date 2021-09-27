@@ -242,7 +242,6 @@ export class HelperObject {
    * @param value Valor da propriedade.
    */
   public static setProperty<
-
     TValue = unknown,
     TInstance = unknown,
     TProperty extends string | number | symbol = string
