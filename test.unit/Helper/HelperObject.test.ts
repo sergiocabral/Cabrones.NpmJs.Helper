@@ -701,6 +701,25 @@ describe('Classe HelperObject', () => {
       expect(described.includes(ignoreType)).toBe(false);
     }
   });
+  test('describe() deve exibir propriedades com nomes compostos entre aspas', () => {
+    // Arrange, Given
+
+    const instance = {
+      'composite: name': 'from composite name',
+      'composite: arrow': () => {},
+      'composite: function': function(){}
+    };
+
+    // Act, When
+
+    const described = HelperObject.describe(instance, false, false);
+
+    // Assert, Then
+
+    expect(described.includes('"composite: name"')).toBe(true);
+    expect(described.includes('"composite: arrow"')).toBe(true);
+    expect(described.includes('"composite: function"')).toBe(true);
+  });
   test('describe() lista os membros de uma instância', () => {
     // Arrange, Given
 
@@ -710,7 +729,10 @@ describe('Classe HelperObject', () => {
       funcArrow: (arg1: number = 20) => {},
       funcFunction: function OtherName(arg1: number = 20) {},
       valueNull: null,
-      valueUndefined: undefined
+      valueUndefined: undefined,
+      'composite: property': 'from composite name',
+      'composite: arrow': (arg1: number = 20) => {},
+      'composite: func': function OtherName(arg1: number = 20) {}
     };
 
     // Act, When
@@ -721,11 +743,14 @@ describe('Classe HelperObject', () => {
 
     expect(described).toBe(
       `Properties:
+- "composite: property" : string
 - memberDate : object, Date
 - memberText : string
 - valueNull : object, null
 - valueUndefined : undefined
 Methods:
+- "composite: arrow"(arg1 = 20)
+- "composite: func"(arg1 = 20)
 - funcArrow(arg1 = 20)
 - funcFunction(arg1 = 20)`
     );

@@ -12,6 +12,16 @@ export class HelperObject {
   }
 
   /**
+   * Exibição de um nome composto.
+   * @param name
+   * @private
+   */
+  private static compositeName(name: string): string {
+    const regexIsComposite = /\W/;
+    return regexIsComposite.test(name) ? `"${name}"` : name;
+  }
+
+  /**
    * Verifica se uma variável é uma função.
    * @param variable Variável.
    */
@@ -192,11 +202,14 @@ export class HelperObject {
         const func = (instance as Record<string, unknown>)[name];
         let signature = this.getFunctionSignature(func);
         const regexFunctionName = /^[^(]*/;
-        signature = signature.replace(regexFunctionName, name);
+        signature = signature.replace(
+          regexFunctionName,
+          this.compositeName(name)
+        );
         methods.push(signature);
       } else {
         properties.push(
-          `${name} : ${
+          `${this.compositeName(name)} : ${
             type.toLowerCase() === constructor.toLowerCase() ||
             constructor === ''
               ? type
