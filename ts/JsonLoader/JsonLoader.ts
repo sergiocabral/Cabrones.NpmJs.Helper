@@ -45,8 +45,9 @@ export abstract class JsonLoader {
           backup[key] !== instance[key] &&
           (backup[key] instanceof Date || backup[key] instanceof JsonLoader)
         ) {
-          const constructor = (backup[key] as JsonLoader)
-            .constructor as new (argument: unknown) => unknown;
+          const constructor = (backup[key] as JsonLoader).constructor as new (
+            argument: unknown
+          ) => unknown;
           instance[key] = new constructor(instance[key]);
           if (instance[key] instanceof JsonLoader) {
             (instance[key] as JsonLoader).initialize();
