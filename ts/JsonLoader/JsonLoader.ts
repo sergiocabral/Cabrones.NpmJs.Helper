@@ -3,7 +3,7 @@ import { NotImplementedError } from '../Error/NotImplementedError';
 /**
  * Conjunto de informações de configuração.
  */
-export abstract class Configuration {
+export abstract class JsonLoader {
   /**
    * Carrega as propriedades do JSON.
    */
@@ -43,13 +43,13 @@ export abstract class Configuration {
       for (const key of Object.keys(backup)) {
         if (
           backup[key] !== instance[key] &&
-          (backup[key] instanceof Date || backup[key] instanceof Configuration)
+          (backup[key] instanceof Date || backup[key] instanceof JsonLoader)
         ) {
-          const constructor = (backup[key] as Configuration)
+          const constructor = (backup[key] as JsonLoader)
             .constructor as new (argument: unknown) => unknown;
           instance[key] = new constructor(instance[key]);
-          if (instance[key] instanceof Configuration) {
-            (instance[key] as Configuration).initialize();
+          if (instance[key] instanceof JsonLoader) {
+            (instance[key] as JsonLoader).initialize();
           }
         }
       }
@@ -65,8 +65,8 @@ export abstract class Configuration {
     const errors = Array<string>();
     const instance = this as Record<string, unknown>;
     for (const key of Object.keys(instance)) {
-      if (instance[key] instanceof Configuration) {
-        errors.push(...(instance[key] as Configuration).errors());
+      if (instance[key] instanceof JsonLoader) {
+        errors.push(...(instance[key] as JsonLoader).errors());
       }
     }
     return errors;

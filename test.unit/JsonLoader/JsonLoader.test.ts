@@ -1,29 +1,29 @@
-import { Configuration, NotImplementedError } from '../../ts';
+import { JsonLoader, NotImplementedError } from '../../ts';
 
 const propertyDefaultValueNumber = Math.random();
 const propertyDefaultValueDate = new Date();
 const propertyDefaultValueString = Math.random().toString();
 const errorConfigurationTestB = [Math.random().toString()];
 
-class ConfigurationTestC extends Configuration {}
+class ConfigurationTestC extends JsonLoader {}
 
-class ConfigurationTestB extends Configuration {
+class ConfigurationTestB extends JsonLoader {
   propertyString = propertyDefaultValueString;
   errors(): string[] {
     return errorConfigurationTestB;
   }
 }
 
-class ConfigurationTestA extends Configuration {
+class ConfigurationTestA extends JsonLoader {
   propertyNumber = propertyDefaultValueNumber;
   propertyDate = propertyDefaultValueDate;
   propertyConfiguration = new ConfigurationTestB();
 }
 
-describe('Class Configuration', () => {
+describe('Class JsonLoader', () => {
   afterEach(() => jest.useRealTimers());
 
-  test('Se criar se informar JSON não precisa chamar initialize()', async () => {
+  test('Se criar sem informar JSON não precisa chamar initialize()', async () => {
     // Arrange, Given
 
     jest.useFakeTimers();
