@@ -28,8 +28,8 @@ export class MessageSubscription<TMessage extends IMessage> {
    * Notifica o listener com uma mensagem.
    * @param message Mensagem.
    */
-  public notifyListener(message: TMessage): void {
-    this.listener(message);
+  public notifyListener(message: TMessage): void | Promise<void> {
+    return this.listener(message);
   }
 
   /**

@@ -97,7 +97,7 @@ export abstract class Message implements IMessage {
       capture => capture.messageName === message.name
     );
     for (const capture of captures) {
-      capture.notifyListener(message);
+      void capture.notifyListener(message);
     }
     return { rounds: captures.length, message: message };
   }
@@ -110,6 +110,12 @@ export abstract class Message implements IMessage {
   private static async sendAsync<TMessage extends Message>(
     message: TMessage
   ): Promise<DispatchedMessage<TMessage>> {
-    return await new Promise(resolve => resolve(Message.send(message)));
+    const captures = this.subscriptions.filter(
+      capture => capture.messageName === message.name
+    );
+    for (const capture of captures) {
+      await capture.notifyListener(message);
+    }
+    return { rounds: captures.length, message: message };
   }
 }
