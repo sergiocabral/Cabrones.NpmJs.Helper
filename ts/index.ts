@@ -2,7 +2,7 @@ import { DispatchedMessage } from './Bus/DispatchedMessage';
 import { Message } from './Bus/Message';
 import { MessageListener } from './Bus/MessageListener';
 import { MessageSubscription } from './Bus/MessageSubscription';
-import { JsonLoader } from './JsonLoader/JsonLoader';
+import { JsonLoader } from './Json/JsonLoader';
 import { EmptyError } from './Error/EmptyError';
 import { GenericError } from './Error/GenericError';
 import { InvalidArgumentError } from './Error/InvalidArgumentError';
