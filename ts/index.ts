@@ -34,7 +34,7 @@ import { LogLevel } from './Log/LogLevel';
 import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
-import sha256 from "./3rdParty/sha256";
+import sha256 from './3rdParty/sha256';
 import './Helper/Prototype/Array';
 import './Helper/Prototype/Date';
 import './Helper/Prototype/JSON';
