@@ -1,4 +1,4 @@
-import { HashJson } from '../../ts/Json/HashJson';
+import { HashJson } from '../../ts';
 
 describe('HashJson', () => {
   afterEach(() => jest.useRealTimers());

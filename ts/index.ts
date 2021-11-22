@@ -2,6 +2,7 @@ import { DispatchedMessage } from './Bus/DispatchedMessage';
 import { Message } from './Bus/Message';
 import { MessageListener } from './Bus/MessageListener';
 import { MessageSubscription } from './Bus/MessageSubscription';
+import { HashJson } from './Json/HashJson';
 import { JsonLoader } from './Json/JsonLoader';
 import { EmptyError } from './Error/EmptyError';
 import { GenericError } from './Error/GenericError';
@@ -46,6 +47,7 @@ export {
   Message,
   MessageListener,
   MessageSubscription,
+  HashJson,
   JsonLoader,
   EmptyError,
   GenericError,
