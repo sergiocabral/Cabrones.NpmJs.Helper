@@ -41,7 +41,7 @@ export default function sha256(ascii: string): string {
     ascii += '\x00'; // More zero padding
   }
   for (let i = 0; i < ascii.length; i++) {
-    let j = ascii.charCodeAt(i);
+    const j = ascii.charCodeAt(i);
     if (j >> 8) {
       throw new InvalidArgumentError(
         'ASCII input expected. Only accept characters in range 0-255.'
@@ -100,7 +100,7 @@ export default function sha256(ascii: string): string {
   for (let i = 0; i < 8; i++) {
     for (let j = 3; j + 1; j--) {
       const b = (hash[i] >> (j * 8)) & 255;
-      result += (b < 16 ? 0 : '') + b.toString(16);
+      result += (b < 16 ? '0' : '') + b.toString(16);
     }
   }
   return result;
