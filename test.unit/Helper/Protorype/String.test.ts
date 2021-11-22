@@ -39,12 +39,17 @@ describe('Prototype para String', () => {
     });
 
     test('replaceAll', () => {
-      // Arrange, Given
-      const func = (HelperText.replaceAll = jest.fn());
-      // Act, When
-      String('').replaceAll('', '');
-      // Assert, Then
-      expect(func).toBeCalledTimes(1);
+      const functionContent = String(String.prototype.replaceAll);
+      if (functionContent !== 'function replaceAll() { [native code] }') {
+        // Arrange, Given
+        const func = (HelperText.replaceAll = jest.fn());
+        // Act, When
+        String('').
+          replaceAll('', '');
+        // Assert, Then
+        expect(func).
+          toBeCalledTimes(1);
+      }
     });
 
     test('removeAccents', () => {
