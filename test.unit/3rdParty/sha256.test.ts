@@ -5,17 +5,32 @@ describe('sha256', () => {
     // Arrange, Given
 
     const wellKnownSha256 = {
-      value:
-        'valor de entrada com hash de saida conhecido para o proposito deste teste',
-      hash: 'eede78d21e995cd1cd5a77fe8309e62b31664ee86470777ee1e2d6a473a5c856'
+      'valor de entrada com hash de saida conhecido para o proposito deste teste':
+        'eede78d21e995cd1cd5a77fe8309e62b31664ee86470777ee1e2d6a473a5c856'
     };
+
+    for (const valueHash of Object.entries(wellKnownSha256)) {
+      // Act, When
+
+      const calculatedHash = sha256(valueHash[0]);
+
+      // Assert, Then
+
+      expect(calculatedHash).toBe(valueHash[1]);
+    }
+  });
+
+  test('sha256 só recebe como entrada ASCII', () => {
+    // Arrange, Given
+
+    const nonAsciiValue = '👽';
 
     // Act, When
 
-    const calculatedHash = sha256(wellKnownSha256.value);
+    const invalidCall = () => sha256(nonAsciiValue);
 
     // Assert, Then
 
-    expect(calculatedHash).toBe(wellKnownSha256.hash);
-  })
+    expect(invalidCall).toThrow('ASCII input expected. Only accept characters in range 0-255.');
+  });
 });
