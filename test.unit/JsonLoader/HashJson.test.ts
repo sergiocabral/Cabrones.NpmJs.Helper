@@ -1,4 +1,4 @@
-import { HashJson } from "../../ts/Json/HashJson";
+import { HashJson } from '../../ts/Json/HashJson';
 
 describe('HashJson', () => {
   afterEach(() => jest.useRealTimers());
@@ -11,7 +11,7 @@ describe('HashJson', () => {
       propDate: new Date(),
       propText: Math.random().toString(),
       propBoolean: true.toString()
-    }
+    };
     const otherObjectButSameJson = JSON.parse(JSON.stringify(anyObject));
 
     var inputObjectAsValue = {};
@@ -21,7 +21,7 @@ describe('HashJson', () => {
     // Act, When
 
     sut.set(anyObject, inputObjectAsValue);
-    var outputObjectAsValue = sut.get(otherObjectButSameJson)
+    var outputObjectAsValue = sut.get(otherObjectButSameJson);
 
     // Assert, Then
 
@@ -43,7 +43,7 @@ describe('HashJson', () => {
 
     sut.set(anyObject, inputValue, expirationTime);
     jest.advanceTimersByTime(expirationTime - 1);
-    var outputValue = sut.get(anyObject)
+    var outputValue = sut.get(anyObject);
 
     // Assert, Then
 
@@ -65,7 +65,7 @@ describe('HashJson', () => {
 
     sut.set(anyObject, inputValue, expirationTime);
     jest.advanceTimersByTime(expirationTime);
-    var outputValue = sut.get(anyObject)
+    var outputValue = sut.get(anyObject);
 
     // Assert, Then
 
@@ -86,7 +86,7 @@ describe('HashJson', () => {
 
     sut.set(anyObject, inputValue);
     jest.advanceTimersByTime(Number.MAX_SAFE_INTEGER);
-    var outputValue = sut.get(anyObject)
+    var outputValue = sut.get(anyObject);
 
     // Assert, Then
 
@@ -105,7 +105,7 @@ describe('HashJson', () => {
 
     // Act, When
 
-    sut.set(anyObject, { });
+    sut.set(anyObject, {});
     jest.advanceTimersByTime(expirationTime - 1);
     var expectedOutputDefined = sut.get(anyObject);
     jest.advanceTimersByTime(1);
@@ -123,13 +123,15 @@ describe('HashJson', () => {
     jest.useFakeTimers();
 
     const anyObject = {};
-    const expirationTimeAtInitialization = Math.round(Math.random() * 100 + 100);
+    const expirationTimeAtInitialization = Math.round(
+      Math.random() * 100 + 100
+    );
 
     var sut = new HashJson<unknown>(expirationTimeAtInitialization);
 
     // Act, When
 
-    sut.set(anyObject, { }, expirationTimeAtInitialization + 1);
+    sut.set(anyObject, {}, expirationTimeAtInitialization + 1);
     jest.advanceTimersByTime(expirationTimeAtInitialization);
     var expectedOutputDefined = sut.get(anyObject);
 

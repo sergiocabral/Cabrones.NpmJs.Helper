@@ -1,5 +1,5 @@
-import sha256 from "../3rdParty/sha256";
-import { HelperObject } from "../Helper/HelperObject";
+import sha256 from '../3rdParty/sha256';
+import { HelperObject } from '../Helper/HelperObject';
 
 /**
  * Representa um conjunto de informações para JsonObject.
@@ -20,7 +20,6 @@ interface IHashJsonData<TValue> {
    */
   value: TValue;
 }
-
 
 /**
  * Associa objetos (baseado em JSON.stringify) a valores.
@@ -52,7 +51,7 @@ export class HashJson<TValue> {
     this.discardExpired();
     const key = HashJson.hash(object);
 
-    return this.list.find((data) => data.key === key)?.value;
+    return this.list.find(data => data.key === key)?.value;
   }
 
   /**
@@ -78,10 +77,10 @@ export class HashJson<TValue> {
           ? new Date().getTime() + expirationInMilliseconds
           : undefined,
       key,
-      value,
+      value
     };
 
-    const existingIndex = this.list.findIndex((d) => d.key === key);
+    const existingIndex = this.list.findIndex(d => d.key === key);
     if (existingIndex < 0) {
       this.list.push(data);
     } else {

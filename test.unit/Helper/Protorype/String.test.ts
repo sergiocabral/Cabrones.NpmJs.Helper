@@ -44,11 +44,9 @@ describe('Prototype para String', () => {
         // Arrange, Given
         const func = (HelperText.replaceAll = jest.fn());
         // Act, When
-        String('').
-          replaceAll('', '');
+        String('').replaceAll('', '');
         // Assert, Then
-        expect(func).
-          toBeCalledTimes(1);
+        expect(func).toBeCalledTimes(1);
       }
     });
 

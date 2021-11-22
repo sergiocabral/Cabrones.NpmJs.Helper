@@ -31,6 +31,8 @@ describe('sha256', () => {
 
     // Assert, Then
 
-    expect(invalidCall).toThrow('ASCII input expected. Only accept characters in range 0-255.');
+    expect(invalidCall).toThrow(
+      'ASCII input expected. Only accept characters in range 0-255.'
+    );
   });
 });
