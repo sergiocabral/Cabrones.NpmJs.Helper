@@ -1,4 +1,4 @@
-import { Translate } from "../../i18n/Translate";
+import { Translate } from '../../i18n/Translate';
 import { HelperText } from '../HelperText';
 
 declare global {
@@ -72,7 +72,10 @@ String.prototype.slugify = function (): string {
 };
 
 String.prototype.translate = function (language?: string): string {
-  return Translate.default?.get(String(this), language) ?? String(this);
+  const translated = Translate.default?.get(String(this), language);
+  return translated !== undefined && translated !== null
+    ? String(translated)
+    : String(this);
 };
 
 export {};

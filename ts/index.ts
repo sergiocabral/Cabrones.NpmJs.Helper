@@ -35,6 +35,9 @@ import { LogLevel } from './Log/LogLevel';
 import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
+import { ITranslate } from './i18n/ITranslate';
+import { Translate } from './i18n/Translate';
+import { TranslateSet } from './i18n/TranslateSet';
 import sha256 from './3rdParty/sha256';
 import './Helper/Prototype/Array';
 import './Helper/Prototype/Date';
@@ -80,5 +83,8 @@ export {
   LogWriter,
   LogWriterToConsole,
   KeyValue,
-  sha256
+  sha256,
+  ITranslate,
+  Translate,
+  TranslateSet
 };

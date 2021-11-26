@@ -1,5 +1,5 @@
 import { ITranslate } from "./ITranslate";
-import { TranslationSet } from "./TranslationSet";
+import { TranslateSet } from "./TranslateSet";
 
 /**
  * Serviço de tradução.
@@ -42,7 +42,7 @@ export class Translate implements ITranslate {
    * @param language Idioma.
    * @param translationSet Traduções.
    */
-  public load(language: string, translationSet: TranslationSet): void {
+  public load(language: string, translationSet: TranslateSet): void {
 
   }
 

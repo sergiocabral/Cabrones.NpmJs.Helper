@@ -1,9 +1,9 @@
 /**
  * Conjunto de traduções.
  */
-export type TranslationSet = {
+export type TranslateSet = {
   /**
    * Chave como string e valor como string ou outro conjunto.
    */
-  [key: string]: TranslationSet | string;
+  [key: string]: TranslateSet | string;
 };

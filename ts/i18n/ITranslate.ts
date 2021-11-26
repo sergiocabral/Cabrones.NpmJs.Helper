@@ -1,4 +1,4 @@
-import { TranslationSet } from './TranslationSet';
+import { TranslateSet } from './TranslateSet';
 
 /**
  * Representa um serviço de tradução.
@@ -32,7 +32,7 @@ export interface ITranslate {
    * @param language Idioma.
    * @param translationSet Traduções.
    */
-  load(language: string, translationSet: TranslationSet): void;
+  load(language: string, translationSet: TranslateSet): void;
 
   /**
    * Retorna uma tradução para determinada chave.
