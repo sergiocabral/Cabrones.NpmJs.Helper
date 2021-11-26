@@ -1,3 +1,4 @@
+import { Translate } from "../../i18n/Translate";
 import { HelperText } from '../HelperText';
 
 declare global {
@@ -36,6 +37,12 @@ declare global {
      * @returns Texto no formato slug.
      */
     slugify(): string;
+
+    /**
+     * Retorna a tradução de um termo (se for capaz).
+     * @returns Tradução ou a própria string.
+     */
+    translate(language?: string): string;
   }
 }
 
@@ -62,6 +69,10 @@ String.prototype.removeAccents = function (): string {
 
 String.prototype.slugify = function (): string {
   return HelperText.slugify(String(this));
+};
+
+String.prototype.translate = function (language?: string): string {
+  return Translate.default?.get(String(this), language) ?? String(this);
 };
 
 export {};
