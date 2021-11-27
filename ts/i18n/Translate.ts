@@ -23,15 +23,13 @@ export class Translate implements ITranslate {
     const result = new Map<string, string>();
     const preventRecursion = new Set<unknown>();
     const walkThrough = (data: TranslateSet): void => {
-      for (const value of Object.entries(data)) {
-        const key = value[0];
-        const translate = value[1];
+      for (const [key, translate] of Object.entries(data)) {
         if (typeof translate === 'object' && translate !== null) {
           if (!preventRecursion.has(translate)) {
             preventRecursion.add(translate);
             walkThrough(translate);
           }
-        } else if (translate !== undefined) {
+        } else if (translate !== undefined && translate !== null) {
           result.set(key, String(translate));
         }
       }

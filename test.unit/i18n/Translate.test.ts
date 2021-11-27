@@ -388,6 +388,113 @@ describe('Translate', () => {
   });
 
   describe('Lógica de Translate.flatten', () => {
-    // TODO: Escrever testes do flatten.
+    test('O json deve ser transformado em lista', () => {
+      // Arrange, Given
+
+      const data: TranslateSet = {};
+
+      const count = 10;
+      for (let i = 0; i < count; i++) {
+        data[Math.random().toString()] = Math.random().toString();
+      }
+
+      // Act, When
+
+      const result = Translate.flatten(data);
+
+      // Assert, Then
+
+      expect(result.size).toBe(Object.keys(data).length);
+
+      for (const key in Object.keys(data)) {
+        expect(result.get(key)).toBe(data[key]);
+      }
+    });
+    test('Somente valores são incluídos no resultado', () => {
+      // Arrange, Given
+
+      const data: TranslateSet = {
+        includedString: Math.random().toString(),
+        includedNumber: Math.random() as any,
+        includedBoolean: true as any,
+        includedObject: {},
+        includedDate: new Date() as any,
+        includedNull: null as any,
+        includedUndefined: undefined as any
+      };
+
+      // Act, When
+
+      const result = Translate.flatten(data);
+
+      // Assert, Then
+
+      expect(result.get('includedString')).toBeDefined();
+      expect(result.get('includedNumber')).toBeDefined();
+      expect(result.get('includedBoolean')).toBeDefined();
+
+      expect(result.get('includedObject')).toBeUndefined();
+      expect(result.get('includedDate')).toBeUndefined();
+      expect(result.get('includedNull')).toBeUndefined();
+      expect(result.get('includedUndefined')).toBeUndefined();
+    });
+    test('Nomes de sub-estruturas não devem ser considerados', () => {
+      // Arrange, Given
+
+      const data: TranslateSet = {
+        'sub structure': {
+          key2: 'value2',
+          'sub structure': {
+            'sub structure': {
+              'sub structure': {
+                key3: 'value3'
+              }
+            }
+          }
+        },
+        key1: 'value1'
+      };
+
+      const subStructureName = Object.keys(data)[0];
+
+      // Act, When
+
+      const result = Translate.flatten(data);
+
+      // Assert, Then
+
+      for (const [key, value] of result) {
+        expect(key).not.toBe(subStructureName);
+        expect(value).not.toBe(subStructureName);
+      }
+    });
+    test('Deve captura valores dentro de sub-estruturas', () => {
+      // Arrange, Given
+
+      const data: TranslateSet = {
+        'sub structure': {
+          keyLevel2: 'valueLevel2',
+          'sub structure': {
+            'sub structure': {
+              'sub structure': {
+                keyLevel5: 'valueLevel5'
+              }
+            }
+          }
+        },
+        keyLevel1: 'valueLevel1'
+      };
+
+      // Act, When
+
+      const result = Translate.flatten(data);
+
+      // Assert, Then
+
+      expect(result.get('keyLevel1')).toBe('valueLevel1');
+      expect(result.get('keyLevel2')).toBe('valueLevel2');
+      expect(result.get('keyLevel5')).toBe('valueLevel5');
+      expect(result.size).toBe(3);
+    });
   });
 });
