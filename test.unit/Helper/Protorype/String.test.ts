@@ -1,4 +1,4 @@
-import { HelperText, ITranslate, KeyValue, Translate } from "../../../ts";
+import { HelperText, ITranslate, KeyValue, Translate } from '../../../ts';
 
 describe('Prototype para String', () => {
   const originals: KeyValue<any> = {};
@@ -9,7 +9,7 @@ describe('Prototype para String', () => {
     originals['HelperText.replaceAll'] = HelperText.replaceAll;
     originals['HelperText.removeAccents'] = HelperText.removeAccents;
     originals['HelperText.slugify'] = HelperText.slugify;
-    originals['Translate.default'] = Translate.default
+    originals['Translate.default'] = Translate.default;
   });
 
   afterEach(() => {
@@ -118,12 +118,12 @@ describe('Prototype para String', () => {
 
       // Act, When
 
-      const outputText = String("").translate();
+      const outputText = String('').translate();
 
       // Assert, Then
 
       expect(typeof outputText).not.toBe(typeof invalidOutput);
-      expect(typeof outputText).toBe("string");
+      expect(typeof outputText).toBe('string');
       expect(outputText).toBe(String(invalidOutput));
     });
     test('translate() deve retornar o próprio valor se o serviço de tradução retornar undefined', () => {
