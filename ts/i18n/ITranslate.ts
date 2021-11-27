@@ -15,17 +15,9 @@ export interface ITranslate {
   selectedLanguage: string;
 
   /**
-   * Idioma disponíveis,
+   * Idiomas disponíveis.
    */
   get availableLanguages(): string[];
-
-  /**
-   * Remove traduções.
-   * @param language Idioma. Caso não informado, todos os idiomas.
-   * @param key Chave de tradução. Caso não informado, todos as chaves de tradução.
-   * @returns Retorna true se chaves foram apagadas.
-   */
-  clear(language?: string, key?: string): boolean;
 
   /**
    * Carrega um conjunto de traduções para determinado idioma.
@@ -35,17 +27,38 @@ export interface ITranslate {
   load(language: string, translationSet: TranslateSet): void;
 
   /**
+   * Define uma tradução para uma determinada chave.
+   * @param key Chave.
+   * @param text Tradução.
+   * @param language Idioma. Se não informado usa o idioma selecionado.
+   */
+  set(key: string, text: string, language?: string): void;
+
+  /**
    * Retorna uma tradução para determinada chave.
-   * @param key Chave de tradução.
-   * @param language Força especificação do idioma
+   * @param key Chave.
+   * @param language Idioma. Se não informado usa o idioma selecionado.
    */
   get(key: string, language?: string): string;
 
   /**
-   * Define uma tradução para determinada chave.
-   * @param key Chave de tradução.
-   * @param language Idioma.
-   * @param text Texto associado à chave.
+   * Remove uma tradução.
+   * @param key Chave.
+   * @param language Idioma. Se não informado usa o idioma selecionado.
+   * @returns Retorna true se dados foram apagados.
    */
-  set(key: string, language: string, text: string): void;
+  delete(key: string, language?: string): boolean;
+
+  /**
+   * Remove um idioma e suas traduções.
+   * @param language Idioma.
+   * @returns Retorna true se dados foram apagados.
+   */
+  deleteLanguage(language: string): boolean;
+
+  /**
+   * Remove todos os idiomas e suas traduções.
+   * @returns Retorna true se dados foram apagados.
+   */
+  deleteAll(): boolean;
 }
