@@ -21,10 +21,10 @@ export interface ITranslate {
 
   /**
    * Carrega um conjunto de traduções para determinado idioma.
-   * @param language Idioma.
    * @param translationSet Traduções.
+   * @param language Idioma. Se não informado usa o idioma selecionado.
    */
-  load(language: string, translationSet: TranslateSet): void;
+  load(translationSet: TranslateSet, language?: string): void;
 
   /**
    * Define uma tradução para uma determinada chave.

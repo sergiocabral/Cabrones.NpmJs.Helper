@@ -41,17 +41,29 @@ export class Translate implements ITranslate {
   }
 
   /**
+   * Idioma selecionado para fornecer traduções de chaves.
+   */
+  public selectedLanguage: string;
+
+  /**
+   * Idioma consultado caso o idioma selecionado não tenha determinada chave.
+   */
+  public fallbackLanguage: string;
+
+  /**
    *
    * @param selectedLanguage Idioma selecionado para fornecer traduções de chaves.
    * @param fallbackLanguage Idioma consultado caso o idioma selecionado não tenha determinada chave.
    * @param setAsDefault Define como a instância padrão de tradução em Translate.default.
    */
   public constructor(
-    public selectedLanguage = Translate.defaultLanguageName,
-    public fallbackLanguage = Translate.defaultLanguageName,
-    setAsDefault: boolean = false
+    selectedLanguage?: string,
+    fallbackLanguage?: string,
+    setAsDefault?: boolean
   ) {
-    if (setAsDefault) {
+    this.selectedLanguage = selectedLanguage ?? Translate.defaultLanguageName;
+    this.fallbackLanguage = fallbackLanguage ?? this.selectedLanguage;
+    if (setAsDefault === true) {
       Translate.default = this;
     }
   }
@@ -73,16 +85,18 @@ export class Translate implements ITranslate {
 
   /**
    * Carrega um conjunto de traduções para determinado idioma.
-   * @param language Idioma.
    * @param translationSet Traduções.
+   * @param language Idioma. Se não informado usa o idioma selecionado.
    */
-  public load(language: string, translationSet: TranslateSet): void {
-    const database = this.getLanguageDatabase(language);
+  public load(translationSet: TranslateSet, language?: string): void {
     const translations = Translate.flatten(translationSet);
-    for (const translation of translations) {
-      const key = translation[0];
-      const translate = translation[0];
-      database.set(key, translate);
+    if (translations.size > 0) {
+      const database = this.getLanguageDatabase(language);
+      for (const translation of translations) {
+        const key = translation[0];
+        const translate = translation[1];
+        database.set(key, translate);
+      }
     }
   }
 
@@ -119,7 +133,15 @@ export class Translate implements ITranslate {
    */
   public delete(key: string, language?: string): boolean {
     language = language ?? this.selectedLanguage;
-    return Boolean(this.database.get(language)?.delete(key));
+    const databaseLanguage = this.database.get(language);
+    if (databaseLanguage !== undefined) {
+      const deleted = databaseLanguage.delete(key);
+      if (deleted && databaseLanguage.size === 0) {
+        this.database.delete(language);
+      }
+      return deleted;
+    }
+    return false;
   }
 
   /**
@@ -128,7 +150,6 @@ export class Translate implements ITranslate {
    * @returns Retorna true se dados foram apagados.
    */
   public deleteLanguage(language: string): boolean {
-    language = language ?? this.selectedLanguage;
     return this.database.delete(language);
   }
 
