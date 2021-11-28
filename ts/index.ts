@@ -35,6 +35,7 @@ import { LogLevel } from './Log/LogLevel';
 import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
+import { PartialRecord } from './Type/PartialRecord';
 import { ITranslate } from './i18n/ITranslate';
 import { Translate } from './i18n/Translate';
 import { TranslateSet } from './i18n/TranslateSet';
@@ -83,6 +84,7 @@ export {
   LogWriter,
   LogWriterToConsole,
   KeyValue,
+  PartialRecord,
   sha256,
   ITranslate,
   Translate,
