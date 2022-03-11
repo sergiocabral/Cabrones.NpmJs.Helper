@@ -39,6 +39,8 @@ import { PartialRecord } from './Type/PartialRecord';
 import { ITranslate } from './i18n/ITranslate';
 import { Translate } from './i18n/Translate';
 import { TranslateSet } from './i18n/TranslateSet';
+import { CommandLine } from './IO/CommandLine';
+import { CommandLineArgument } from './IO/CommandLineArgument';
 import sha256 from './3rdParty/sha256';
 import './Helper/Prototype/Array';
 import './Helper/Prototype/Date';
@@ -88,5 +90,7 @@ export {
   sha256,
   ITranslate,
   Translate,
-  TranslateSet
+  TranslateSet,
+  CommandLine,
+  CommandLineArgument
 };
