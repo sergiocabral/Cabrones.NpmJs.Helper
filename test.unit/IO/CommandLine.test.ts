@@ -15,6 +15,37 @@ describe('CommandLine', () => {
 
       expect(sut.commandLine).toBe(commandLineText);
     });
+    test('CaseInsensitive por padrão é false', () => {
+      // Arrange, Given
+
+      const caseInsensitiveExpected = false;
+      const sut = new CommandLine(Math.random().toString());
+
+      // Act, When
+
+      const caseInsensitiveReceived = sut.caseInsensitive;
+
+      // Assert, Then
+
+      expect(caseInsensitiveReceived).toBe(caseInsensitiveExpected);
+    });
+    test('CaseInsensitive pode ser modificador no construtor', () => {
+      // Arrange, Given
+
+      const caseInsensitiveSetted = true;
+
+      // Act, When
+
+      const sut = new CommandLine(
+        Math.random().toString(),
+        caseInsensitiveSetted
+      );
+      const caseInsensitiveReceived = sut.caseInsensitive;
+
+      // Assert, Then
+
+      expect(caseInsensitiveReceived).toBe(caseInsensitiveSetted);
+    });
     test('Manter ordem dos argumentos', () => {
       // Arrange, Given
 
@@ -106,7 +137,7 @@ describe('CommandLine', () => {
       expect(argParsed.value).toBe(valueSpaced);
     });
   });
-  describe('Validações de negócio', () => {
+  describe('Validações de argumentos em geral', () => {
     test('Um argumento com valor', () => {
       // Arrange, Given
 
@@ -188,6 +219,138 @@ describe('CommandLine', () => {
 
       expect(sut.args[0].name).toBe('--spaces');
       expect(sut.args[0].value).toBe('    ');
+    });
+    test('comando e argumentos em geral', () => {
+      // Arrange, Given
+
+      const commandLineText = 'comand --arg1 -a2';
+
+      // Act, When
+
+      const sut = new CommandLine(commandLineText);
+
+      // Assert, Then
+
+      expect(sut.args[0].name).toBe('comand');
+      expect(sut.args[1].name).toBe('--arg1');
+      expect(sut.args[2].name).toBe('-a2');
+    });
+  });
+  describe('Validações de busca por argumentos e valores', () => {
+    test('caseInsensitive', () => {
+      // Arrange, Given
+
+      const argName = '--Arg1';
+
+      const sut = new CommandLine(argName);
+
+      // Act, When
+
+      const normalExpectedTrue = sut.hasArgumentName(argName);
+
+      const lowerExpectedFalseBeforeCaseInsensitive = sut.hasArgumentName(
+        argName.toLowerCase()
+      );
+      const upperExpectedFalseBeforeCaseInsensitive = sut.hasArgumentName(
+        argName.toUpperCase()
+      );
+
+      sut.caseInsensitive = true;
+
+      const lowerExpectedFalseAfterCaseInsensitive = sut.hasArgumentName(
+        argName.toLowerCase()
+      );
+      const upperExpectedFalseAfterCaseInsensitive = sut.hasArgumentName(
+        argName.toUpperCase()
+      );
+
+      // Assert, Then
+
+      expect(normalExpectedTrue).toBe(true);
+      expect(lowerExpectedFalseBeforeCaseInsensitive).toBe(false);
+      expect(upperExpectedFalseBeforeCaseInsensitive).toBe(false);
+      expect(lowerExpectedFalseAfterCaseInsensitive).toBe(true);
+      expect(upperExpectedFalseAfterCaseInsensitive).toBe(true);
+    });
+    test('hasArgumentName', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('--coin=BTC --coin=ETH --coin=XMR');
+
+      // Act, When
+
+      const hasArgumentExpectedFalse = sut.hasArgumentName('--price');
+      const hasArgumentExpectedTrue = sut.hasArgumentName('--coin');
+
+      // Assert, Then
+
+      expect(hasArgumentExpectedFalse).toBe(false);
+      expect(hasArgumentExpectedTrue).toBe(true);
+    });
+    test('hasArgumentValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('--arg1=BCH --arg2=ETH --arg3=XMR');
+
+      // Act, When
+
+      const hasValueExpectedFalse = sut.hasArgumentValue('BTC');
+      const hasValueExpectedTrue = sut.hasArgumentValue('ETH');
+
+      // Assert, Then
+
+      expect(hasValueExpectedFalse).toBe(false);
+      expect(hasValueExpectedTrue).toBe(true);
+    });
+    test('hasArgumentValue para undefined', () => {
+      // Arrange, Given
+
+      const sutWithUndefined = new CommandLine('--WithUndefined');
+      const sutWithoutUndefined = new CommandLine(
+        '--WithoutUndefined="has value"'
+      );
+
+      // Act, When
+
+      const hasValueExpectedTrue = sutWithUndefined.hasArgumentValue(undefined);
+      const hasValueExpectedFalse =
+        sutWithoutUndefined.hasArgumentValue(undefined);
+
+      // Assert, Then
+
+      expect(hasValueExpectedFalse).toBe(false);
+      expect(hasValueExpectedTrue).toBe(true);
+    });
+    test('getArgumentValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('--coin=BTC --coin=ETH --coin=XMR');
+
+      // Act, When
+
+      const nonExistentValue = sut.getArgumentValue('--price');
+      const existentValue = sut.getArgumentValue('--coin');
+
+      // Assert, Then
+
+      expect(nonExistentValue).toBeUndefined();
+      expect(existentValue).toBe('BTC');
+    });
+    test('getArgumentValues', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('--coin=BTC --coin=ETH --coin --coin=XMR');
+
+      // Act, When
+
+      const nonExistentValues = sut.getArgumentValues('--price');
+      const existentValues = sut.getArgumentValues('--coin');
+
+      // Assert, Then
+
+      expect(nonExistentValues.length).toBe(0);
+      expect(existentValues.length).toBe(4);
+      expect(existentValues).toStrictEqual(['BTC', 'ETH', undefined, 'XMR']);
     });
   });
 });
