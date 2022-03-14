@@ -8,12 +8,13 @@ export class CommandLine {
   /**
    * Construtor.
    * @param commandLine Linha de comando.
-   * @param caseInsensitive Gnora minúsculas e maiúsculas.
+   * @param caseInsensitiveForName Ignora minúsculas e maiúsculas para nomes de argumentos.
+   * @param caseInsensitiveForValue Ignora minúsculas e maiúsculas para valores de argumentos.
    */
   constructor(
     public readonly commandLine: string,
-    // TODO: Separar caseInsensitive para nome e valor.
-    public caseInsensitive: boolean = false
+    public caseInsensitiveForName: boolean = false,
+    public caseInsensitiveForValue: boolean = false
   ) {
     this.args = this.parseArguments(commandLine);
   }
@@ -73,10 +74,21 @@ export class CommandLine {
   }
 
   /**
-   * Normaliza o texto para comparação com base no caseInsensitive
+   * Normaliza o texto para comparação. Apenas para nome de argumento.
    */
-  private normalizeCase(input: string): string {
-    return this.caseInsensitive ? input.toLowerCase() : input;
+  private normalizeCaseForName(argName: string): string {
+    return !this.caseInsensitiveForName ? argName : argName.toLowerCase();
+  }
+
+  /**
+   * Normaliza o texto para comparação. Apenas para valor de argumento.
+   */
+  private normalizeCaseForValue(
+    argValue: string | undefined
+  ): string | undefined {
+    return !this.caseInsensitiveForValue || argValue === undefined
+      ? argValue
+      : argValue.toLowerCase();
   }
 
   // TODO: Transformar argumentos em spread array
@@ -85,9 +97,9 @@ export class CommandLine {
    * Verifica presença de um argumento por nome.
    */
   public hasArgumentName(argName: string): boolean {
-    argName = this.normalizeCase(argName);
+    argName = this.normalizeCaseForName(argName);
     return (
-      this.args.find(arg => this.normalizeCase(arg.name) == argName) !==
+      this.args.find(arg => this.normalizeCaseForName(arg.name) == argName) !==
       undefined
     );
   }
@@ -96,13 +108,10 @@ export class CommandLine {
    * Verifica presença de um valor de argumento.
    */
   public hasArgumentValue(argValue: string | undefined): boolean {
-    argValue = argValue === undefined ? argValue : this.normalizeCase(argValue);
+    argValue = this.normalizeCaseForValue(argValue);
     return (
       this.args.find(
-        arg =>
-          (arg.value === undefined
-            ? arg.value
-            : this.normalizeCase(arg.value)) == argValue
+        arg => this.normalizeCaseForValue(arg.value) === argValue
       ) !== undefined
     );
   }
@@ -114,15 +123,13 @@ export class CommandLine {
     argName: string,
     argValue: string | undefined
   ): boolean {
-    argName = this.normalizeCase(argName);
-    argValue = argValue === undefined ? argValue : this.normalizeCase(argValue);
+    argName = this.normalizeCaseForName(argName);
+    argValue = this.normalizeCaseForValue(argValue);
     return (
       this.args.find(
         arg =>
-          this.normalizeCase(arg.name) === argName &&
-          (arg.value === argValue ||
-            this.normalizeCase(String(arg.value)) ===
-              this.normalizeCase(String(argValue)))
+          this.normalizeCaseForName(arg.name) === argName &&
+          this.normalizeCaseForValue(arg.value) === argValue
       ) !== undefined
     );
   }
@@ -131,8 +138,10 @@ export class CommandLine {
    * Busca o primeiro valor de um argumento
    */
   public getArgumentValue(argName: string): string | undefined {
-    argName = this.normalizeCase(argName);
-    const arg = this.args.find(arg => this.normalizeCase(arg.name) == argName);
+    argName = this.normalizeCaseForName(argName);
+    const arg = this.args.find(
+      arg => this.normalizeCaseForName(arg.name) == argName
+    );
     return arg?.value;
   }
 
@@ -140,9 +149,9 @@ export class CommandLine {
    * Busca todos os valores de um argumento
    */
   public getArgumentValues(argName: string): Array<string | undefined> {
-    argName = this.normalizeCase(argName);
+    argName = this.normalizeCaseForName(argName);
     const args = this.args.filter(
-      arg => this.normalizeCase(arg.name) == argName
+      arg => this.normalizeCaseForName(arg.name) == argName
     );
     return args.map(arg => arg.value);
   }

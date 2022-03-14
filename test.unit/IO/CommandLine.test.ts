@@ -15,36 +15,36 @@ describe('CommandLine', () => {
 
       expect(sut.commandLine).toBe(commandLineText);
     });
-    test('CaseInsensitive por padrão é false', () => {
+    test('CaseInsensitiveForName por padrão é false', () => {
       // Arrange, Given
 
-      const caseInsensitiveExpected = false;
+      const caseInsensitiveForNameExpected = false;
       const sut = new CommandLine(Math.random().toString());
 
       // Act, When
 
-      const caseInsensitiveReceived = sut.caseInsensitive;
+      const caseInsensitiveForNameReceived = sut.caseInsensitiveForName;
 
       // Assert, Then
 
-      expect(caseInsensitiveReceived).toBe(caseInsensitiveExpected);
+      expect(caseInsensitiveForNameReceived).toBe(caseInsensitiveForNameExpected);
     });
-    test('CaseInsensitive pode ser modificador no construtor', () => {
+    test('CaseInsensitiveForName pode ser modificador no construtor', () => {
       // Arrange, Given
 
-      const caseInsensitiveSetted = true;
+      const caseInsensitiveForNameSetted = true;
 
       // Act, When
 
       const sut = new CommandLine(
         Math.random().toString(),
-        caseInsensitiveSetted
+        caseInsensitiveForNameSetted
       );
-      const caseInsensitiveReceived = sut.caseInsensitive;
+      const caseInsensitiveForNameReceived = sut.caseInsensitiveForName;
 
       // Assert, Then
 
-      expect(caseInsensitiveReceived).toBe(caseInsensitiveSetted);
+      expect(caseInsensitiveForNameReceived).toBe(caseInsensitiveForNameSetted);
     });
     test('Manter ordem dos argumentos', () => {
       // Arrange, Given
@@ -237,7 +237,7 @@ describe('CommandLine', () => {
     });
   });
   describe('Validações de busca por argumentos e valores', () => {
-    test('caseInsensitive', () => {
+    test('caseInsensitiveForName', () => {
       // Arrange, Given
 
       const argName = '--Arg1';
@@ -248,29 +248,29 @@ describe('CommandLine', () => {
 
       const normalExpectedTrue = sut.hasArgumentName(argName);
 
-      const lowerExpectedFalseBeforeCaseInsensitive = sut.hasArgumentName(
+      const lowerExpectedFalseBeforeCaseInsensitiveForName = sut.hasArgumentName(
         argName.toLowerCase()
       );
-      const upperExpectedFalseBeforeCaseInsensitive = sut.hasArgumentName(
+      const upperExpectedFalseBeforeCaseInsensitiveForName = sut.hasArgumentName(
         argName.toUpperCase()
       );
 
-      sut.caseInsensitive = true;
+      sut.caseInsensitiveForName = true;
 
-      const lowerExpectedFalseAfterCaseInsensitive = sut.hasArgumentName(
+      const lowerExpectedFalseAfterCaseInsensitiveForName = sut.hasArgumentName(
         argName.toLowerCase()
       );
-      const upperExpectedFalseAfterCaseInsensitive = sut.hasArgumentName(
+      const upperExpectedFalseAfterCaseInsensitiveForName = sut.hasArgumentName(
         argName.toUpperCase()
       );
 
       // Assert, Then
 
       expect(normalExpectedTrue).toBe(true);
-      expect(lowerExpectedFalseBeforeCaseInsensitive).toBe(false);
-      expect(upperExpectedFalseBeforeCaseInsensitive).toBe(false);
-      expect(lowerExpectedFalseAfterCaseInsensitive).toBe(true);
-      expect(upperExpectedFalseAfterCaseInsensitive).toBe(true);
+      expect(lowerExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
+      expect(upperExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
+      expect(lowerExpectedFalseAfterCaseInsensitiveForName).toBe(true);
+      expect(upperExpectedFalseAfterCaseInsensitiveForName).toBe(true);
     });
     test('hasArgumentName', () => {
       // Arrange, Given
