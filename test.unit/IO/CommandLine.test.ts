@@ -352,5 +352,24 @@ describe('CommandLine', () => {
       expect(existentValues.length).toBe(4);
       expect(existentValues).toStrictEqual(['BTC', 'ETH', undefined, 'XMR']);
     });
+    test('hasArgumentNameWithValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('--coin=BTC --price');
+
+      // Act, When
+
+      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue('--coin', 'BTC');
+      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue('--price', undefined);
+      const nameExistsValueNotExists = sut.hasArgumentNameWithValue('--coin', 'ETH');
+      const nameNotExistsValueExists = sut.hasArgumentNameWithValue('--price', 'BTC');
+
+      // Assert, Then
+
+      expect(nameAndValueExistsAsText).toBe(true);
+      expect(nameAndValueExistsAsUndefined).toBe(true);
+      expect(nameExistsValueNotExists).toBe(false);
+      expect(nameNotExistsValueExists).toBe(false);
+    });
   });
 });

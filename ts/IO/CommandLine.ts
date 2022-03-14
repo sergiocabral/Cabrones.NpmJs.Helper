@@ -12,6 +12,7 @@ export class CommandLine {
    */
   constructor(
     public readonly commandLine: string,
+    // TODO: Separar caseInsensitive para nome e valor.
     public caseInsensitive: boolean = false
   ) {
     this.args = this.parseArguments(commandLine);
@@ -78,6 +79,8 @@ export class CommandLine {
     return this.caseInsensitive ? input.toLowerCase() : input;
   }
 
+  // TODO: Transformar argumentos em spread array
+
   /**
    * Verifica presença de um argumento por nome.
    */
@@ -100,6 +103,26 @@ export class CommandLine {
           (arg.value === undefined
             ? arg.value
             : this.normalizeCase(arg.value)) == argValue
+      ) !== undefined
+    );
+  }
+
+  /**
+   * Verifica presença de um argumento com determinado valor.
+   */
+  public hasArgumentNameWithValue(
+    argName: string,
+    argValue: string | undefined
+  ): boolean {
+    argName = this.normalizeCase(argName);
+    argValue = argValue === undefined ? argValue : this.normalizeCase(argValue);
+    return (
+      this.args.find(
+        arg =>
+          this.normalizeCase(arg.name) === argName &&
+          (arg.value === argValue ||
+            this.normalizeCase(String(arg.value)) ===
+              this.normalizeCase(String(argValue)))
       ) !== undefined
     );
   }
