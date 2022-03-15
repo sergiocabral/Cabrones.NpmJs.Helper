@@ -448,10 +448,10 @@ describe('CommandLine', () => {
 
       // Act, When
 
-      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue('--coin', 'BTC');
-      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue('--price', undefined);
-      const nameExistsValueNotExists = sut.hasArgumentNameWithValue('--coin', 'ETH');
-      const nameNotExistsValueExists = sut.hasArgumentNameWithValue('--price', 'BTC');
+      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue(['--coin'], ['BTC']);
+      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue(['--price'], [undefined]);
+      const nameExistsValueNotExists = sut.hasArgumentNameWithValue(['--coin'], ['ETH']);
+      const nameNotExistsValueExists = sut.hasArgumentNameWithValue(['--price'], ['BTC']);
 
       // Assert, Then
 

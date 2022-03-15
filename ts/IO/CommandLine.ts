@@ -128,16 +128,20 @@ export class CommandLine {
    * Verifica presença de um argumento com determinado valor.
    */
   public hasArgumentNameWithValue(
-    argName: string,
-    argValue: string | undefined
+    argNames: string[],
+    argValues: Array<string | undefined>
   ): boolean {
-    argName = this.normalizeCaseForName(argName);
-    argValue = this.normalizeCaseForValue(argValue);
+    if (argNames.length === 0 || argValues.length === 0) {
+      return false;
+    }
+
+    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
+    argValues = argValues.map(argValue => this.normalizeCaseForValue(argValue));
     return (
       this.args.find(
         arg =>
-          this.normalizeCaseForName(arg.name) === argName &&
-          this.normalizeCaseForValue(arg.value) === argValue
+          argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0 &&
+          argValues.indexOf(this.normalizeCaseForValue(arg.value)) >= 0
       ) !== undefined
     );
   }
