@@ -460,5 +460,77 @@ describe('CommandLine', () => {
       expect(nameExistsValueNotExists).toBe(false);
       expect(nameNotExistsValueExists).toBe(false);
     });
+
+    describe('Teste de métodos com spread array', () => {
+      test('hasArgumentName', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine('--coin=BTC --coin=ETH --coin=XMR');
+
+        // Act, When
+
+        const expectedFalse = sut.hasArgumentName('--price', '--amount');
+        const expectedTrue = sut.hasArgumentName('--price', '--coin');
+        const emptyListExpectedFalse = sut.hasArgumentName();
+
+        // Assert, Then
+
+        expect(expectedFalse).toBe(false);
+        expect(expectedTrue).toBe(true);
+        expect(emptyListExpectedFalse).toBe(false);
+      });
+      test('hasArgumentValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine('--arg1=BCH --arg2=ETH --arg3=XMR');
+
+        // Act, When
+
+        const expectedFalse = sut.hasArgumentValue('BTC', 'DOGE');
+        const expectedTrue = sut.hasArgumentValue('BTC', 'ETH');
+        const emptyListExpectedFalse = sut.hasArgumentValue();
+
+        // Assert, Then
+
+        expect(expectedFalse).toBe(false);
+        expect(expectedTrue).toBe(true);
+        expect(emptyListExpectedFalse).toBe(false);
+      });
+      test('getArgumentValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine('--coin=BTC --coin=ETH --coin=XMR');
+
+        // Act, When
+
+        const nonExistentValue = sut.getArgumentValue('--price', '--amount');
+        const existentValue = sut.getArgumentValue('--price', '--coin');
+        const emptyList = sut.getArgumentValue();
+
+        // Assert, Then
+
+        expect(nonExistentValue).toBeUndefined();
+        expect(existentValue).toBe('BTC');
+        expect(emptyList).toBeUndefined();
+      });
+      test('getArgumentValues', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine('--coin=BTC --coin=ETH --coin --coin=XMR --destination=USDT');
+
+        // Act, When
+
+        const nonExistentValues = sut.getArgumentValues('--price', '--amount');
+        const existentValues = sut.getArgumentValues('--coin', '--price', '--destination');
+        const emptyList = sut.getArgumentValues();
+
+        // Assert, Then
+
+        expect(nonExistentValues.length).toBe(0);
+        expect(existentValues.length).toBe(5);
+        expect(existentValues).toStrictEqual(['BTC', 'ETH', undefined, 'XMR', 'USDT']);
+        expect(emptyList.length).toBe(0);
+      });
+    });
   });
 });
