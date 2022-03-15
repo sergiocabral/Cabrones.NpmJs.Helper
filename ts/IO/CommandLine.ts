@@ -91,27 +91,35 @@ export class CommandLine {
       : argValue.toLowerCase();
   }
 
-  // TODO: Transformar argumentos em spread array
-
   /**
    * Verifica presença de um argumento por nome.
    */
-  public hasArgumentName(argName: string): boolean {
-    argName = this.normalizeCaseForName(argName);
+  public hasArgumentName(...argNames: string[]): boolean {
+    if (argNames.length === 0) {
+      return false;
+    }
+
+    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
     return (
-      this.args.find(arg => this.normalizeCaseForName(arg.name) == argName) !==
-      undefined
+      this.args.find(
+        arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
+      ) !== undefined
     );
   }
 
   /**
    * Verifica presença de um valor de argumento.
    */
-  public hasArgumentValue(argValue: string | undefined): boolean {
-    argValue = this.normalizeCaseForValue(argValue);
+  public hasArgumentValue(...argValues: Array<string | undefined>): boolean {
+    if (argValues.length === 0) {
+      return false;
+    }
+
+    argValues = argValues.map(argValue => this.normalizeCaseForValue(argValue));
+
     return (
       this.args.find(
-        arg => this.normalizeCaseForValue(arg.value) === argValue
+        arg => argValues.indexOf(this.normalizeCaseForValue(arg.value)) >= 0
       ) !== undefined
     );
   }
@@ -137,10 +145,14 @@ export class CommandLine {
   /**
    * Busca o primeiro valor de um argumento
    */
-  public getArgumentValue(argName: string): string | undefined {
-    argName = this.normalizeCaseForName(argName);
+  public getArgumentValue(...argNames: string[]): string | undefined {
+    if (argNames.length === 0) {
+      return undefined;
+    }
+
+    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
     const arg = this.args.find(
-      arg => this.normalizeCaseForName(arg.name) == argName
+      arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
     );
     return arg?.value;
   }
@@ -148,10 +160,14 @@ export class CommandLine {
   /**
    * Busca todos os valores de um argumento
    */
-  public getArgumentValues(argName: string): Array<string | undefined> {
-    argName = this.normalizeCaseForName(argName);
+  public getArgumentValues(...argNames: string[]): Array<string | undefined> {
+    if (argNames.length === 0) {
+      return [];
+    }
+
+    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
     const args = this.args.filter(
-      arg => this.normalizeCaseForName(arg.name) == argName
+      arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
     );
     return args.map(arg => arg.value);
   }
