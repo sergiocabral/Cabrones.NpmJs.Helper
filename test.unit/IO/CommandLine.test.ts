@@ -46,6 +46,38 @@ describe('CommandLine', () => {
 
       expect(caseInsensitiveForNameReceived).toBe(caseInsensitiveForNameSetted);
     });
+    test('CaseInsensitiveForValue por padrão é false', () => {
+      // Arrange, Given
+
+      const caseInsensitiveForValueExpected = false;
+      const sut = new CommandLine(Math.random().toString());
+
+      // Act, When
+
+      const caseInsensitiveForValueReceived = sut.caseInsensitiveForValue;
+
+      // Assert, Then
+
+      expect(caseInsensitiveForValueReceived).toBe(caseInsensitiveForValueExpected);
+    });
+    test('CaseInsensitiveForValue pode ser modificador no construtor', () => {
+      // Arrange, Given
+
+      const caseInsensitiveForValueSetted = true;
+
+      // Act, When
+
+      const sut = new CommandLine(
+        Math.random().toString(),
+        false,
+        caseInsensitiveForValueSetted
+      );
+      const caseInsensitiveForValueReceived = sut.caseInsensitiveForValue;
+
+      // Assert, Then
+
+      expect(caseInsensitiveForValueReceived).toBe(caseInsensitiveForValueSetted);
+    });
     test('Manter ordem dos argumentos', () => {
       // Arrange, Given
 
@@ -257,10 +289,10 @@ describe('CommandLine', () => {
 
       sut.caseInsensitiveForName = true;
 
-      const lowerExpectedFalseAfterCaseInsensitiveForName = sut.hasArgumentName(
+      const lowerExpectedTrueAfterCaseInsensitiveForName = sut.hasArgumentName(
         argName.toLowerCase()
       );
-      const upperExpectedFalseAfterCaseInsensitiveForName = sut.hasArgumentName(
+      const upperExpectedTrueAfterCaseInsensitiveForName = sut.hasArgumentName(
         argName.toUpperCase()
       );
 
@@ -269,8 +301,65 @@ describe('CommandLine', () => {
       expect(normalExpectedTrue).toBe(true);
       expect(lowerExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
       expect(upperExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
-      expect(lowerExpectedFalseAfterCaseInsensitiveForName).toBe(true);
-      expect(upperExpectedFalseAfterCaseInsensitiveForName).toBe(true);
+      expect(lowerExpectedTrueAfterCaseInsensitiveForName).toBe(true);
+      expect(upperExpectedTrueAfterCaseInsensitiveForName).toBe(true);
+    });
+    test('caseInsensitiveForValue quando não é undefined', () => {
+      // Arrange, Given
+
+      const argValueText = 'Value';
+
+      const sut = new CommandLine(`--arg=${argValueText}`);
+
+      // Act, When
+
+      const normalExpectedTrue = sut.hasArgumentValue(argValueText);
+
+      const lowerExpectedFalseBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
+          argValueText.toLowerCase()
+      );
+      const upperExpectedFalseBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
+          argValueText.toUpperCase()
+      );
+
+      sut.caseInsensitiveForValue = true;
+
+      const lowerExpectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
+          argValueText.toLowerCase()
+      );
+      const upperExpectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
+          argValueText.toUpperCase()
+      );
+
+      // Assert, Then
+
+      expect(normalExpectedTrue).toBe(true);
+      expect(lowerExpectedFalseBeforeCaseInsensitiveForValue).toBe(false);
+      expect(upperExpectedFalseBeforeCaseInsensitiveForValue).toBe(false);
+      expect(lowerExpectedTrueAfterCaseInsensitiveForValue).toBe(true);
+      expect(upperExpectedTrueAfterCaseInsensitiveForValue).toBe(true);
+    });
+    test('caseInsensitiveForValue quando undefined', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(`--arg`);
+
+      // Act, When
+
+      const expectedTrueBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
+          undefined
+      );
+
+      sut.caseInsensitiveForValue = true;
+
+      const expectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
+          undefined
+      );
+
+      // Assert, Then
+
+      expect(expectedTrueBeforeCaseInsensitiveForValue).toBe(true);
+      expect(expectedTrueAfterCaseInsensitiveForValue).toBe(true);
     });
     test('hasArgumentName', () => {
       // Arrange, Given
