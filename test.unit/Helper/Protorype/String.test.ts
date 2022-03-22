@@ -6,7 +6,7 @@ describe('Prototype para String', () => {
   beforeEach(() => {
     originals['HelperText.querystring'] = HelperText.querystring;
     originals['HelperText.escapeRegExp'] = HelperText.escapeRegExp;
-    originals['HelperText.replaceAll'] = HelperText.replaceAll;
+    // originals['HelperText.replaceAll'] = HelperText.replaceAll;
     originals['HelperText.removeAccents'] = HelperText.removeAccents;
     originals['HelperText.slugify'] = HelperText.slugify;
     originals['Translate.default'] = Translate.default;
@@ -15,7 +15,7 @@ describe('Prototype para String', () => {
   afterEach(() => {
     HelperText.querystring = originals['HelperText.querystring'];
     HelperText.escapeRegExp = originals['HelperText.escapeRegExp'];
-    HelperText.replaceAll = originals['HelperText.replaceAll'];
+    // HelperText.replaceAll = originals['HelperText.replaceAll'];
     HelperText.removeAccents = originals['HelperText.removeAccents'];
     HelperText.slugify = originals['HelperText.slugify'];
     Translate.default = originals['Translate.default'];
@@ -40,17 +40,17 @@ describe('Prototype para String', () => {
       expect(func).toBeCalledTimes(1);
     });
 
-    test('replaceAll', () => {
-      const functionContent = String(String.prototype.replaceAll);
-      if (functionContent !== 'function replaceAll() { [native code] }') {
-        // Arrange, Given
-        const func = (HelperText.replaceAll = jest.fn());
-        // Act, When
-        String('').replaceAll('', '');
-        // Assert, Then
-        expect(func).toBeCalledTimes(1);
-      }
-    });
+    // test('replaceAll', () => {
+    //   const functionContent = String(String.prototype.replaceAll);
+    //   if (functionContent !== 'function replaceAll() { [native code] }') {
+    //     // Arrange, Given
+    //     const func = (HelperText.replaceAll = jest.fn());
+    //     // Act, When
+    //     String('').replaceAll('', '');
+    //     // Assert, Then
+    //     expect(func).toBeCalledTimes(1);
+    //   }
+    // });
 
     test('removeAccents', () => {
       // Arrange, Given

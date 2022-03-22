@@ -1,6 +1,7 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { DateTimeFormat } from './DateTimeFormat';
 import { IDateTimeFormat } from './IDateTimeFormat';
+import {HelperText} from "./HelperText";
 
 /**
  * Utilitários para manipulação de datas.
@@ -109,15 +110,15 @@ export class HelperDate {
       }
     }
 
-    return formatFullFill.mask
-      .replaceAll('y', y)
-      .replaceAll('M', M)
-      .replaceAll('d', d)
-      .replaceAll('h', h)
-      .replaceAll('m', m)
-      .replaceAll('s', s)
-      .replaceAll('z', z)
-      .replaceAll('D', D === 0 ? '' : `${D} ${labelD}`)
-      .trim();
+    let result = formatFullFill.mask;
+    result = HelperText.replaceAll(result, 'y', y);
+    result = HelperText.replaceAll(result, 'M', M);
+    result = HelperText.replaceAll(result, 'd', d);
+    result = HelperText.replaceAll(result, 'h', h);
+    result = HelperText.replaceAll(result, 'm', m);
+    result = HelperText.replaceAll(result, 's', s);
+    result = HelperText.replaceAll(result, 'z', z);
+    result = HelperText.replaceAll(result, 'D', D === 0 ? '' : `${D} ${labelD}`);
+    return result.trim();
   }
 }

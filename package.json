@@ -9,7 +9,7 @@
     "lint": "eslint \"ts/**/*.ts\"",
     "format+lint": "npm run format && npm run lint",
     "build": "tsc",
-    "test": "jest --config jest.config.ts",
+    "test": "jest --runInBand --config jest.config.ts",
     "build:prod": "npm run format && npm run lint && npm run build && npm run test",
     "version": "npm run build:prod && git add -A ts",
     "prepare": "npm run build",
