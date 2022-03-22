@@ -531,6 +531,33 @@ describe('CommandLine', () => {
         expect(existentValues).toStrictEqual(['BTC', 'ETH', undefined, 'XMR', 'USDT']);
         expect(emptyList.length).toBe(0);
       });
+      test('hasArgumentNameWithValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine('--coin=BTC --token=BTC --price=10 --price=20 --origin --destination');
+
+        // Act, When
+
+        const expectedTrueForMultipleArg = sut.hasArgumentNameWithValue(['--coin', '--token'], ['BTC']);
+        const expectedFalseForMultipleArg = sut.hasArgumentNameWithValue(['--coin', '--token'], ['ETH']);
+        const expectedTrueForMultipleValue = sut.hasArgumentNameWithValue(['--price'], ['10', '20']);
+        const expectedFalseForMultipleValue = sut.hasArgumentNameWithValue(['--price'], ['70', '80']);
+        const expectedTrueForMultipleArgUndefined = sut.hasArgumentNameWithValue(['--origin', '--destination'], [undefined]);
+        const expectedFalseForMultipleArgUndefined = sut.hasArgumentNameWithValue(['--coin', '--token'], [undefined]);
+        const emptyListForArgs = sut.hasArgumentNameWithValue([], ['BTC']);
+        const emptyListForValues = sut.hasArgumentNameWithValue(['--coin'], []);
+
+        // Assert, Then
+
+        expect(expectedTrueForMultipleArg).toBe(true);
+        expect(expectedFalseForMultipleArg).toBe(false);
+        expect(expectedTrueForMultipleValue).toBe(true);
+        expect(expectedFalseForMultipleValue).toBe(false);
+        expect(expectedTrueForMultipleArgUndefined).toBe(true);
+        expect(expectedFalseForMultipleArgUndefined).toBe(false);
+        expect(emptyListForArgs).toBe(false);
+        expect(emptyListForValues).toBe(false);
+      });
     });
   });
 });
