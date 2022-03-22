@@ -10,7 +10,7 @@ declare global {
 }
 
 Array.prototype.getRandom = function <T = unknown>(): T | undefined {
-  return HelperList.getRandom<T>(this);
+  return HelperList.getRandom<T>(this as T[]);
 };
 
 export {};

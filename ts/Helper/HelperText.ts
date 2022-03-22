@@ -28,7 +28,7 @@ export class HelperText {
         text = HelperText.replaceAll(
           text,
           `{${valueIndex}}`,
-          values[valueIndex]
+          String(values[valueIndex])
         );
       }
     } else if (typeof values === 'object' && !doNotTreatAsObject(values)) {
