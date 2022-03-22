@@ -27,7 +27,9 @@ describe('CommandLine', () => {
 
       // Assert, Then
 
-      expect(caseInsensitiveForNameReceived).toBe(caseInsensitiveForNameExpected);
+      expect(caseInsensitiveForNameReceived).toBe(
+        caseInsensitiveForNameExpected
+      );
     });
     test('CaseInsensitiveForName pode ser modificador no construtor', () => {
       // Arrange, Given
@@ -58,7 +60,9 @@ describe('CommandLine', () => {
 
       // Assert, Then
 
-      expect(caseInsensitiveForValueReceived).toBe(caseInsensitiveForValueExpected);
+      expect(caseInsensitiveForValueReceived).toBe(
+        caseInsensitiveForValueExpected
+      );
     });
     test('CaseInsensitiveForValue pode ser modificador no construtor', () => {
       // Arrange, Given
@@ -76,7 +80,9 @@ describe('CommandLine', () => {
 
       // Assert, Then
 
-      expect(caseInsensitiveForValueReceived).toBe(caseInsensitiveForValueSetted);
+      expect(caseInsensitiveForValueReceived).toBe(
+        caseInsensitiveForValueSetted
+      );
     });
     test('Manter ordem dos argumentos', () => {
       // Arrange, Given
@@ -280,12 +286,10 @@ describe('CommandLine', () => {
 
       const normalExpectedTrue = sut.hasArgumentName(argName);
 
-      const lowerExpectedFalseBeforeCaseInsensitiveForName = sut.hasArgumentName(
-        argName.toLowerCase()
-      );
-      const upperExpectedFalseBeforeCaseInsensitiveForName = sut.hasArgumentName(
-        argName.toUpperCase()
-      );
+      const lowerExpectedFalseBeforeCaseInsensitiveForName =
+        sut.hasArgumentName(argName.toLowerCase());
+      const upperExpectedFalseBeforeCaseInsensitiveForName =
+        sut.hasArgumentName(argName.toUpperCase());
 
       sut.caseInsensitiveForName = true;
 
@@ -315,21 +319,17 @@ describe('CommandLine', () => {
 
       const normalExpectedTrue = sut.hasArgumentValue(argValueText);
 
-      const lowerExpectedFalseBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
-          argValueText.toLowerCase()
-      );
-      const upperExpectedFalseBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
-          argValueText.toUpperCase()
-      );
+      const lowerExpectedFalseBeforeCaseInsensitiveForValue =
+        sut.hasArgumentValue(argValueText.toLowerCase());
+      const upperExpectedFalseBeforeCaseInsensitiveForValue =
+        sut.hasArgumentValue(argValueText.toUpperCase());
 
       sut.caseInsensitiveForValue = true;
 
-      const lowerExpectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
-          argValueText.toLowerCase()
-      );
-      const upperExpectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
-          argValueText.toUpperCase()
-      );
+      const lowerExpectedTrueAfterCaseInsensitiveForValue =
+        sut.hasArgumentValue(argValueText.toLowerCase());
+      const upperExpectedTrueAfterCaseInsensitiveForValue =
+        sut.hasArgumentValue(argValueText.toUpperCase());
 
       // Assert, Then
 
@@ -346,15 +346,13 @@ describe('CommandLine', () => {
 
       // Act, When
 
-      const expectedTrueBeforeCaseInsensitiveForValue = sut.hasArgumentValue(
-          undefined
-      );
+      const expectedTrueBeforeCaseInsensitiveForValue =
+        sut.hasArgumentValue(undefined);
 
       sut.caseInsensitiveForValue = true;
 
-      const expectedTrueAfterCaseInsensitiveForValue = sut.hasArgumentValue(
-          undefined
-      );
+      const expectedTrueAfterCaseInsensitiveForValue =
+        sut.hasArgumentValue(undefined);
 
       // Assert, Then
 
@@ -448,10 +446,22 @@ describe('CommandLine', () => {
 
       // Act, When
 
-      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue(['--coin'], ['BTC']);
-      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue(['--price'], [undefined]);
-      const nameExistsValueNotExists = sut.hasArgumentNameWithValue(['--coin'], ['ETH']);
-      const nameNotExistsValueExists = sut.hasArgumentNameWithValue(['--price'], ['BTC']);
+      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue(
+        ['--coin'],
+        ['BTC']
+      );
+      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue(
+        ['--price'],
+        [undefined]
+      );
+      const nameExistsValueNotExists = sut.hasArgumentNameWithValue(
+        ['--coin'],
+        ['ETH']
+      );
+      const nameNotExistsValueExists = sut.hasArgumentNameWithValue(
+        ['--price'],
+        ['BTC']
+      );
 
       // Assert, Then
 
@@ -516,34 +526,65 @@ describe('CommandLine', () => {
       test('getArgumentValues', () => {
         // Arrange, Given
 
-        const sut = new CommandLine('--coin=BTC --coin=ETH --coin --coin=XMR --destination=USDT');
+        const sut = new CommandLine(
+          '--coin=BTC --coin=ETH --coin --coin=XMR --destination=USDT'
+        );
 
         // Act, When
 
         const nonExistentValues = sut.getArgumentValues('--price', '--amount');
-        const existentValues = sut.getArgumentValues('--coin', '--price', '--destination');
+        const existentValues = sut.getArgumentValues(
+          '--coin',
+          '--price',
+          '--destination'
+        );
         const emptyList = sut.getArgumentValues();
 
         // Assert, Then
 
         expect(nonExistentValues.length).toBe(0);
         expect(existentValues.length).toBe(5);
-        expect(existentValues).toStrictEqual(['BTC', 'ETH', undefined, 'XMR', 'USDT']);
+        expect(existentValues).toStrictEqual([
+          'BTC',
+          'ETH',
+          undefined,
+          'XMR',
+          'USDT'
+        ]);
         expect(emptyList.length).toBe(0);
       });
       test('hasArgumentNameWithValue', () => {
         // Arrange, Given
 
-        const sut = new CommandLine('--coin=BTC --token=BTC --price=10 --price=20 --origin --destination');
+        const sut = new CommandLine(
+          '--coin=BTC --token=BTC --price=10 --price=20 --origin --destination'
+        );
 
         // Act, When
 
-        const expectedTrueForMultipleArg = sut.hasArgumentNameWithValue(['--coin', '--token'], ['BTC']);
-        const expectedFalseForMultipleArg = sut.hasArgumentNameWithValue(['--coin', '--token'], ['ETH']);
-        const expectedTrueForMultipleValue = sut.hasArgumentNameWithValue(['--price'], ['10', '20']);
-        const expectedFalseForMultipleValue = sut.hasArgumentNameWithValue(['--price'], ['70', '80']);
-        const expectedTrueForMultipleArgUndefined = sut.hasArgumentNameWithValue(['--origin', '--destination'], [undefined]);
-        const expectedFalseForMultipleArgUndefined = sut.hasArgumentNameWithValue(['--coin', '--token'], [undefined]);
+        const expectedTrueForMultipleArg = sut.hasArgumentNameWithValue(
+          ['--coin', '--token'],
+          ['BTC']
+        );
+        const expectedFalseForMultipleArg = sut.hasArgumentNameWithValue(
+          ['--coin', '--token'],
+          ['ETH']
+        );
+        const expectedTrueForMultipleValue = sut.hasArgumentNameWithValue(
+          ['--price'],
+          ['10', '20']
+        );
+        const expectedFalseForMultipleValue = sut.hasArgumentNameWithValue(
+          ['--price'],
+          ['70', '80']
+        );
+        const expectedTrueForMultipleArgUndefined =
+          sut.hasArgumentNameWithValue(
+            ['--origin', '--destination'],
+            [undefined]
+          );
+        const expectedFalseForMultipleArgUndefined =
+          sut.hasArgumentNameWithValue(['--coin', '--token'], [undefined]);
         const emptyListForArgs = sut.hasArgumentNameWithValue([], ['BTC']);
         const emptyListForValues = sut.hasArgumentNameWithValue(['--coin'], []);
 

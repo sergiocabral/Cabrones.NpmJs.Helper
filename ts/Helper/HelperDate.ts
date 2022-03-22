@@ -1,7 +1,7 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { DateTimeFormat } from './DateTimeFormat';
 import { IDateTimeFormat } from './IDateTimeFormat';
-import {HelperText} from "./HelperText";
+import { HelperText } from './HelperText';
 
 /**
  * Utilitários para manipulação de datas.
@@ -118,7 +118,11 @@ export class HelperDate {
     result = HelperText.replaceAll(result, 'm', m);
     result = HelperText.replaceAll(result, 's', s);
     result = HelperText.replaceAll(result, 'z', z);
-    result = HelperText.replaceAll(result, 'D', D === 0 ? '' : `${D} ${labelD}`);
+    result = HelperText.replaceAll(
+      result,
+      'D',
+      D === 0 ? '' : `${D} ${labelD}`
+    );
     return result.trim();
   }
 }
