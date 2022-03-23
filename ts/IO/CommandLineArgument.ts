@@ -1,5 +1,5 @@
-import {InvalidArgumentError} from "../Error/InvalidArgumentError";
-import {HelperList} from "../Helper/HelperList";
+import { InvalidArgumentError } from '../Error/InvalidArgumentError';
+import { HelperList } from '../Helper/HelperList';
 
 /**
  * Representa um argumento nalinha de comando.
