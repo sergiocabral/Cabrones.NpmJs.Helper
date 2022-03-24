@@ -10,12 +10,17 @@ export class CommandLine {
    * @param commandLine Linha de comando.
    * @param caseInsensitiveForName Ignora minúsculas e maiúsculas para nomes de argumentos.
    * @param caseInsensitiveForValue Ignora minúsculas e maiúsculas para valores de argumentos.
+   * @param attribution Caracteres que indicam atriuição de valor.
+   * @param quotes Sequência de caracteres usados como aspas
    */
   constructor(
     public readonly commandLine: string,
     public caseInsensitiveForName: boolean = false,
-    public caseInsensitiveForValue: boolean = false
+    public caseInsensitiveForValue: boolean = false,
+    public readonly attribution: string = '=',
+    public readonly quotes: string[] = ["'", '"', '`', '´']
   ) {
+    CommandLineArgument.validateParameters(attribution, quotes);
     this.args = this.parseArguments(commandLine);
   }
 
@@ -28,9 +33,7 @@ export class CommandLine {
    * Avalia um texto de linha de comando e separa em partes.
    */
   private parseArguments(commandLine: string): CommandLineArgument[] {
-    const quotesEscapedForRegex = HelperText.escapeRegExp(
-      CommandLineArgument.quotes.join('')
-    );
+    const quotesEscapedForRegex = HelperText.escapeRegExp(this.quotes.join(''));
     const regexAllQuotedText = new RegExp(
       `([${quotesEscapedForRegex}]).*?\\1`,
       'g'
@@ -70,7 +73,9 @@ export class CommandLine {
       })
       .filter(v => v);
 
-    return parts.map(arg => new CommandLineArgument(arg));
+    return parts.map(
+      arg => new CommandLineArgument(arg, this.attribution, this.quotes)
+    );
   }
 
   /**

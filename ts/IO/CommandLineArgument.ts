@@ -6,67 +6,41 @@ import { HelperList } from '../Helper/HelperList';
  */
 export class CommandLineArgument {
   /**
-   * Caracter que sinaliza: atribuição de vaor a um argumento.
+   * Valida os valores dos parâmetros fundamentais para parse de argumento.
+   * @param attribution Caracteres que indicam atriuição de valor.
+   * @param quotes Sequência de caracteres usados como aspas
    */
-  private static attributionValue = '=';
-
-  /**
-   * Caracter que sinaliza: atribuição de vaor a um argumento.
-   */
-  public static get attribution(): string {
-    return this.attributionValue;
-  }
-
-  /**
-   * Caracter que sinaliza: atribuição de vaor a um argumento.
-   */
-  public static set attribution(value: string) {
-    if (!value.trim()) {
+  public static validateParameters(
+    attribution: string,
+    quotes: string[]
+  ): void {
+    if (!attribution.trim()) {
       throw new InvalidArgumentError('Empty attribuition characters.');
     }
-    this.attributionValue = value.trim();
-  }
-
-  /**
-   * Caracteres que sinalizam: delimitação de texto.
-   */
-  private static quotesValue = '\'"`´';
-
-  /**
-   * Caracteres que sinalizam: delimitação de texto.
-   */
-  public static get quotes(): string[] {
-    return this.quotesValue.split('');
-  }
-
-  /**
-   * Caracteres que sinalizam: delimitação de texto.
-   */
-  public static set quotes(value: string[]) {
-    const quotes = HelperList.unique(value).filter(v => v.trim());
     if (quotes.length === 0) {
       throw new InvalidArgumentError('Empty list of quotes characters.');
     }
     if (quotes.filter(v => v.length !== 1).length > 0) {
       throw new InvalidArgumentError('Quotes with multiple characters.');
     }
-    this.quotesValue = quotes.join('');
-  }
-
-  /**
-   * Caracter padrão que sinalizar: delimitação de texto.
-   */
-  public static get quote(): string {
-    return this.quotesValue[0];
   }
 
   /**
    * Construtor.
+   * @param commandLineArgument Um argumento da linha de comando.
+   * @param attribution Caracteres que indicam atriuição de valor.
+   * @param quotes Sequência de caracteres usados como aspas
    */
-  constructor(commandLineArgument: string) {
-    const nameValue = CommandLineArgument.parse(commandLineArgument);
+  constructor(
+    commandLineArgument: string,
+    private readonly attribution: string = '=',
+    private readonly quotes: string[] = ["'", '"', '`', '´']
+  ) {
+    CommandLineArgument.validateParameters(attribution, quotes);
+    const nameValue = this.parse(commandLineArgument);
     this.name = nameValue[0];
     this.value = nameValue[1];
+    this.sequenceOfQuotes = quotes.join('');
   }
 
   /**
@@ -80,14 +54,15 @@ export class CommandLineArgument {
   public readonly value?: string;
 
   /**
+   * Sequência de aspas válidas.
+   */
+  private readonly sequenceOfQuotes: string;
+
+  /**
    * Avalia um argumento e separa em nome e valor.
    */
-  private static parse(
-    commandLineArgument: string
-  ): [string, string | undefined] {
-    const attributionIndex = commandLineArgument.indexOf(
-      CommandLineArgument.attribution
-    );
+  private parse(commandLineArgument: string): [string, string | undefined] {
+    const attributionIndex = commandLineArgument.indexOf(this.attribution);
 
     let name: string = commandLineArgument;
     let value: string | undefined;
@@ -96,12 +71,10 @@ export class CommandLineArgument {
     if (hasValue) {
       name = commandLineArgument.substring(0, attributionIndex);
       value = commandLineArgument.substring(
-        attributionIndex + CommandLineArgument.attribution.length
+        attributionIndex + this.attribution.length
       );
 
-      const regexTextQuoted = new RegExp(
-        `^([${CommandLineArgument.quotesValue}]).*\\1$`
-      );
+      const regexTextQuoted = new RegExp(`^([${this.sequenceOfQuotes}]).*\\1$`);
       if (regexTextQuoted.test(value)) {
         value = value.substring(1, value.length - 1);
       }
@@ -115,7 +88,7 @@ export class CommandLineArgument {
    */
   public toString(): string {
     if (this.value !== undefined) {
-      return `${this.name}${CommandLineArgument.attribution}${CommandLineArgument.quote}${this.value}${CommandLineArgument.quote}`;
+      return `${this.name}${this.attribution}${this.quotes[0]}${this.value}${this.quotes[0]}`;
     }
     return this.name;
   }
