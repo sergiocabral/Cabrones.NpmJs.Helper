@@ -1,5 +1,7 @@
 import { CommandLineArgument } from './CommandLineArgument';
 import { HelperText } from '../Helper/HelperText';
+import { CommandLineConfiguration } from './CommandLineConfiguration';
+import {ICommandLineConfiguration} from "./ICommandLineConfiguration";
 
 /**
  * Manipulação de texto para linha de comando.
@@ -8,20 +10,14 @@ export class CommandLine {
   /**
    * Construtor.
    * @param commandLine Linha de comando.
-   * @param caseInsensitiveForName Ignora minúsculas e maiúsculas para nomes de argumentos.
-   * @param caseInsensitiveForValue Ignora minúsculas e maiúsculas para valores de argumentos.
-   * @param attribution Caracteres que indicam atriuição de valor.
-   * @param quotes Sequência de caracteres usados como aspas
+   * @param configuration Configurações usadas para o parse da linha de comando.
    */
   constructor(
     public readonly commandLine: string,
-    public caseInsensitiveForName: boolean = false,
-    public caseInsensitiveForValue: boolean = false,
-    public readonly attribution: string = '=',
-    public readonly quotes: string[] = ["'", '"', '`', '´']
+    configuration?: ICommandLineConfiguration
   ) {
-    CommandLineArgument.validateParameters(attribution, quotes);
     this.args = this.parseArguments(commandLine);
+    this.configuration = new CommandLineConfiguration(configuration);
   }
 
   /**
@@ -30,59 +26,70 @@ export class CommandLine {
   public readonly args: CommandLineArgument[];
 
   /**
+   * Configurações usadas para o parse da linha de comando.
+   * @private
+   */
+  private readonly configuration: CommandLineConfiguration;
+
+  /**
    * Avalia um texto de linha de comando e separa em partes.
    */
   private parseArguments(commandLine: string): CommandLineArgument[] {
-    const quotesEscapedForRegex = HelperText.escapeRegExp(this.quotes.join(''));
-    const regexAllQuotedText = new RegExp(
-      `([${quotesEscapedForRegex}]).*?\\1`,
-      'g'
-    );
-    const regexSpace = /\s+/;
-    const regexAllSpaces = /\s/g;
-    const regexAllSpaceMarks = /\0/g;
-    const regexTextWithQuotedAndMarks = new RegExp(
-      `([${quotesEscapedForRegex}]).*\0.*\\1`
-    );
-    const spaceMark = String.fromCharCode(0);
+    // TODO: Reescrever parseArguments
+    // const quotesEscapedForRegex = HelperText.escapeRegExp(this.quotes.join(''));
+    // const regexAllQuotedText = new RegExp(
+    //   `([${quotesEscapedForRegex}]).*?\\1`,
+    //   'g'
+    // );
+    // const regexSpace = /\s+/;
+    // const regexAllSpaces = /\s/g;
+    // const regexAllSpaceMarks = /\0/g;
+    // const regexTextWithQuotedAndMarks = new RegExp(
+    //   `([${quotesEscapedForRegex}]).*\0.*\\1`
+    // );
+    // const spaceMark = String.fromCharCode(0);
+    //
+    // const intoQuotes = commandLine.match(regexAllQuotedText);
+    // if (intoQuotes) {
+    //   intoQuotes.forEach(
+    //     match =>
+    //       (commandLine = commandLine.replace(
+    //         match,
+    //         match.replace(regexAllSpaces, spaceMark)
+    //       ))
+    //   );
+    // }
+    //
+    // const parts = commandLine
+    //   .split(regexSpace)
+    //   .map(argument => {
+    //     if (argument === '') {
+    //       return argument;
+    //     }
+    //
+    //     const hasQuotedAndMarks = regexTextWithQuotedAndMarks.test(argument);
+    //     if (hasQuotedAndMarks) {
+    //       argument = argument.replace(regexAllSpaceMarks, ' ');
+    //     }
+    //
+    //     return argument;
+    //   })
+    //   .filter(v => v);
+    //
+    // return parts.map(
+    //   arg => new CommandLineArgument(arg, this.attribution, this.quotes)
+    // );
 
-    const intoQuotes = commandLine.match(regexAllQuotedText);
-    if (intoQuotes) {
-      intoQuotes.forEach(
-        match =>
-          (commandLine = commandLine.replace(
-            match,
-            match.replace(regexAllSpaces, spaceMark)
-          ))
-      );
-    }
-
-    const parts = commandLine
-      .split(regexSpace)
-      .map(argument => {
-        if (argument === '') {
-          return argument;
-        }
-
-        const hasQuotedAndMarks = regexTextWithQuotedAndMarks.test(argument);
-        if (hasQuotedAndMarks) {
-          argument = argument.replace(regexAllSpaceMarks, ' ');
-        }
-
-        return argument;
-      })
-      .filter(v => v);
-
-    return parts.map(
-      arg => new CommandLineArgument(arg, this.attribution, this.quotes)
-    );
+    return [];
   }
 
   /**
    * Normaliza o texto para comparação. Apenas para nome de argumento.
    */
   private normalizeCaseForName(argName: string): string {
-    return !this.caseInsensitiveForName ? argName : argName.toLowerCase();
+    return !this.configuration.caseInsensitiveForName
+      ? argName
+      : argName.toLowerCase();
   }
 
   /**
@@ -91,7 +98,7 @@ export class CommandLine {
   private normalizeCaseForValue(
     argValue: string | undefined
   ): string | undefined {
-    return !this.caseInsensitiveForValue || argValue === undefined
+    return !this.configuration.caseInsensitiveForValue || argValue === undefined
       ? argValue
       : argValue.toLowerCase();
   }
