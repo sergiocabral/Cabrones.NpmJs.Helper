@@ -74,9 +74,9 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
   }
 
   /**
-   * Retorna a lista de Regex para captura de valores entre aspas.
+   * Retorna a Regex correspondente para captura das aspas informadas.
    */
-  public regexQuotes(quotes: [string, string], flags?: string): RegExp {
+  public static regexQuotes(quotes: [string, string], flags?: string): RegExp {
     return new RegExp(
       `${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
         quotes[1]
@@ -90,17 +90,16 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
    */
   public removeQuotes(value: string): string {
     for (const quotes of this.quotes) {
-      const regexQuoted = this.regexQuotes(quotes);
+      const regexQuoted = CommandLineConfiguration.regexQuotes(quotes);
       const match = value.match(regexQuoted);
       if (match && match.index !== undefined) {
         value =
           value.substring(0, match.index) +
           value.substring(
             match.index + quotes[0].length,
-            match[0].length - quotes[1].length
+            match.index + match[0].length - quotes[1].length
           ) +
-          value.substring(match[0].length + quotes[1].length);
-        break;
+          value.substring(match.index + match[0].length);
       }
     }
     return value;

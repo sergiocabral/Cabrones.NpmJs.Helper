@@ -41,7 +41,7 @@ export class CommandLine {
     const regexAllSpaceMarks = /\0/g;
 
     for (const quotes of this.configuration.quotes) {
-      const regexQuoted = this.configuration.regexQuotes(quotes);
+      const regexQuoted = CommandLineConfiguration.regexQuotes(quotes);
       const intoQuotes = commandLine.match(regexQuoted);
       if (intoQuotes) {
         intoQuotes.forEach(

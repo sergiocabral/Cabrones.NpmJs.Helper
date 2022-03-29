@@ -1,6 +1,26 @@
 import {CommandLineConfiguration, InvalidArgumentError} from '../../ts';
 
 describe('CommandLineConfiguration', () => {
+    describe('Estáticos', () => {
+        test('regexQuotes retorna RegExp corresponde às aspas informadas', () => {
+            // Arrange, Given
+
+            const quotes: [string, string] = ["((", "]]]"];
+            const textMatched = "aqui ((match]]] sim";
+            const textNotMatched = "aqui ((match]] sim";
+
+            // Act, When
+
+            const regex = CommandLineConfiguration.regexQuotes(quotes);
+            const textMatchedResult = regex.test(textMatched);
+            const textNotMatchedResult = regex.test(textNotMatched);
+
+            // Assert, Then
+
+            expect(textMatchedResult).toBe(true);
+            expect(textNotMatchedResult).toBe(false);
+        });
+    })
     describe('Valores padrão', () => {
         test('caseInsensitiveForName', () => {
             // Arrange, Given
@@ -258,4 +278,42 @@ describe('CommandLineConfiguration', () => {
             expect(action).toThrow(InvalidArgumentError);
         });
     });
+    describe('Testes para removeQuotes', () => {
+        test('Remover todas as aspas de um texto', () => {
+            // Arrange, Given
+
+            const sut = new CommandLineConfiguration({
+                quotes: [
+                    ["<!--", "-->"],
+                    ["/**", "*/"],
+                ]
+            });
+
+            const comment = Math.random().toString();
+            const textWithQuotes = `<h1>Título <!--${comment}--> Principal</h1><script>/** ${comment} */</script>`;
+            const textWithoutQuotes = `<h1>Título ${comment} Principal</h1><script> ${comment} </script>`;
+
+            // Act, When
+
+            const result = sut.removeQuotes(textWithQuotes);
+
+            // Assert, Then
+
+            expect(result).toBe(textWithoutQuotes);
+        });
+        test('', () => {
+            // Arrange, Given
+
+            // Actm When
+
+            // Assert, Then
+        });
+        test('', () => {
+            // Arrange, Given
+
+            // Actm When
+
+            // Assert, Then
+        });
+    })
 });
