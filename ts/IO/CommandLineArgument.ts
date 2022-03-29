@@ -1,6 +1,7 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { HelperList } from '../Helper/HelperList';
 import { CommandLineConfiguration } from './CommandLineConfiguration';
+import { ICommandLineConfiguration } from './ICommandLineConfiguration';
 
 /**
  * Representa um argumento nalinha de comando.
@@ -12,64 +13,65 @@ export class CommandLineArgument {
    * @param configuration Configurações usadas para o parse da linha de comando.
    */
   constructor(
-    commandLineArgument: string,
-    private readonly configuration: CommandLineConfiguration
+    commandLineArgument?: string,
+    configuration?: ICommandLineConfiguration
   ) {
-    const nameValue = this.parse(commandLineArgument);
-    this.name = nameValue[0];
-    this.value = nameValue[1];
+    this.configuration = new CommandLineConfiguration(configuration);
+
+    if (commandLineArgument !== undefined) {
+      const nameValue = this.parse(commandLineArgument);
+      this.name = nameValue[0];
+      this.value = nameValue[1];
+    }
   }
+
+  /**
+   * Configurações usadas para o parse da linha de comando.
+   * @private
+   */
+  private readonly configuration: CommandLineConfiguration;
 
   /**
    * Nome.
    */
-  public readonly name: string;
+  public name = '';
 
   /**
    * Value.
    */
-  public readonly value?: string;
+  public value?: string;
 
   /**
    * Avalia um argumento e separa em nome e valor.
    */
   private parse(commandLineArgument: string): [string, string | undefined] {
-    // TODO: Reescrever parse
-    // const attributionIndex = commandLineArgument.indexOf(
-    //   this.configuration.attribution
-    // );
-    //
-    // let name: string = commandLineArgument;
-    // let value: string | undefined;
-    //
-    // const hasValue = attributionIndex >= 0;
-    // if (hasValue) {
-    //   name = commandLineArgument.substring(0, attributionIndex);
-    //   value = commandLineArgument.substring(
-    //     attributionIndex + this.configuration.attribution.length
-    //   );
-    //
-    //   const regexTextQuoted = new RegExp(`^([${this.sequenceOfQuotes}]).*\\1$`);
-    //   if (regexTextQuoted.test(value)) {
-    //     value = value.substring(1, value.length - 1);
-    //   }
-    // }
-    //
-    // return [name, value];
+    const attributionIndex = commandLineArgument.indexOf(
+      this.configuration.attribution
+    );
 
-    return ['', undefined];
+    let name: string = commandLineArgument;
+    let value: string | undefined;
+
+    const hasValue = attributionIndex >= 0;
+    if (hasValue) {
+      name = commandLineArgument.substring(0, attributionIndex);
+      value = commandLineArgument.substring(
+        attributionIndex + this.configuration.attribution.length
+      );
+
+      value = this.configuration.removeQuotes(value);
+    }
+
+    return [name, value];
   }
 
   /**
    * Representação como texto.
    */
   public toString(): string {
-    // TODO: Reescrever toString
-    // if (this.value !== undefined) {
-    //   return `${this.name}${this.configuration.attribution}${this.configuration.quotes[0]}${this.value}${this.configuration.quotes[0]}`;
-    // }
-    // return this.name;
-
-    return '';
+    if (this.value !== undefined) {
+      return `${this.name}${this.configuration.attribution}${this.configuration.quotes[0][0]}${this.value}${this.configuration.quotes[0][1]}`;
+    }
+    return this.name;
   }
 }

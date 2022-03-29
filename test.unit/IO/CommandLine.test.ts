@@ -2,7 +2,18 @@ import { CommandLine, CommandLineArgument } from '../../ts';
 
 // TODO: Corrigir testes CommandLine
 
-// describe('CommandLine', () => {
+describe('CommandLine', () => {
+    test('teste do teste', () => {
+
+        const sut = new CommandLine('exec --name=[[sergio cabral]] --value="123"', {
+            quotes: [['"', '"'], ["[[", "]]"]]
+        })
+
+        const asText = sut.args;
+
+    });
+
+
 //   describe('Validações básicas', function () {
 //     test('Instanciar classe', () => {
 //       // Arrange, Given
@@ -603,4 +614,4 @@ import { CommandLine, CommandLineArgument } from '../../ts';
 //       });
 //     });
 //   });
-// });
+});
