@@ -2,12 +2,12 @@ import { CommandLineConfiguration, InvalidArgumentError } from '../../ts';
 
 describe('CommandLineConfiguration', () => {
   describe('Estáticos', () => {
-    test('regexQuotes retorna RegExp corresponde às aspas informadas', () => {
+    test('regexQuotes retorna RegExp corresponde às aspas no início e fim', () => {
       // Arrange, Given
 
       const quotes: [string, string] = ['((', ']]]'];
-      const textMatched = 'aqui ((match]]] sim';
-      const textNotMatched = 'aqui ((match]] sim';
+      const textMatched = '((aqui sim]]]';
+      const textNotMatched = 'aqui ((não]]]';
 
       // Act, When
 
@@ -273,19 +273,17 @@ describe('CommandLineConfiguration', () => {
     });
   });
   describe('Testes para removeQuotes', () => {
-    test('Remover todas as aspas de um texto', () => {
+    test('Remover aspas de um valor', () => {
       // Arrange, Given
 
       const sut = new CommandLineConfiguration({
         quotes: [
-          ['<!--', '-->'],
-          ['/**', '*/']
+          ['<!--', '-->']
         ]
       });
 
-      const comment = Math.random().toString();
-      const textWithQuotes = `<h1>Título <!--${comment}--> Principal</h1><script>/** ${comment} */</script>`;
-      const textWithoutQuotes = `<h1>Título ${comment} Principal</h1><script> ${comment} </script>`;
+      const textWithoutQuotes = Math.random().toString();
+      const textWithQuotes = `<!--${textWithoutQuotes}-->`;
 
       // Act, When
 
@@ -294,16 +292,6 @@ describe('CommandLineConfiguration', () => {
       // Assert, Then
 
       expect(result).toBe(textWithoutQuotes);
-    });
-    test('', () => {
-      // Arrange, Given
-      // Actm When
-      // Assert, Then
-    });
-    test('', () => {
-      // Arrange, Given
-      // Actm When
-      // Assert, Then
     });
   });
 });

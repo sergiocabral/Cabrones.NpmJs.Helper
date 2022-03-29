@@ -1,7 +1,5 @@
 import { CommandLineArgument, InvalidArgumentError, KeyValue } from '../../ts';
 
-// TODO: Corrigir testes CommandLineArgument
-
 describe('CommandLineArgument', () => {
   describe('Teste da instância', function () {
     test('Instanciar classe sem parâmetros', () => {
