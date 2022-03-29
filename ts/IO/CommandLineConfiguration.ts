@@ -74,13 +74,13 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
   }
 
   /**
-   * Retorna a Regex correspondente para captura das aspas informadas.
+   * Retorna a Regex correspondente para captura das aspas no início e fim.
    */
   public static regexQuotes(quotes: [string, string], flags?: string): RegExp {
     return new RegExp(
-      `${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
+      `^${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
         quotes[1]
-      )}`,
+      )}$`,
       flags
     );
   }
@@ -100,6 +100,7 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
             match.index + match[0].length - quotes[1].length
           ) +
           value.substring(match.index + match[0].length);
+        break;
       }
     }
     return value;
