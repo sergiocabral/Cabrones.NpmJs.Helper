@@ -29,7 +29,7 @@ export class CommandLineArgument {
    * Configurações usadas para o parse da linha de comando.
    * @private
    */
-  private readonly configuration: CommandLineConfiguration;
+  public readonly configuration: CommandLineConfiguration;
 
   /**
    * Nome.

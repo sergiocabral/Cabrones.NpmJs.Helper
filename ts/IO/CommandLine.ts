@@ -29,7 +29,7 @@ export class CommandLine {
    * Configurações usadas para o parse da linha de comando.
    * @private
    */
-  private readonly configuration: CommandLineConfiguration;
+  public readonly configuration: CommandLineConfiguration;
 
   /**
    * Avalia um texto de linha de comando e separa em partes.

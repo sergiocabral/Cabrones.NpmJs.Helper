@@ -20,6 +20,26 @@ describe('CommandLineConfiguration', () => {
       expect(textMatchedResult).toBe(true);
       expect(textNotMatchedResult).toBe(false);
     });
+    test('regexAllQuotes retorna RegExp corresponde às aspas em todo o texto', () => {
+      // Arrange, Given
+
+      const quotes: [string, string] = ['<!--', '-->'];
+      const value = Math.random().toString();
+      const inputText = `<h1>Titulo <!--${value}1--> Principal</h1><!--${value}2-->`;
+      const expectedMatches = 2;
+
+      // Act, When
+
+      const regex = CommandLineConfiguration.regexAllQuotes(quotes, 'g');
+      const matches = inputText.match(regex);
+
+      // Assert, Then
+
+      expect(matches).toBeDefined();
+      expect(matches?.length).toBe(expectedMatches);
+      expect((matches as string[])[0]).toBe(quotes[0] + value + "1" + quotes[1]);
+      expect((matches as string[])[1]).toBe(quotes[0] + value + "2" + quotes[1]);
+    });
   });
   describe('Valores padrão', () => {
     test('caseInsensitiveForName', () => {
