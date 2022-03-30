@@ -237,15 +237,17 @@ describe('CommandLine', () => {
     test('Obter valores da argumentos com mesma aspa', () => {
       // Arrange, Given
 
-      const sut = new CommandLine('exec --coin="0.1 BTC" --coin="0.1 ETH" --coin="0.1 XMR"');
+      const sut = new CommandLine(
+        'exec --coin="0.1 BTC" --coin="0.1 ETH" --coin="0.1 XMR"'
+      );
 
       // Act, When
 
-      const values = sut.getArgumentValues("--coin");
+      const values = sut.getArgumentValues('--coin');
 
       // Assert, Then
 
-      expect(values).toStrictEqual(["0.1 BTC", "0.1 ETH", "0.1 XMR"]);
+      expect(values).toStrictEqual(['0.1 BTC', '0.1 ETH', '0.1 XMR']);
     });
   });
   describe('Validações de busca por argumentos e valores', () => {

@@ -1,5 +1,4 @@
 import { CommandLineArgument } from './CommandLineArgument';
-import { HelperText } from '../Helper/HelperText';
 import { CommandLineConfiguration } from './CommandLineConfiguration';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
 
