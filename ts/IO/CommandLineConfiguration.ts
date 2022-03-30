@@ -80,27 +80,23 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
   /**
    * Retorna a Regex correspondente para captura das aspas no início e fim.
    */
-  public static regexQuotes(quotes: [string, string], flags?: string): RegExp {
+  public static regexQuotes(quotes: [string, string]): RegExp {
     return new RegExp(
       `^${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
         quotes[1]
-      )}$`,
-      flags
+      )}$`
     );
   }
 
   /**
    * Retorna a Regex correspondente para captura das aspas no início e fim.
    */
-  public static regexAllQuotes(
-    quotes: [string, string],
-    flags?: string
-  ): RegExp {
+  public static regexAllQuotes(quotes: [string, string]): RegExp {
     return new RegExp(
       `${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
         quotes[1]
       )}`,
-      flags
+      'g'
     );
   }
 

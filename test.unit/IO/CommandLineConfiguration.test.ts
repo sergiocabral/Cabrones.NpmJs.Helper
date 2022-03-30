@@ -30,7 +30,7 @@ describe('CommandLineConfiguration', () => {
 
       // Act, When
 
-      const regex = CommandLineConfiguration.regexAllQuotes(quotes, 'g');
+      const regex = CommandLineConfiguration.regexAllQuotes(quotes);
       const matches = inputText.match(regex);
 
       // Assert, Then

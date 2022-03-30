@@ -234,6 +234,19 @@ describe('CommandLine', () => {
       expect(sut.args[1].name).toBe('--arg1');
       expect(sut.args[2].name).toBe('-a2');
     });
+    test('Obter valores da argumentos com mesma aspa', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('exec --coin="0.1 BTC" --coin="0.1 ETH" --coin="0.1 XMR"');
+
+      // Act, When
+
+      const values = sut.getArgumentValues("--coin");
+
+      // Assert, Then
+
+      expect(values).toStrictEqual(["0.1 BTC", "0.1 ETH", "0.1 XMR"]);
+    });
   });
   describe('Validações de busca por argumentos e valores', () => {
     test('caseInsensitiveForName', () => {
@@ -431,7 +444,6 @@ describe('CommandLine', () => {
       expect(nameExistsValueNotExists).toBe(false);
       expect(nameNotExistsValueExists).toBe(false);
     });
-
     describe('Teste de métodos com spread array', () => {
       test('hasArgumentName', () => {
         // Arrange, Given
