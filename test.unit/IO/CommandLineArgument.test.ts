@@ -1,4 +1,5 @@
 import { CommandLineArgument, InvalidArgumentError, KeyValue } from '../../ts';
+import {ICommandLineConfiguration} from "../../ts/IO/ICommandLineConfiguration";
 
 describe('CommandLineArgument', () => {
   describe('Teste da instância', function () {
@@ -19,7 +20,7 @@ describe('CommandLineArgument', () => {
       expect(receivedName).toBe(expectedName);
       expect(receivedValue).toBe(expectedValue);
     });
-    test('Instanciar classe com parâmetros', () => {
+    test('Instanciar classe com commandLine', () => {
       // Arrange, Given
 
       const expectedName = '--coin';
@@ -36,6 +37,27 @@ describe('CommandLineArgument', () => {
 
       expect(receivedName).toBe(expectedName);
       expect(receivedValue).toBe(expectedValue);
+    });
+    test('Instanciar classe especificando configuration', () => {
+      // Arrange, Given
+
+      const configuration: ICommandLineConfiguration = {
+        attribution: " := ",
+        quotes: [
+            ['(', ')'],
+            ['[', ']'],
+        ]
+      };
+      const commandLineArgumentInput = "arg1 := [value1, value2, value3]";
+      const expectedToString = "arg1 := (value1, value2, value3)";
+
+      // Act, When
+
+      const sut = new CommandLineArgument(commandLineArgumentInput, configuration);
+
+      // Assert, Then
+
+      expect(sut.toString()).toBe(expectedToString);
     });
     describe('toString() - Representação como texto', () => {
       test('Apenas nome', () => {

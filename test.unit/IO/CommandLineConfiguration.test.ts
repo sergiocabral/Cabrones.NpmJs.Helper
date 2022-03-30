@@ -277,9 +277,7 @@ describe('CommandLineConfiguration', () => {
       // Arrange, Given
 
       const sut = new CommandLineConfiguration({
-        quotes: [
-          ['<!--', '-->']
-        ]
+        quotes: [['<!--', '-->']]
       });
 
       const textWithoutQuotes = Math.random().toString();
