@@ -37,8 +37,12 @@ describe('CommandLineConfiguration', () => {
 
       expect(matches).toBeDefined();
       expect(matches?.length).toBe(expectedMatches);
-      expect((matches as string[])[0]).toBe(quotes[0] + value + "1" + quotes[1]);
-      expect((matches as string[])[1]).toBe(quotes[0] + value + "2" + quotes[1]);
+      expect((matches as string[])[0]).toBe(
+        quotes[0] + value + '1' + quotes[1]
+      );
+      expect((matches as string[])[1]).toBe(
+        quotes[0] + value + '2' + quotes[1]
+      );
     });
   });
   describe('Valores padrão', () => {

@@ -1,5 +1,5 @@
-import { CommandLineArgument, InvalidArgumentError, KeyValue } from '../../ts';
-import {ICommandLineConfiguration} from "../../ts/IO/ICommandLineConfiguration";
+import { CommandLineArgument } from '../../ts';
+import { ICommandLineConfiguration } from '../../ts/IO/ICommandLineConfiguration';
 
 describe('CommandLineArgument', () => {
   describe('Teste da instância', function () {
@@ -42,18 +42,21 @@ describe('CommandLineArgument', () => {
       // Arrange, Given
 
       const configuration: ICommandLineConfiguration = {
-        attribution: ":=",
+        attribution: ':=',
         quotes: [
-            ['(', ')'],
-            ['[', ']'],
+          ['(', ')'],
+          ['[', ']']
         ]
       };
-      const commandLineArgumentInput = "arg1:=[value1, value2, value3]";
-      const expectedToString = "arg1:=(value1, value2, value3)";
+      const commandLineArgumentInput = 'arg1:=[value1, value2, value3]';
+      const expectedToString = 'arg1:=(value1, value2, value3)';
 
       // Act, When
 
-      const sut = new CommandLineArgument(commandLineArgumentInput, configuration);
+      const sut = new CommandLineArgument(
+        commandLineArgumentInput,
+        configuration
+      );
 
       // Assert, Then
 
