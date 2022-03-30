@@ -42,6 +42,10 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
   }
 
   public set attribution(value: string) {
+    if (/\s/.test(value)) {
+      throw new InvalidArgumentError('Attribuition with spaces.');
+    }
+
     if (!value.trim()) {
       throw new InvalidArgumentError('Empty attribuition characters.');
     }
@@ -81,6 +85,21 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
       `^${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
         quotes[1]
       )}$`,
+      flags
+    );
+  }
+
+  /**
+   * Retorna a Regex correspondente para captura das aspas no início e fim.
+   */
+  public static regexAllQuotes(
+    quotes: [string, string],
+    flags?: string
+  ): RegExp {
+    return new RegExp(
+      `${HelperText.escapeRegExp(quotes[0])}.*?${HelperText.escapeRegExp(
+        quotes[1]
+      )}`,
       flags
     );
   }

@@ -42,14 +42,14 @@ describe('CommandLineArgument', () => {
       // Arrange, Given
 
       const configuration: ICommandLineConfiguration = {
-        attribution: " := ",
+        attribution: ":=",
         quotes: [
             ['(', ')'],
             ['[', ']'],
         ]
       };
-      const commandLineArgumentInput = "arg1 := [value1, value2, value3]";
-      const expectedToString = "arg1 := (value1, value2, value3)";
+      const commandLineArgumentInput = "arg1:=[value1, value2, value3]";
+      const expectedToString = "arg1:=(value1, value2, value3)";
 
       // Act, When
 
@@ -77,7 +77,7 @@ describe('CommandLineArgument', () => {
       test('Nome com valor vazio', () => {
         // Arrange, Given
 
-        const attribution = ' := ';
+        const attribution = ':=';
         const quotes: Array<[string, string]> = [["'", "'"]];
         const nameSetted = Math.random().toString();
         const valueEmpty = '';
@@ -101,7 +101,7 @@ describe('CommandLineArgument', () => {
       test('Nome com valor definido', () => {
         // Arrange, Given
 
-        const attribution = ' := ';
+        const attribution = ':=';
         const quotes: Array<[string, string]> = [['$(', ')']];
         const nameSetted = Math.random().toString();
         const valueSetted = Math.random().toString();

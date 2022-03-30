@@ -215,6 +215,20 @@ describe('CommandLineConfiguration', () => {
     });
   });
   describe('Validação de valores', () => {
+    test('attribution não pode ter espaços', () => {
+      // Arrange, Given
+
+      const sut = new CommandLineConfiguration();
+      const emptyValue = ' := ';
+
+      // Act, When
+
+      const action = () => (sut.attribution = emptyValue);
+
+      // Assert, Then
+
+      expect(action).toThrow(InvalidArgumentError);
+    });
     test('attribution não pode ser vazio', () => {
       // Arrange, Given
 

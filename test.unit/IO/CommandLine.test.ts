@@ -1,39 +1,46 @@
 import { CommandLine, CommandLineArgument } from '../../ts';
+import {ICommandLineConfiguration} from "../../ts/IO/ICommandLineConfiguration";
 
 // TODO: Corrigir testes CommandLine
 // TODO: Verificar que CommandLineConfiguration não informado é usado o padrão
 
 describe('CommandLine', () => {
-  //   describe('Validações básicas', function () {
-  //     test('Instanciar classe', () => {
-  //       // Arrange, Given
-  //
-  //       const commandLineText = 'arg1 arg2 arg3';
-  //
-  //       // Act, When
-  //
-  //       const sut = new CommandLine(commandLineText);
-  //
-  //       // Assert, Then
-  //
-  //       expect(sut.commandLine).toBe(commandLineText);
-  //     });
-  //     test('CaseInsensitiveForName por padrão é false', () => {
-  //       // Arrange, Given
-  //
-  //       const caseInsensitiveForNameExpected = false;
-  //       const sut = new CommandLine(Math.random().toString());
-  //
-  //       // Act, When
-  //
-  //       const caseInsensitiveForNameReceived = sut.caseInsensitiveForName;
-  //
-  //       // Assert, Then
-  //
-  //       expect(caseInsensitiveForNameReceived).toBe(
-  //         caseInsensitiveForNameExpected
-  //       );
-  //     });
+     describe('Validações básicas', function () {
+      test('Instanciar classe sem configuration', () => {
+        // Arrange, Given
+
+        const commandLineText = 'arg1 arg2 arg3';
+
+        // Act, When
+
+        const sut = new CommandLine(commandLineText);
+
+        // Assert, Then
+
+        expect(sut.commandLine).toBe(commandLineText);
+      });
+      test('Instanciar classe com configuration', () => {
+        // Arrange, Given
+
+        const configuration: ICommandLineConfiguration = {
+            attribution: ":=",
+            quotes: [
+                ['[', ']'],
+                ['(', ')'],
+                ['"', '"'],
+            ]
+        }
+        const commandLineInput = 'exec name:="sergio cabral" list:=(123,456,789)'
+        const expectedToString = 'exec name:=[sergio cabral] list:=[123,456,789]';
+
+        // Act, When
+
+        const sut = new CommandLine(commandLineInput, configuration);
+
+        // Assert, Then
+
+        expect(sut.toString()).toBe(expectedToString);
+      });
   //     test('CaseInsensitiveForName pode ser modificador no construtor', () => {
   //       // Arrange, Given
   //
@@ -177,7 +184,7 @@ describe('CommandLine', () => {
   //       expect(argParsed.name).toBe(nameSetted);
   //       expect(argParsed.value).toBe(valueSpaced);
   //     });
-  //   });
+     });
   //   describe('Validações de argumentos em geral', () => {
   //     test('Um argumento com valor', () => {
   //       // Arrange, Given
