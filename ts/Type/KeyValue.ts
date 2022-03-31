@@ -1,9 +1,14 @@
 /**
- * Dicionário de dados com chave e valor.
+ * Agrupamento de informação tipo chave/valor.
  */
-export type KeyValue<Type = unknown> = {
+export type KeyValue<TValue = string, TKey = string> = {
   /**
-   * Chave como string e valor como tipo Type
+   * Chave.
    */
-  [index: string]: Type;
+  Key: TKey;
+
+  /**
+   * Valor.
+   */
+  Value: TValue;
 };

@@ -1,7 +1,7 @@
-import { KeyValue, LogLevel, LogWriter, LogWriterToConsole } from '../../ts';
+import { LogLevel, LogWriter, LogWriterToConsole } from '../../ts';
 
 describe('Class LogWriterToConsoleLevel', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['LogWriter.factoryMessage'] = LogWriter.factoryMessage;

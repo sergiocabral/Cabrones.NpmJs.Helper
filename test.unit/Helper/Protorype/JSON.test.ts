@@ -1,9 +1,9 @@
 // noinspection JSUnusedLocalSymbols
 
-import { HelperObject, KeyValue } from '../../../ts';
+import { HelperObject } from '../../../ts';
 
 describe('Prototype para JSON', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperObject.toText'] = HelperObject.toText;

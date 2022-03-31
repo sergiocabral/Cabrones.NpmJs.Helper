@@ -1,10 +1,4 @@
-import {
-  HelperText,
-  ILogMessage,
-  KeyValue,
-  LogLevel,
-  LogWriter
-} from '../../ts';
+import { HelperText, ILogMessage, LogLevel, LogWriter } from '../../ts';
 
 class LogWriterToTest extends LogWriter {
   public customFactoryMessage?: (message: ILogMessage) => string;
@@ -20,7 +14,7 @@ class LogWriterToTest extends LogWriter {
 }
 
 describe('Class LogWriter', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['LogWriter.minimumLevel'] = LogWriter.minimumLevel;

@@ -1,6 +1,6 @@
 // noinspection JSPrimitiveTypeWrapperUsage,JSUnusedLocalSymbols
 
-import { HelperObject, InvalidExecutionError, KeyValue } from '../../ts';
+import { HelperObject, InvalidExecutionError } from '../../ts';
 
 abstract class ClassBase {
   public thisValue = 123;
@@ -23,7 +23,7 @@ class ClassWithErrorIntoProperty extends ClassReal {
 }
 
 describe('Classe HelperObject', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperObject.getMembers'] = HelperObject.getMembers;

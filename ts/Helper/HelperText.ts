@@ -2,7 +2,6 @@
  * Utilitários para texto (string).
  */
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { KeyValue } from '../Type/KeyValue';
 
 export class HelperText {
   /**
@@ -32,7 +31,7 @@ export class HelperText {
         );
       }
     } else if (typeof values === 'object' && !doNotTreatAsObject(values)) {
-      const objectValue = values as KeyValue;
+      const objectValue = values as Record<string, unknown>;
       const properties = Object.keys(objectValue);
       for (const property of properties) {
         const value = String(objectValue[property]);

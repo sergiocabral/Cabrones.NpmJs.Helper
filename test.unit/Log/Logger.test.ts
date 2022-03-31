@@ -1,8 +1,8 @@
-import { ILogWriter, KeyValue, Logger } from '../../ts';
+import { ILogWriter, Logger } from '../../ts';
 
 describe('Class Logger', () => {
   describe('Funções e propriedades estáticas', () => {
-    const originals: KeyValue<any> = {};
+    const originals: Record<string, any> = {};
 
     beforeEach(() => {
       originals['Logger.defaultLogger'] = Logger.defaultLogger;

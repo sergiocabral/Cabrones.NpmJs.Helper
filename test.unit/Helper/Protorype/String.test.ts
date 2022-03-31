@@ -1,7 +1,7 @@
-import { HelperText, ITranslate, KeyValue, Translate } from '../../../ts';
+import { HelperText, ITranslate, Translate } from '../../../ts';
 
 describe('Prototype para String', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperText.querystring'] = HelperText.querystring;

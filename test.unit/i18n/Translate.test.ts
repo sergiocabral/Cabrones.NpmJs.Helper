@@ -1,8 +1,8 @@
-import { KeyValue, Translate, TranslateSet } from '../../ts';
+import { Translate, TranslateSet } from '../../ts';
 
 describe('Translate', () => {
   describe('Membros static', () => {
-    const originals: KeyValue<any> = {};
+    const originals: Record<string, any> = {};
 
     beforeEach(() => {
       originals['Translate.default'] = Translate.default;

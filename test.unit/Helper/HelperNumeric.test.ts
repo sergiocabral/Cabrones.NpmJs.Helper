@@ -1,5 +1,4 @@
 import {
-  KeyValue,
   HelperNumeric,
   InvalidArgumentError,
   InvalidExecutionError,
@@ -40,7 +39,7 @@ describe('Classe HelperNumeric', () => {
       const percentAcceptableDeviation = 0.2;
 
       const bigLength = 10000;
-      const sample: KeyValue<number> = {
+      const sample: Record<string, any> = {
         '0': 0,
         '1': 0,
         '2': 0,
@@ -86,7 +85,7 @@ describe('Classe HelperNumeric', () => {
     const max = min + range;
 
     const sampleLength = range * 100;
-    const sample: KeyValue<number> = {};
+    const sample: Record<string, any> = {};
     for (let i = min; i <= max; i++) {
       sample[i.toString()] = 0;
     }

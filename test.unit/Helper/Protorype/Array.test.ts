@@ -1,7 +1,7 @@
-import { HelperList, KeyValue } from '../../../ts';
+import { HelperList } from '../../../ts';
 
 describe('Prototype para Array', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperList.getRandom'] = HelperList.getRandom;

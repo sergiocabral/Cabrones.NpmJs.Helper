@@ -1,12 +1,7 @@
-import {
-  HelperDate,
-  InvalidExecutionError,
-  KeyValue,
-  IDateTimeFormat
-} from '../../ts';
+import { HelperDate, InvalidExecutionError, IDateTimeFormat } from '../../ts';
 
 describe('Classe HelperDate', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperDate.addMilliseconds'] = HelperDate.addMilliseconds;

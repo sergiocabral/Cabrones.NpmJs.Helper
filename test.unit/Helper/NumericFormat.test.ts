@@ -1,7 +1,7 @@
-import { KeyValue, NumericFormat } from '../../ts';
+import { NumericFormat } from '../../ts';
 
 describe('Classe NumericFormat', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['NumericFormat.suffix'] = NumericFormat.suffix;

@@ -1,7 +1,7 @@
-import { KeyValue, DateTimeFormat } from '../../ts';
+import { DateTimeFormat } from '../../ts';
 
 describe('Classe DateTimeFormat', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['DateTimeFormat.mask'] = DateTimeFormat.mask;

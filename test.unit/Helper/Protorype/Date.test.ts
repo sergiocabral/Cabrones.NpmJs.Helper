@@ -1,7 +1,7 @@
-import { HelperDate, KeyValue } from '../../../ts';
+import { HelperDate } from '../../../ts';
 
 describe('Prototype para Date', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperDate.format'] = HelperDate.format;

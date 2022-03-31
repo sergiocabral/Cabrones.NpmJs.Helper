@@ -1,4 +1,4 @@
-import { KeyValue, Message, MessageSubscription } from '../../ts';
+import { Message, MessageSubscription } from '../../ts';
 
 class TestMessage1 extends Message {
   public constructor(_arg1: string, _arg2: number) {
@@ -12,7 +12,7 @@ class TestMessage2 extends Message {
 }
 
 describe('Class MessageSubscription', () => {
-  const originals: KeyValue<any> = {};
+  const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['Message.unsubscribe'] = Message.unsubscribe;
