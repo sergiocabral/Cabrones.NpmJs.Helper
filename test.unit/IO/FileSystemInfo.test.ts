@@ -1,8 +1,21 @@
-import { FileSystemInfo } from '../../ts';
+import {FileSystemInfo, HelperObject} from '../../ts';
 import * as fs from "fs";
 import {IFindFileSystemInfoConfiguration} from "../../ts/IO/IFindFileSystemInfoConfiguration";
 
 describe('Classe FileSystemInfo', () => {
+    afterEach(() => {
+        const items = fs.readdirSync('.');
+
+        const files = items.filter(item => item.startsWith('test-file'))
+        for (const file of files) {
+            fs.unlinkSync(file);
+        }
+
+        const directories = items.filter(item => item.startsWith('test-dir'))
+        for (const directory of directories) {
+            fs.rmdirSync(directory);
+        }
+    });
   test('Aceita qualquer caminho', () => {
       // Arrange, Given
 
@@ -91,11 +104,6 @@ describe('Classe FileSystemInfo', () => {
 
           expect(sutDirectory.exists).toBe(false);
           expect(sutFile.exists).toBe(false);
-
-          // Down
-
-          fs.unlinkSync(file);
-          fs.rmdirSync(directory);
       });
       test('O item existe', () => {
           // Arrange, Given
@@ -119,11 +127,6 @@ describe('Classe FileSystemInfo', () => {
 
           expect(sutDirectory.exists).toBe(true);
           expect(sutFile.exists).toBe(true);
-
-          // Down
-
-          fs.unlinkSync(file);
-          fs.rmdirSync(directory);
       });
   });
   describe('Verificar se é diretório', () => {
@@ -147,11 +150,6 @@ describe('Classe FileSystemInfo', () => {
           expect(sutDirectory.isFile).toBe(false);
           expect(sutFile.isDirectory).toBe(false);
           expect(sutFile.isFile).toBe(false);
-
-          // Down
-
-          fs.unlinkSync(file);
-          fs.rmdirSync(directory);
       });
       test('Verificação especificada', () => {
           // Arrange, Given
@@ -177,11 +175,6 @@ describe('Classe FileSystemInfo', () => {
           expect(sutDirectory.isFile).toBe(false);
           expect(sutFile.isDirectory).toBe(false);
           expect(sutFile.isFile).toBe(true);
-
-          // Down
-
-          fs.unlinkSync(file);
-          fs.rmdirSync(directory);
       });
       test('Verificação especificada mas itens não existem', () => {
           // Arrange, Given
