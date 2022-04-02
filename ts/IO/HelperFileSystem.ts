@@ -3,7 +3,7 @@ import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 /**
  * Utilitário para arquivo e diretórios.
  */
-export class HelperIO {
+export class HelperFileSystem {
   /**
    * Construtor proibido.
    */

@@ -42,6 +42,8 @@ import { TranslateSet } from './i18n/TranslateSet';
 import { CommandLine } from './IO/CommandLine';
 import { CommandLineArgument } from './IO/CommandLineArgument';
 import { CommandLineConfiguration } from './IO/CommandLineConfiguration';
+import { FileSystemInfo } from './IO/FileSystemInfo';
+import { HelperFileSystem } from './IO/HelperFileSystem';
 import sha256 from './3rdParty/sha256';
 import './Prototype/Array';
 import './Prototype/Date';
@@ -94,5 +96,7 @@ export {
   TranslateSet,
   CommandLine,
   CommandLineArgument,
-  CommandLineConfiguration
+  CommandLineConfiguration,
+  FileSystemInfo,
+  HelperFileSystem
 };
