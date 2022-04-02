@@ -24,6 +24,51 @@ describe('Classe HelperFileSystem', () => {
 
     expect(instantiate).toThrowError(InvalidExecutionError);
   });
+  describe('getStats()', () => {
+    test('Deve ler stats de diretório', () => {
+      // Arrange, Given
+
+      const directory = `test-dir-${Math.random()}`;
+      HelperFileSystem.createRecursive(directory);
+
+      // Act, When
+
+      const stats = HelperFileSystem.getStats(directory);
+
+      // Assert, Then
+
+      expect(stats).toBeDefined();
+      expect(stats?.isDirectory()).toBe(true);
+    });
+    test('Deve ler stats de arquivo', () => {
+      // Arrange, Given
+
+      const file = `test-dir-${Math.random()}`;
+      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const stats = HelperFileSystem.getStats(file);
+
+      // Assert, Then
+
+      expect(stats).toBeDefined();
+      expect(stats?.isFile()).toBe(true);
+    });
+    test('Não deve lançar erros e retornar undefined pra inválidos', () => {
+      // Arrange, Given
+
+      const file = `test-dir-${Math.random()}`;
+
+      // Act, When
+
+      const stats = HelperFileSystem.getStats(file);
+
+      // Assert, Then
+
+      expect(stats).toBeUndefined();
+    });
+  });
   describe('splitPath()', () => {
     test('Deve lançar erro se separadores não forem informados', () => {
       // Arrange, Given
@@ -768,4 +813,36 @@ describe('Classe HelperFileSystem', () => {
       });
     });
   });
+  describe('findFilesOut', () => {
+    test('localizar todos os arquivos para cima', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+      const directoryInto = `${directoryBase}/dir1/dir2`;
+
+      HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+          `${directoryBase}/dir1/file2.txt`,
+          `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+          `${directoryBase}/dir1/dir2/file3.txt`,
+          `Created by test. Delete me, please.`
+      );
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(directoryInto);
+
+      // Assert, Then
+
+      expect(allPaths.length).toBeGreaterThanOrEqual(3);
+      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/file1.txt`)))).toBeDefined();
+      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`)))).toBeDefined();
+      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`)))).toBeDefined();
+    });
+  })
 });

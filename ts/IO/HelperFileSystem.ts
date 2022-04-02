@@ -4,6 +4,7 @@ import { HelperText } from '../Data/HelperText';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { FilterType } from '../Data/FilterType';
+import { Stats } from 'fs';
 
 /**
  * Utilitário para arquivo e diretórios.
@@ -148,7 +149,7 @@ export class HelperFileSystem {
   }
 
   /**
-   * Localiza arquivos recursivamente em um caminho.
+   * Localiza arquivos recursivamente dentro de um caminho.
    * @param directoryPath Caminho
    * @param filter Filtros
    * @param limitCount Limite de arquivos para encontrar.
@@ -166,15 +167,64 @@ export class HelperFileSystem {
         break;
       }
       const itemPath = pathNode.join(directoryPath, item);
-      const stats = fs.lstatSync(itemPath);
-      if (stats.isDirectory()) {
-        result.push(...this.findFilesInto(itemPath));
-      } else {
+      const stats = HelperFileSystem.getStats(itemPath);
+      if (stats !== undefined) {
+        if (stats.isDirectory()) {
+          result.push(...this.findFilesInto(itemPath, filter, limitCount));
+        } else {
+          if (filter === undefined || HelperText.matchFilter(item, filter)) {
+            result.push(itemPath);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Localiza arquivos recursivamente subindo diretórios em um caminho.
+   * @param directoryPath Caminho
+   * @param filter Filtros
+   * @param limitCount Limite de arquivos para encontrar.
+   */
+  public static findFilesOut(
+    directoryPath: string,
+    filter?: FilterType,
+    limitCount?: number
+  ): string[] {
+    const result: string[] = [];
+    directoryPath = fs.realpathSync(directoryPath);
+    const items = fs.readdirSync(directoryPath);
+    for (const item of items) {
+      if (limitCount !== undefined && result.length >= limitCount) {
+        break;
+      }
+      const itemPath = pathNode.join(directoryPath, item);
+      const stats = HelperFileSystem.getStats(itemPath);
+      if (stats !== undefined && !stats.isDirectory()) {
         if (filter === undefined || HelperText.matchFilter(item, filter)) {
           result.push(itemPath);
         }
       }
     }
+    const parentDirectoryPath = pathNode.dirname(directoryPath);
+    if (parentDirectoryPath !== directoryPath) {
+      result.push(
+        ...this.findFilesOut(parentDirectoryPath, filter, limitCount)
+      );
+    }
     return result;
+  }
+
+  /**
+   * Lê os stats de um caminho sem lançar erro.
+   * @param path
+   */
+  public static getStats(path: string): Stats | undefined {
+    try {
+      return fs.lstatSync(path);
+    } catch (error) {
+      return undefined;
+    }
   }
 }
