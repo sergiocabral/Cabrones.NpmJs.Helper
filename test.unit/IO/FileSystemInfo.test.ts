@@ -92,6 +92,8 @@ describe('Classe FileSystemInfo', () => {
           expect(sutDirectory.exists).toBe(false);
           expect(sutFile.exists).toBe(false);
 
+          // Down
+
           fs.unlinkSync(file);
           fs.rmdirSync(directory);
       });
@@ -118,8 +120,90 @@ describe('Classe FileSystemInfo', () => {
           expect(sutDirectory.exists).toBe(true);
           expect(sutFile.exists).toBe(true);
 
+          // Down
+
           fs.unlinkSync(file);
           fs.rmdirSync(directory);
       });
-  })
+  });
+  describe('Verificar se é diretório', () => {
+      test('Não especificado essa verificação', () => {
+          // Arrange, Given
+
+          const directory = `test-dir-delete-me-${Math.random()}`;
+          const file = `test-file-delete-me-${Math.random()}`;
+
+          fs.mkdirSync(directory);
+          fs.writeFileSync(file, 'Created by test. Delete me, please.');
+
+          // Act, When
+
+          const sutDirectory = new FileSystemInfo(directory);
+          const sutFile = new FileSystemInfo(file);
+
+          // Assert, Then
+
+          expect(sutDirectory.isDirectory).toBe(false);
+          expect(sutDirectory.isFile).toBe(false);
+          expect(sutFile.isDirectory).toBe(false);
+          expect(sutFile.isFile).toBe(false);
+
+          // Down
+
+          fs.unlinkSync(file);
+          fs.rmdirSync(directory);
+      });
+      test('Verificação especificada', () => {
+          // Arrange, Given
+
+          const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+            checkIfFileOrDirectory: true
+          };
+
+          const directory = `test-dir-delete-me-${Math.random()}`;
+          const file = `test-file-delete-me-${Math.random()}`;
+
+          fs.mkdirSync(directory);
+          fs.writeFileSync(file, 'Created by test. Delete me, please.');
+
+          // Act, When
+
+          const sutDirectory = new FileSystemInfo(directory, configuration);
+          const sutFile = new FileSystemInfo(file, configuration);
+
+          // Assert, Then
+
+          expect(sutDirectory.isDirectory).toBe(true);
+          expect(sutDirectory.isFile).toBe(false);
+          expect(sutFile.isDirectory).toBe(false);
+          expect(sutFile.isFile).toBe(true);
+
+          // Down
+
+          fs.unlinkSync(file);
+          fs.rmdirSync(directory);
+      });
+      test('Verificação especificada mas itens não existem', () => {
+          // Arrange, Given
+
+          const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+            checkIfFileOrDirectory: true
+          };
+
+          const directory = `test-dir-delete-me-${Math.random()}`;
+          const file = `test-file-delete-me-${Math.random()}`;
+
+          // Act, When
+
+          const sutDirectory = new FileSystemInfo(directory, configuration);
+          const sutFile = new FileSystemInfo(file, configuration);
+
+          // Assert, Then
+
+          expect(sutDirectory.isDirectory).toBe(false);
+          expect(sutDirectory.isFile).toBe(false);
+          expect(sutFile.isDirectory).toBe(false);
+          expect(sutFile.isFile).toBe(false);
+      });
+  });
 });

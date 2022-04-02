@@ -23,10 +23,20 @@ export class FileSystemInfo implements IFileSystemInfo {
     this.name = parts[parts.length - 1];
     this.extension = HelperFileSystem.getExtension(path);
     this.exists = configuration?.checkExistence ? fs.existsSync(path) : false;
+
+    this.isDirectory = false;
+    this.isFile = false;
+    if (configuration?.checkIfFileOrDirectory) {
+      try {
+        this.isDirectory = fs.lstatSync(path).isDirectory();
+        this.isFile = !this.isDirectory;
+      } catch (error) {
+        // Ignore
+      }
+    }
     this.children = [];
     this.size = 0;
     this.parent = undefined;
-    this.isDirectory = false;
   }
 
   /**
@@ -38,6 +48,16 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Extensão do arquivo.
    */
   public readonly extension: string;
+
+  /**
+   * Sinaliza se existe ou não.
+   */
+  public readonly exists: boolean;
+
+  /**
+   * Sinaliza ser arquivo.
+   */
+  public readonly isFile: boolean;
 
   /**
    * Sinaliza ser diretório.
@@ -58,9 +78,4 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Arquivos e diretórios filhos.
    */
   public readonly children: IFileSystemInfo[];
-
-  /**
-   * Sinaliza se existe ou não.
-   */
-  public readonly exists: boolean;
 }

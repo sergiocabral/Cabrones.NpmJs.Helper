@@ -3,6 +3,16 @@
  */
 export interface IFindFileSystemInfoConfiguration {
   /**
+   * Verifica existência em disco.
+   */
+  checkExistence: boolean;
+
+  /**
+   * Verifica se é arquivo ou diretório
+   */
+  checkIfFileOrDirectory: boolean;
+
+  /**
    * Aplica um filtro no nome durante a pesquisa.
    */
   nameFilter: RegExp[];
@@ -21,9 +31,4 @@ export interface IFindFileSystemInfoConfiguration {
    * Consulta o tamanho do diretório.
    */
   fillDirectorySize: boolean;
-
-  /**
-   * Verifica existência em disco.
-   */
-  checkExistence: boolean;
 }

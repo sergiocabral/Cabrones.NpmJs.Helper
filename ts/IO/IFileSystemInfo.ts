@@ -23,6 +23,11 @@ export interface IFileSystemInfo {
   exists: boolean;
 
   /**
+   * Sinaliza ser arquivo.
+   */
+  isFile: boolean;
+
+  /**
    * Sinaliza ser diretório.
    */
   isDirectory: boolean;
