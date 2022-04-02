@@ -1,3 +1,5 @@
+import { Stats } from 'fs';
+
 /**
  * Informações sobre objetos de disco: arquivos e diretórios
  */
@@ -28,6 +30,11 @@ export interface IFileSystemInfo {
   absolutePath: string | undefined;
 
   /**
+   * Dados do item.
+   */
+  stats: Stats | undefined;
+
+  /**
    * Sinaliza ser arquivo.
    */
   isFile: boolean;
@@ -36,6 +43,11 @@ export interface IFileSystemInfo {
    * Sinaliza ser diretório.
    */
   isDirectory: boolean;
+
+  /**
+   * Tamanho em bytes.
+   */
+  size: number;
 
   /**
    * Diretórios ancestrais.
@@ -51,9 +63,4 @@ export interface IFileSystemInfo {
    * Arquivos e diretórios filhos.
    */
   children: IFileSystemInfo[];
-
-  /**
-   * Tamanho em bytes.
-   */
-  size: number;
 }

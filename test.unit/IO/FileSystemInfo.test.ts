@@ -149,7 +149,7 @@ describe('Classe FileSystemInfo', () => {
       // Arrange, Given
 
       const configuration: Partial<IFindFileSystemInfoConfiguration> = {
-        checkIfFileOrDirectory: true
+        loadStats: true
       };
 
       const directory = `test-dir-delete-me-${Math.random()}`;
@@ -174,7 +174,7 @@ describe('Classe FileSystemInfo', () => {
       // Arrange, Given
 
       const configuration: Partial<IFindFileSystemInfoConfiguration> = {
-        checkIfFileOrDirectory: true
+        loadStats: true
       };
 
       const directory = `test-dir-delete-me-${Math.random()}`;

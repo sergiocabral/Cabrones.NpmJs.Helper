@@ -3,6 +3,7 @@ import { IFindFileSystemInfoConfiguration } from './IFindFileSystemInfoConfigura
 import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
+import { Stats } from 'fs';
 
 /**
  * Representação de um arquivo ou diretório.
@@ -25,16 +26,22 @@ export class FileSystemInfo implements IFileSystemInfo {
 
     this.name = parts[parts.length - 1];
     this.extension = HelperFileSystem.getExtension(path);
-    this.exists = configuration?.checkExistence ? fs.existsSync(path) : false;
+    this.exists =
+      configuration?.checkExistence || configuration?.loadStats
+        ? fs.existsSync(path)
+        : false;
+
+    let lstat: Stats | undefined = undefined;
 
     this.isDirectory = false;
     this.isFile = false;
-    if (configuration?.checkIfFileOrDirectory) {
-      try {
-        this.isDirectory = fs.lstatSync(path).isDirectory();
-        this.isFile = !this.isDirectory;
-      } catch (error) {
-        // Ignore
+    this.size = -1;
+    if (configuration?.loadStats && this.exists) {
+      lstat = fs.lstatSync(path);
+      this.isDirectory = lstat.isDirectory();
+      this.isFile = lstat.isFile();
+      if (this.isFile) {
+        this.size = lstat.size;
       }
     }
 
@@ -83,8 +90,6 @@ export class FileSystemInfo implements IFileSystemInfo {
       }
     }
 
-    this.size = 0;
-
     this.children = [];
   }
 
@@ -107,6 +112,11 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Caminho absoluto.
    */
   public readonly absolutePath: string | undefined;
+
+  /**
+   * Dados do item.
+   */
+  public readonly stats: Stats | undefined;
 
   /**
    * Sinaliza ser arquivo.

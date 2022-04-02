@@ -8,14 +8,19 @@ export interface IFindFileSystemInfoConfiguration {
   checkExistence: boolean;
 
   /**
-   * Verifica se é arquivo ou diretório
-   */
-  checkIfFileOrDirectory: boolean;
-
-  /**
    * Verifica o caminho real e absoluto.
    */
   fillAbsolutePath: boolean;
+
+  /**
+   * Carrega dados gerais do item: tamanho de arquivo, se é arquivo ou diretório.
+   */
+  loadStats: boolean;
+
+  /**
+   * Consulta o tamanho do diretório.
+   */
+  fillDirectorySize: boolean;
 
   /**
    * Aplica um filtro no nome durante a pesquisa.
@@ -31,14 +36,4 @@ export interface IFindFileSystemInfoConfiguration {
    * Carrega os dados o diretório pai.
    */
   fillParent: boolean;
-
-  /**
-   * Consulta o tamanho do arquivo.
-   */
-  fillFileSize: boolean;
-
-  /**
-   * Consulta o tamanho do diretório.
-   */
-  fillDirectorySize: boolean;
 }
