@@ -373,21 +373,26 @@ describe('Classe FileSystemInfo', () => {
     test('Deve ser igual se path existir e é relativo', () => {
       // Arrange, Given
 
-      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
-        checkExistence: true,
-        fillAbsolutePath: true
-      };
+      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> =
+        {
+          checkExistence: true,
+          fillAbsolutePath: true
+        };
 
-      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
-        checkExistence: false,
-        fillAbsolutePath: true
-      };
+      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> =
+        {
+          checkExistence: false,
+          fillAbsolutePath: true
+        };
 
       const directory = `test-dir-delete-me-${Math.random()}`;
       const file = `test-file-delete-me-${Math.random()}`;
       const path = `${directory}/${file}`;
 
-      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        path,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -401,21 +406,26 @@ describe('Classe FileSystemInfo', () => {
     test('Deve ser igual se path existir e é absoluto', () => {
       // Arrange, Given
 
-      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
-        checkExistence: true,
-        fillAbsolutePath: true
-      };
+      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> =
+        {
+          checkExistence: true,
+          fillAbsolutePath: true
+        };
 
-      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
-        checkExistence: false,
-        fillAbsolutePath: true
-      };
+      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> =
+        {
+          checkExistence: false,
+          fillAbsolutePath: true
+        };
 
       const directory = `test-dir-delete-me-${Math.random()}`;
       const file = `test-file-delete-me-${Math.random()}`;
       const path = pathNode.join(fs.realpathSync('.'), `${directory}/${file}`);
 
-      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        path,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -459,9 +469,9 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.parent).toBeDefined();
       expect(sut.parent?.parent).toBeDefined();
       expect(sut.parent?.parent?.parent).toBeUndefined();
-      expect(sut.name).toBe("file");
-      expect(sut.parent?.name).toBe("dir2");
-      expect(sut.parent?.parent?.name).toBe("dir1");
+      expect(sut.name).toBe('file');
+      expect(sut.parent?.name).toBe('dir2');
+      expect(sut.parent?.parent?.name).toBe('dir1');
     });
     test('Parâmetro é especificado para path absoluto', () => {
       // Arrange, Given
@@ -481,9 +491,9 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.parent).toBeDefined();
       expect(sut.parent?.parent).toBeDefined();
       expect(sut.parent?.parent?.parent).toBeUndefined();
-      expect(sut.name).toBe("file");
-      expect(sut.parent?.name).toBe("dir2");
-      expect(sut.parent?.parent?.name).toBe("dir1");
+      expect(sut.name).toBe('file');
+      expect(sut.parent?.name).toBe('dir2');
+      expect(sut.parent?.parent?.name).toBe('dir1');
     });
   });
   describe('children', () => {
@@ -507,7 +517,10 @@ describe('Classe FileSystemInfo', () => {
       const file = `test-file-delete-me-${Math.random()}`;
       const path = `${directory}/${file}`;
 
-      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        path,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -543,9 +556,18 @@ describe('Classe FileSystemInfo', () => {
 
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file1.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file2.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file3.txt`,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -564,7 +586,10 @@ describe('Classe FileSystemInfo', () => {
 
       const file = `test-file-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        file,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -623,9 +648,18 @@ describe('Classe FileSystemInfo', () => {
       const content = `Created by test. Delete me, please. ${Math.random()}`;
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, content);
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, content);
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, content);
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file1.txt`,
+        content
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file2.txt`,
+        content
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file3.txt`,
+        content
+      );
 
       const expectedSize = content.length * 3;
 
@@ -644,20 +678,35 @@ describe('Classe FileSystemInfo', () => {
 
       const configuration: Partial<IFindFileSystemInfoConfiguration> = {
         fillChildren: true,
-        fileFilter: [
-            /fileA1/,
-            /fileA3/
-        ]
+        fileFilter: [/fileA1/, /fileA3/]
       };
 
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA1.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA2.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA3.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/fileA1.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/fileA2.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/fileA3.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir/fileA1.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir/fileA2.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir/fileA3.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/fileA1.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/fileA2.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/fileA3.txt`,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -678,19 +727,31 @@ describe('Classe FileSystemInfo', () => {
 
       const configuration: Partial<IFindFileSystemInfoConfiguration> = {
         fillChildren: true,
-        directoryFilter: [
-            /dirA1/,
-            /dirA3/
-        ]
+        directoryFilter: [/dirA1/, /dirA3/]
       };
 
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dirA1/fileA1.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dirA2/fileA2.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/fileA3.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/dirA1/fileA4.txt`, 'Created by test. Delete me, please.');
-      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/dirA2/fileA5.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dirA1/fileA1.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dirA2/fileA2.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dirA3/fileA3.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dirA3/dirA1/fileA4.txt`,
+        'Created by test. Delete me, please.'
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dirA3/dirA2/fileA5.txt`,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 

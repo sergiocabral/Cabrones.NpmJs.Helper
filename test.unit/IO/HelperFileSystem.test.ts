@@ -459,7 +459,7 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const action = () => HelperFileSystem.getDirectorySize(directory)
+      const action = () => HelperFileSystem.getDirectorySize(directory);
 
       // Assert, Then
 
@@ -469,11 +469,14 @@ describe('Classe HelperFileSystem', () => {
       // Arrange, Given
 
       const file = `test-file-${Math.random()}`;
-      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        file,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
-      const action = () => HelperFileSystem.getDirectorySize(file)
+      const action = () => HelperFileSystem.getDirectorySize(file);
 
       // Assert, Then
 
@@ -485,9 +488,18 @@ describe('Classe HelperFileSystem', () => {
       const content = `Created by test. Delete me, please. ${Math.random()}`;
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, content);
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, content);
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, content);
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file1.txt`,
+        content
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file2.txt`,
+        content
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file3.txt`,
+        content
+      );
 
       const expectedSize = content.length * 3;
 
