@@ -3,14 +3,19 @@
  */
 export interface IFileSystemInfo {
   /**
+   * Caminho completo.
+   */
+  path: string;
+
+  /**
    * Nome.
    */
   name: string;
 
   /**
-   * Caminho completo.
+   * Extensão do arquivo.
    */
-  path: string;
+  extension: string;
 
   /**
    * Sinaliza ser diretório.

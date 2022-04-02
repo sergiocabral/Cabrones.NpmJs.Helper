@@ -12,10 +12,11 @@ export class FileSystemInfo implements IFileSystemInfo {
    */
   public constructor(
     public readonly path: string,
-    private readonly configuration: Partial<IFindFileSystemInfoConfiguration>
+    private readonly configuration?: Partial<IFindFileSystemInfoConfiguration>
   ) {
     // TODO: Implementar classe.
     this.name = '';
+    this.extension = '';
     this.children = [];
     this.size = 0;
     this.parent = undefined;
@@ -27,6 +28,11 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Nome.
    */
   public readonly name: string;
+
+  /**
+   * Extensão do arquivo.
+   */
+  public readonly extension: string;
 
   /**
    * Sinaliza ser diretório.
