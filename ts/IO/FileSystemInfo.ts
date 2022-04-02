@@ -1,5 +1,6 @@
 import { IFileSystemInfo } from './IFileSystemInfo';
 import { IFindFileSystemInfoConfiguration } from './IFindFileSystemInfoConfiguration';
+import { HelperFileSystem } from './HelperFileSystem';
 
 /**
  * Representação de um arquivo ou diretório.
@@ -15,7 +16,10 @@ export class FileSystemInfo implements IFileSystemInfo {
     private readonly configuration?: Partial<IFindFileSystemInfoConfiguration>
   ) {
     // TODO: Implementar classe.
-    this.name = '';
+
+    const parts = HelperFileSystem.splitPath(path);
+
+    this.name = parts[parts.length - 1];
     this.extension = '';
     this.children = [];
     this.size = 0;

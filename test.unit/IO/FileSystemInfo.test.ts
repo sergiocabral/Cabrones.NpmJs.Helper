@@ -1,7 +1,7 @@
 import { FileSystemInfo } from '../../ts';
 
 describe('Classe FileSystemInfo', () => {
-  test('Pode instanciar com qualquer caminho de arquivo', () => {
+  test('Aceita qualquer caminho', () => {
       // Arrange, Given
 
       const invalidFileName = `!@#$%¨&*()${Math.random()}<>:^\`{}][´~;.,]`;
@@ -14,7 +14,21 @@ describe('Classe FileSystemInfo', () => {
 
       expect(sut.path).toBe(invalidFileName);
   });
-  test('Ao instanciar deve obter o nome do arquivo', () => {
+  test('Se não houver caminho o nome será igual', () => {
+      // Arrange, Given
+
+      const name = `file-${Math.random()}.log`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(name);
+
+      // Assert, Then
+
+      expect(sut.path).toBe(name);
+      expect(sut.name).toBe(name);
+  });
+  test('Deve obter o nome do arquivo', () => {
       // Arrange, Given
 
       const name = `file-${Math.random()}.log`;
