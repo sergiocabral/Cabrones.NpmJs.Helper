@@ -920,7 +920,7 @@ describe('Classe HelperFileSystem', () => {
       // Act, When
 
       const allPaths = HelperFileSystem.findFilesOut(
-          directoryBase,
+        directoryBase,
         undefined,
         limitCount
       );
@@ -929,9 +929,7 @@ describe('Classe HelperFileSystem', () => {
 
       expect(allPaths.length).toBe(1);
       expect(
-        allPaths[0].endsWith(
-          pathNode.join(`${directoryBase}/file1.txt`)
-        )
+        allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
       ).toBe(true);
     });
     test('se a limitação for zero não retorna nada', () => {
