@@ -41,7 +41,7 @@ describe('CommandLineArgument', () => {
     test('Instanciar classe especificando configuration', () => {
       // Arrange, Given
 
-      const configuration: ICommandLineConfiguration = {
+      const configuration: Partial<ICommandLineConfiguration> = {
         attribution: ':=',
         quotes: [
           ['(', ')'],

@@ -12,7 +12,7 @@ export class CommandLineArgument {
    */
   constructor(
     commandLineArgument?: string,
-    configuration?: ICommandLineConfiguration
+    configuration?: Partial<ICommandLineConfiguration>
   ) {
     this.configuration = new CommandLineConfiguration(configuration);
 

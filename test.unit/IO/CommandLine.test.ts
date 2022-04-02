@@ -19,7 +19,7 @@ describe('CommandLine', () => {
     test('Instanciar classe com configuration', () => {
       // Arrange, Given
 
-      const configuration: ICommandLineConfiguration = {
+      const configuration: Partial<ICommandLineConfiguration> = {
         attribution: ':=',
         quotes: [
           ['[', ']'],

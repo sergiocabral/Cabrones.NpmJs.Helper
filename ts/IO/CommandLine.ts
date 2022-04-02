@@ -13,7 +13,7 @@ export class CommandLine {
    */
   constructor(
     public readonly commandLine: string,
-    configuration?: ICommandLineConfiguration
+    configuration?: Partial<ICommandLineConfiguration>
   ) {
     this.configuration = new CommandLineConfiguration(configuration);
     this.args = this.parseArguments(commandLine);

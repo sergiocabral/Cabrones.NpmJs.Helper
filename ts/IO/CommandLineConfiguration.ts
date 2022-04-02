@@ -10,7 +10,7 @@ export class CommandLineConfiguration implements ICommandLineConfiguration {
    * Construtor.
    * @param configuration Configurações iniciais.
    */
-  public constructor(configuration?: ICommandLineConfiguration) {
+  public constructor(configuration?: Partial<ICommandLineConfiguration>) {
     if (configuration?.caseInsensitiveForName !== undefined) {
       this.caseInsensitiveForName = configuration.caseInsensitiveForName;
     }
