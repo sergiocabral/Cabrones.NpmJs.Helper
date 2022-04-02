@@ -44,7 +44,8 @@ import { CommandLineArgument } from './IO/CommandLineArgument';
 import { CommandLineConfiguration } from './IO/CommandLineConfiguration';
 import { FileSystemInfo } from './IO/FileSystemInfo';
 import { HelperFileSystem } from './IO/HelperFileSystem';
-import { HelperNodeJs } from './IO/HelperNodeJs';
+import { HelperNodeJs } from './IO/NodeJS/HelperNodeJs';
+import { IPackageJson } from './IO/NodeJS/IPackageJson';
 import sha256 from './3rdParty/sha256';
 import './Prototype/Array';
 import './Prototype/Date';
@@ -100,5 +101,6 @@ export {
   CommandLineConfiguration,
   FileSystemInfo,
   HelperFileSystem,
-  HelperNodeJs
+  HelperNodeJs,
+  IPackageJson
 };
