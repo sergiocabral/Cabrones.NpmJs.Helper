@@ -1,5 +1,4 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { default as pathNode } from 'path';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { HelperText } from '../Data/HelperText';
 

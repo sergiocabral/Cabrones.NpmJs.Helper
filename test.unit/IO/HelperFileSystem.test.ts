@@ -1,4 +1,8 @@
-import {HelperFileSystem, InvalidArgumentError, InvalidExecutionError} from '../../ts';
+import {
+  HelperFileSystem,
+  InvalidArgumentError,
+  InvalidExecutionError
+} from '../../ts';
 
 describe('Classe HelperFileSystem', () => {
   test('Não deve permitir instanciar', () => {
@@ -25,7 +29,7 @@ describe('Classe HelperFileSystem', () => {
 
       expect(instantiate).toThrowError(InvalidArgumentError);
     });
-    test('Deve separar caminho por padrão para qualquer barras \\ ou \/', () => {
+    test('Deve separar caminho por padrão para qualquer barras \\ ou /', () => {
       // Arrange, Given
 
       const path = '/folder1/folder2\\folder3\\folder4';
@@ -37,7 +41,13 @@ describe('Classe HelperFileSystem', () => {
       // Assert, Then
 
       expect(parts.length).toBe(5);
-      expect(parts).toStrictEqual(['', 'folder1', 'folder2', 'folder3', 'folder4']);
+      expect(parts).toStrictEqual([
+        '',
+        'folder1',
+        'folder2',
+        'folder3',
+        'folder4'
+      ]);
     });
     test('Ao separar deve manter as partes como são', () => {
       // Arrange, Given
@@ -56,7 +66,7 @@ describe('Classe HelperFileSystem', () => {
       // Arrange, Given
 
       const path = 'part1:part2///part3|part4';
-      const separators: string[] = ['|', '///', ':']
+      const separators: string[] = ['|', '///', ':'];
 
       // Act, When
 
@@ -76,7 +86,8 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const instantiate = () => HelperFileSystem.getExtension('', emptyExtensionMarks);
+      const instantiate = () =>
+        HelperFileSystem.getExtension('', emptyExtensionMarks);
 
       // Assert, Then
 
@@ -89,7 +100,8 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const instantiate = () => HelperFileSystem.getExtension('', listWithemptyExtensionMark);
+      const instantiate = () =>
+        HelperFileSystem.getExtension('', listWithemptyExtensionMark);
 
       // Assert, Then
 
@@ -118,7 +130,9 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const receivedExtension = HelperFileSystem.getExtension(filename, [extensionMark]);
+      const receivedExtension = HelperFileSystem.getExtension(filename, [
+        extensionMark
+      ]);
 
       // Assert, Then
 
@@ -135,8 +149,14 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const receivedExtension1 = HelperFileSystem.getExtension(filename1, [mark1, mark2]);
-      const receivedExtension2 = HelperFileSystem.getExtension(filename2, [mark1, mark2]);
+      const receivedExtension1 = HelperFileSystem.getExtension(filename1, [
+        mark1,
+        mark2
+      ]);
+      const receivedExtension2 = HelperFileSystem.getExtension(filename2, [
+        mark1,
+        mark2
+      ]);
 
       // Assert, Then
 
@@ -154,7 +174,10 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const receivedExtension = HelperFileSystem.getExtension(filename, [mark1, mark2]);
+      const receivedExtension = HelperFileSystem.getExtension(filename, [
+        mark1,
+        mark2
+      ]);
 
       // Assert, Then
 
@@ -172,12 +195,17 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const receivedExtension = HelperFileSystem.getExtension(filename, [mark1, mark2]);
+      const receivedExtension = HelperFileSystem.getExtension(filename, [
+        mark1,
+        mark2
+      ]);
 
       // Assert, Then
 
       expect(receivedExtension).not.toBe(`${mark2}${extensionFirst}`);
-      expect(receivedExtension).toBe(`${mark1}${extensionSecond}${mark2}${extensionFirst}`);
+      expect(receivedExtension).toBe(
+        `${mark1}${extensionSecond}${mark2}${extensionFirst}`
+      );
     });
     test('Deve pegar a extensão junto com o marcador', () => {
       // Arrange, Given
