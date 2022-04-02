@@ -106,13 +106,14 @@ export class FileSystemInfo implements IFileSystemInfo {
       for (const child of children) {
         const childPath = pathNode.join(path, child);
 
-        if (configuration.directoryFilter || configuration.fileFilter) {
-          const stats = fs.lstatSync(childPath);
+        let stats: Stats | undefined;
+        if (
+          (configuration.directoryFilter || configuration.fileFilter) &&
+          (stats = HelperFileSystem.getStats(childPath)) !== undefined
+        ) {
           const filter: FilterType | undefined = stats.isDirectory()
             ? configuration.directoryFilter
-            : stats.isFile()
-            ? configuration.fileFilter
-            : undefined;
+            : configuration.fileFilter;
 
           const ignore =
             filter !== undefined && !HelperText.matchFilter(child, filter);

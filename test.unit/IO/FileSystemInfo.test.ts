@@ -779,6 +779,32 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.children[1].children[0].children.length).toBe(1);
       expect(sut.children[1].children[0].children[0].name).toBe('fileA4.txt');
     });
+    test('Filtro de arquivo quando só há diretórios', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true,
+        fileFilter: [/dirA1/, /dirA3/]
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA1/dirA2/dirA3`);
+
+      // Act, When
+
+      const sut = new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(1);
+      expect(sut.isDirectory).toBe(true);
+      expect(sut.children[0].children.length).toBe(1);
+      expect(sut.children[0].isDirectory).toBe(true);
+      expect(sut.children[0].children[0].children.length).toBe(1);
+      expect(sut.children[0].children[0].isDirectory).toBe(true);
+      expect(sut.children[0].children[0].children[0].children.length).toBe(0);
+    });
     test('Filtro de arquivo deve usar HelperText.matchFilter', () => {
       // Arrange, Given
 
