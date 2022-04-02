@@ -1,5 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { HelperObject } from '../Helper/HelperObject';
+import { HelperObject } from '../Data/HelperObject';
 import { DispatchedMessage } from './DispatchedMessage';
 import { IMessage } from './IMessage';
 import { MessageSubscription } from './MessageSubscription';

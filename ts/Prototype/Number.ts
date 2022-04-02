@@ -1,5 +1,5 @@
-import { HelperNumeric } from '../HelperNumeric';
-import { INumericFormat } from '../INumericFormat';
+import { HelperNumeric } from '../Data/HelperNumeric';
+import { INumericFormat } from '../Data/INumericFormat';
 
 declare global {
   /**

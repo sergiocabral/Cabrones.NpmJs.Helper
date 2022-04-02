@@ -1,4 +1,4 @@
-import { HelperObject } from '../Helper/HelperObject';
+import { HelperObject } from '../Data/HelperObject';
 import { IMessage } from './IMessage';
 import { MessageListener } from './MessageListener';
 

@@ -1,5 +1,5 @@
-import { HelperObject } from '../Helper/HelperObject';
-import { HelperText } from '../Helper/HelperText';
+import { HelperObject } from '../Data/HelperObject';
+import { HelperText } from '../Data/HelperText';
 import { ILogMessage } from './ILogMessage';
 import { ILogWriter } from './ILogWriter';
 import { LogLevel } from './LogLevel';

@@ -1,4 +1,4 @@
-import { HelperObject } from '../HelperObject';
+import { HelperObject } from '../Data/HelperObject';
 
 declare global {
   /**

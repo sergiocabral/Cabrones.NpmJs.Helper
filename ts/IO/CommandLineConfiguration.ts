@@ -1,6 +1,6 @@
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
-import { HelperText } from '../Helper/HelperText';
+import { HelperText } from '../Data/HelperText';
 
 /**
  * Configurações usadas para o parse da linha de comando.

@@ -1,5 +1,5 @@
-import { Translate } from '../../i18n/Translate';
-import { HelperText } from '../HelperText';
+import { Translate } from '../i18n/Translate';
+import { HelperText } from '../Data/HelperText';
 
 declare global {
   /**

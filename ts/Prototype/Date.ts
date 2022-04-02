@@ -1,5 +1,5 @@
-import { HelperDate } from '../HelperDate';
-import { IDateTimeFormat } from '../IDateTimeFormat';
+import { HelperDate } from '../Data/HelperDate';
+import { IDateTimeFormat } from '../Data/IDateTimeFormat';
 
 declare global {
   /**

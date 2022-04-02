@@ -1,5 +1,5 @@
 import sha256 from '../3rdParty/sha256';
-import { HelperObject } from '../Helper/HelperObject';
+import { HelperObject } from '../Data/HelperObject';
 
 /**
  * Representa um conjunto de informações para JsonObject.

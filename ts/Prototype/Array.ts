@@ -1,4 +1,4 @@
-import { HelperList } from '../HelperList';
+import { HelperList } from '../Data/HelperList';
 
 declare global {
   /**
