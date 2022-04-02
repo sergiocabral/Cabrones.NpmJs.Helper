@@ -145,4 +145,23 @@ export class HelperFileSystem {
     }
     return size;
   }
+
+  /**
+   * Retorna todos os arquivos recursivamente de um caminho.
+   */
+  public static getAllFiles(directoryPath: string): string[] {
+    const result: string[] = [];
+    directoryPath = fs.realpathSync(directoryPath);
+    const items = fs.readdirSync(directoryPath);
+    for (const item of items) {
+      const itemPath = pathNode.join(directoryPath, item);
+      const stats = fs.lstatSync(itemPath);
+      if (stats.isDirectory()) {
+        result.push(...this.getAllFiles(itemPath));
+      } else {
+        result.push(itemPath);
+      }
+    }
+    return result;
+  }
 }

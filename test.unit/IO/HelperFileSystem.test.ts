@@ -4,6 +4,7 @@ import {
   InvalidExecutionError
 } from '../../ts';
 import * as fs from 'fs';
+import { default as pathNode } from 'path';
 
 describe('Classe HelperFileSystem', () => {
   afterEach(() => {
@@ -510,6 +511,75 @@ describe('Classe HelperFileSystem', () => {
       // Assert, Then
 
       expect(size).toBe(expectedSize);
+    });
+  });
+  describe('getAllFiles', () => {
+    test('Se caminho não existir deve lançar erro', () => {
+      // Arrange, Given
+
+      const directory = '/dir1/dir2';
+
+      // Act, When
+
+      const action = () => HelperFileSystem.getAllFiles(directory);
+
+      // Assert, Then
+
+      expect(action).toThrowError();
+    });
+    test('Se caminho é um arquivo deve lançar erro', () => {
+      // Arrange, Given
+
+      const file = `test-file-${Math.random()}`;
+      HelperFileSystem.createRecursive(
+        file,
+        'Created by test. Delete me, please.'
+      );
+
+      // Act, When
+
+      const action = () => HelperFileSystem.getAllFiles(file);
+
+      // Assert, Then
+
+      expect(action).toThrowError();
+    });
+    test('Deve retornar toda a lista de arquivos', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file1.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file2.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file3.txt`,
+        `Created by test. Delete me, please.`
+      );
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.getAllFiles(directoryBase);
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(3);
+      expect(
+        allPaths[0].endsWith(
+          pathNode.join(`${directoryBase}/dir1/dir2/file2.txt`)
+        )
+      ).toBe(true);
+      expect(
+        allPaths[1].endsWith(pathNode.join(`${directoryBase}/dir1/file1.txt`))
+      ).toBe(true);
+      expect(
+        allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+      ).toBe(true);
     });
   });
 });
