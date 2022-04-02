@@ -901,6 +901,73 @@ describe('Classe HelperFileSystem', () => {
         allPaths[1].endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
       ).toBe(true);
     });
+    test('localizar arquivos com limitação logo no primeiro nível', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file1.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file2.txt`,
+        `Created by test. Delete me, please.`
+      );
+
+      const limitCount = 1;
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(
+          directoryBase,
+        undefined,
+        limitCount
+      );
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(1);
+      expect(
+        allPaths[0].endsWith(
+          pathNode.join(`${directoryBase}/file1.txt`)
+        )
+      ).toBe(true);
+    });
+    test('se a limitação for zero não retorna nada', () => {
+      // Arrange, Given
+
+      const limitCount = 0;
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(
+        Math.random().toString(),
+        undefined,
+        limitCount
+      );
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(0);
+    });
+    test('se a limitação for menor que zero não retorna nada', () => {
+      // Arrange, Given
+
+      const limitCount = -10;
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(
+        Math.random().toString(),
+        undefined,
+        limitCount
+      );
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(0);
+    });
     test('localizar arquivos com limitação maior que o total de arquivo não deve limitar', () => {
       // Arrange, Given
 
