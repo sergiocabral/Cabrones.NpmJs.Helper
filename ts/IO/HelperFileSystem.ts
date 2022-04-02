@@ -3,6 +3,7 @@ import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { HelperText } from '../Data/HelperText';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
+import { FilterType } from '../Data/FilterType';
 
 /**
  * Utilitário para arquivo e diretórios.
@@ -147,19 +148,31 @@ export class HelperFileSystem {
   }
 
   /**
-   * Retorna todos os arquivos recursivamente de um caminho.
+   * Localiza arquivos recursivamente em um caminho.
+   * @param directoryPath Caminho
+   * @param filter Filtros
+   * @param limitCount Limite de arquivos para encontrar.
    */
-  public static getAllFiles(directoryPath: string): string[] {
+  public static findFilesInto(
+    directoryPath: string,
+    filter?: FilterType,
+    limitCount?: number
+  ): string[] {
     const result: string[] = [];
     directoryPath = fs.realpathSync(directoryPath);
     const items = fs.readdirSync(directoryPath);
     for (const item of items) {
+      if (limitCount !== undefined && result.length >= limitCount) {
+        break;
+      }
       const itemPath = pathNode.join(directoryPath, item);
       const stats = fs.lstatSync(itemPath);
       if (stats.isDirectory()) {
-        result.push(...this.getAllFiles(itemPath));
+        result.push(...this.findFilesInto(itemPath));
       } else {
-        result.push(itemPath);
+        if (filter === undefined || HelperText.matchFilter(item, filter)) {
+          result.push(itemPath);
+        }
       }
     }
     return result;

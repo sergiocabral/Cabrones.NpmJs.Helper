@@ -5,6 +5,7 @@ import {
 } from '../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
+import { FilterType } from '../../ts/Data/FilterType';
 
 describe('Classe HelperFileSystem', () => {
   afterEach(() => {
@@ -513,7 +514,7 @@ describe('Classe HelperFileSystem', () => {
       expect(size).toBe(expectedSize);
     });
   });
-  describe('getAllFiles', () => {
+  describe('findFilesInto', () => {
     test('Se caminho não existir deve lançar erro', () => {
       // Arrange, Given
 
@@ -521,7 +522,7 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const action = () => HelperFileSystem.getAllFiles(directory);
+      const action = () => HelperFileSystem.findFilesInto(directory);
 
       // Assert, Then
 
@@ -538,7 +539,7 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const action = () => HelperFileSystem.getAllFiles(file);
+      const action = () => HelperFileSystem.findFilesInto(file);
 
       // Assert, Then
 
@@ -564,7 +565,7 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const allPaths = HelperFileSystem.getAllFiles(directoryBase);
+      const allPaths = HelperFileSystem.findFilesInto(directoryBase);
 
       // Assert, Then
 
@@ -580,6 +581,191 @@ describe('Classe HelperFileSystem', () => {
       expect(
         allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
       ).toBe(true);
+    });
+    describe('Teste de limitador', () => {
+      test('deve limitar quantidade de arquivos retornados', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file2.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file3.txt`,
+          `Created by test. Delete me, please.`
+        );
+
+        const limiteCount = 2;
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(
+          directoryBase,
+          undefined,
+          limiteCount
+        );
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(2);
+        expect(
+          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+        ).toBe(true);
+      });
+      test('não deve limitar quantidade de arquivos retornados se for inferior ao limite', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file2.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file3.txt`,
+          `Created by test. Delete me, please.`
+        );
+
+        const limiteCount = 20;
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(
+          directoryBase,
+          undefined,
+          limiteCount
+        );
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(3);
+        expect(
+          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+        ).toBe(true);
+      });
+    });
+    describe('Teste de filtragem', () => {
+      test('filtro com base em String', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file2.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file3.txt`,
+          `Created by test. Delete me, please.`
+        );
+
+        const filter: FilterType = 'file3.txt';
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(directoryBase, filter);
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(1);
+        expect(
+          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+        ).toBe(true);
+      });
+      test('filtro com base em RegExp', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file2.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file3.txt`,
+          `Created by test. Delete me, please.`
+        );
+
+        const filter: FilterType = /file[13]/;
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(directoryBase, filter);
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(2);
+        expect(
+          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+        ).toBe(true);
+      });
+      test('filtro com base em lista mista de String e RegExp', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file1.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file2.txt`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/file3.txt`,
+          `Created by test. Delete me, please.`
+        );
+
+        const filter: FilterType = ['file2.txt', /file[13]/];
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(directoryBase, filter);
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(3);
+        expect(
+          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+        ).toBe(true);
+        expect(
+          allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+        ).toBe(true);
+      });
     });
   });
 });
