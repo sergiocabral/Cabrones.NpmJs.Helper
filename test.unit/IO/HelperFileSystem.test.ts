@@ -6,6 +6,14 @@ import {
 import * as fs from "fs";
 
 describe('Classe HelperFileSystem', () => {
+  afterEach(() => {
+    const items = fs
+        .readdirSync('.')
+        .filter(item => item.startsWith('test-'));
+    for (const item of items) {
+      HelperFileSystem.deleteRecursive(item)
+    }
+  });
   test('Não deve permitir instanciar', () => {
     // Arrange, Given
     // Act, When
@@ -224,6 +232,19 @@ describe('Classe HelperFileSystem', () => {
       expect(receivedExtension).not.toBe(extension);
       expect(receivedExtension).toBe(`${mark}${extension}`);
     });
+    test('Extensão deve ser vazia se não existir', () => {
+      // Arrange, Given
+
+      const filename = `file-without-extension`;
+
+      // Act, When
+
+      const receivedExtension = HelperFileSystem.getExtension(filename);
+
+      // Assert, Then
+
+      expect(receivedExtension).toBe('');
+    });
   });
   describe('deleteRecursive', () => {
     test('Se caminho não existir não dá erro e retorna zero.', () => {
@@ -242,7 +263,7 @@ describe('Classe HelperFileSystem', () => {
     test('Deve excluir arquivo e retorna 1 (um)', () => {
       // Arrange, Given
 
-      const file = `temp-file-${Math.random()}`;
+      const file = `test-file-${Math.random()}`;
       fs.writeFileSync(file, 'Created by test. Delete me, please.');
 
       // Act, When
@@ -258,7 +279,7 @@ describe('Classe HelperFileSystem', () => {
     test('Deve excluir diretórios e retorna o total excluído', () => {
       // Arrange, Given
 
-      const directoryBase = `temp-dir-${Math.random()}`;
+      const directoryBase = `test-dir-${Math.random()}`;
       fs.mkdirSync(directoryBase);
       fs.mkdirSync(`${directoryBase}/subdir`);
       fs.mkdirSync(`${directoryBase}/subdir2`);
@@ -273,6 +294,144 @@ describe('Classe HelperFileSystem', () => {
 
       expect(fileExists).toBe(false);
       expect(affected).toBe(4);
+    });
+  });
+  describe('createRecursive', () => {
+    test('se já existir diretório e criar diretório retorna zero', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-${Math.random()}`;
+      fs.mkdirSync(directoryBase);
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(directoryBase);
+
+      // Assert, Then
+
+      expect(affected).toBe(0);
+    });
+    test('se já existir diretório e criar arquivo lança erro', () => {
+      // Arrange, Given
+
+      const createFile = true;
+      const directoryBase = `test-dir-${Math.random()}`;
+      fs.mkdirSync(directoryBase);
+
+      // Act, When
+
+      const action = () => HelperFileSystem.createRecursive(directoryBase, createFile);
+
+      // Assert, Then
+
+      expect(action).toThrowError(InvalidExecutionError);
+    });
+    test('se já existir arquivo e criar arquivo retorna zero', () => {
+      // Arrange, Given
+
+      const createFile = true;
+      const file = `test-file-${Math.random()}`;
+      fs.writeFileSync(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(file, createFile);
+
+      // Assert, Then
+
+      expect(affected).toBe(0);
+    });
+    test('se já existir arquivo e criar diretório lança erro', () => {
+      // Arrange, Given
+
+      const file = `test-file-${Math.random()}`;
+      fs.writeFileSync(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const action = () => HelperFileSystem.createRecursive(file);
+
+      // Assert, Then
+
+      expect(action).toThrowError(InvalidExecutionError);
+    });
+    test('criar diretório', () => {
+      // Arrange, Given
+
+      const directory = `test-dir-${Math.random()}/dir2/dir3/dir4`;
+      const existsBefore = fs.existsSync(directory);
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(directory);
+      const existsAfter = fs.existsSync(directory);
+      const isDirectory = fs.lstatSync(directory).isDirectory();
+
+      // Assert, Then
+
+      expect(existsBefore).toBe(false);
+      expect(existsAfter).toBe(true);
+      expect(isDirectory).toBe(true);
+      expect(affected).toBe(4);
+    });
+    test('criar diretório com barras repetidas', () => {
+      // Arrange, Given
+
+      const directory = `test-dir-${Math.random()}/\\   \\dir2/dir3////dir4`;
+      const existsBefore = fs.existsSync(directory);
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(directory);
+      const existsAfter = fs.existsSync(directory);
+      const isDirectory = fs.lstatSync(directory).isDirectory();
+
+      // Assert, Then
+
+      expect(existsBefore).toBe(false);
+      expect(existsAfter).toBe(true);
+      expect(isDirectory).toBe(true);
+      expect(affected).toBe(5);
+    });
+    test('criar arquivo', () => {
+      // Arrange, Given
+
+      const createFile = true;
+      const file = `test-dir-${Math.random()}/dir2/dir3/file`;
+      const existsBefore = fs.existsSync(file);
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(file, createFile);
+      const existsAfter = fs.existsSync(file);
+      const isFile = !fs.lstatSync(file).isDirectory();
+
+      // Assert, Then
+
+      expect(existsBefore).toBe(false);
+      expect(existsAfter).toBe(true);
+      expect(isFile).toBe(true);
+      expect(affected).toBe(4);
+    });
+    test('criar arquivo com barras repetidas', () => {
+      // Arrange, Given
+
+      const createFile = true;
+      const file = `test-dir-${Math.random()}/\\   \\dir2/dir3////file`;
+      const existsBefore = fs.existsSync(file);
+
+      // Act, When
+
+      const affected = HelperFileSystem.createRecursive(file, createFile);
+      const existsAfter = fs.existsSync(file);
+      const isFile = !fs.lstatSync(file).isDirectory();
+
+      // Assert, Then
+
+      expect(existsBefore).toBe(false);
+      expect(existsAfter).toBe(true);
+      expect(isFile).toBe(true);
+      expect(affected).toBe(5);
     });
   });
 });

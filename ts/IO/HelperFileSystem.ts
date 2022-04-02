@@ -91,4 +91,37 @@ export class HelperFileSystem {
 
     return affected;
   }
+
+  /**
+   * Cria recursivamente todos os itens de um caminho
+   * @param path Caminho.
+   * @param isFile Sinaliza que é para criar um arquivo.
+   */
+  public static createRecursive(path: string, isFile = false): number {
+    if (fs.existsSync(path)) {
+      const isDirectory = fs.lstatSync(path).isDirectory();
+
+      if (isDirectory === isFile) {
+        throw new InvalidExecutionError(
+          'Path already exists but has other type.'
+        );
+      }
+
+      return 0;
+    }
+
+    fs.mkdirSync(path, {
+      recursive: true
+    });
+
+    const absolutePath = fs.realpathSync(path);
+
+    if (isFile) {
+      fs.rmdirSync(absolutePath);
+      fs.writeFileSync(absolutePath, '');
+    }
+
+    return HelperFileSystem.splitPath(path).filter(item => Boolean(item))
+      .length;
+  }
 }

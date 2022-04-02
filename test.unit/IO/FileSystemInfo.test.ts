@@ -1,19 +1,14 @@
-import { FileSystemInfo } from '../../ts';
+import {FileSystemInfo, HelperFileSystem} from '../../ts';
 import * as fs from 'fs';
 import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
   afterEach(() => {
-    const items = fs.readdirSync('.');
-
-    const files = items.filter(item => item.startsWith('test-file'));
-    for (const file of files) {
-      fs.unlinkSync(file);
-    }
-
-    const directories = items.filter(item => item.startsWith('test-dir'));
-    for (const directory of directories) {
-      fs.rmdirSync(directory);
+    const items = fs
+        .readdirSync('.')
+        .filter(item => item.startsWith('test-'));
+    for (const item of items) {
+      HelperFileSystem.deleteRecursive(item)
     }
   });
   test('Aceita qualquer caminho', () => {
