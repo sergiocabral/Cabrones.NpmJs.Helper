@@ -20,8 +20,6 @@ export class FileSystemInfo implements IFileSystemInfo {
     public readonly path: string,
     private readonly configuration?: Partial<IFindFileSystemInfoConfiguration>
   ) {
-    // TODO: Implementar classe.
-
     const regexWindowsRootDirectory = /^[A-Z]:[\\/]?$/i;
 
     const parts = HelperFileSystem.splitPath(path);
