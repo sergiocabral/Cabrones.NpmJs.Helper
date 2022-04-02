@@ -1,4 +1,5 @@
 import { HelperText, InvalidExecutionError } from '../../ts';
+import { FilterType } from '../../ts/Data/FilterType';
 
 describe('Classe HelperText', () => {
   test('Não deve permitir instanciar', () => {
@@ -241,7 +242,6 @@ describe('Classe HelperText', () => {
 
     expect(output).toBe(expectedOutput);
   });
-
   test('slugify deve converter texto em slug', () => {
     // Arrange, Given
 
@@ -255,5 +255,67 @@ describe('Classe HelperText', () => {
     // Assert, Then
 
     expect(output).toBe(expectedOutput);
+  });
+  describe('matchFilter', () => {
+    test('filtro com base em string', () => {
+      // Arrange, Given
+
+      const textMatch = Math.random().toString();
+      const textNotMatch = Math.random().toString();
+      const filter: FilterType = textMatch;
+
+      // Act, When
+
+      const resultForMatch = HelperText.matchFilter(textMatch, filter);
+      const resultForNotMatch = HelperText.matchFilter(textNotMatch, filter);
+
+      // Assert, Then
+
+      expect(resultForMatch).toBe(true);
+      expect(resultForNotMatch).toBe(false);
+    });
+    test('filtro com base em RegExp', () => {
+      // Arrange, Given
+
+      const textMatch = Math.random().toString();
+      const textMatchToo = `qualquer ${textMatch} coisa`;
+      const textNotMatch = Math.random().toString();
+      const filter: FilterType = new RegExp(HelperText.escapeRegExp(textMatch));
+
+      // Act, When
+
+      const resultForMatch = HelperText.matchFilter(textMatch, filter);
+      const resultForMatchToo = HelperText.matchFilter(textMatchToo, filter);
+      const resultForNotMatch = HelperText.matchFilter(textNotMatch, filter);
+
+      // Assert, Then
+
+      expect(resultForMatch).toBe(true);
+      expect(resultForMatchToo).toBe(true);
+      expect(resultForNotMatch).toBe(false);
+    });
+    test('filtro com base em lista mista de String e RegExp', () => {
+      // Arrange, Given
+
+      const textMatch1 = Math.random().toString();
+      const textMatch2 = Math.random().toString();
+      const textNotMatch = Math.random().toString();
+      const filter: FilterType = [
+        textMatch1,
+        new RegExp(`^${HelperText.escapeRegExp(textMatch2)}$`)
+      ];
+
+      // Act, When
+
+      const resultForMatch1 = HelperText.matchFilter(textMatch1, filter);
+      const resultForMatch2 = HelperText.matchFilter(textMatch2, filter);
+      const resultForNotMatch = HelperText.matchFilter(textNotMatch, filter);
+
+      // Assert, Then
+
+      expect(resultForMatch1).toBe(true);
+      expect(resultForMatch2).toBe(true);
+      expect(resultForNotMatch).toBe(false);
+    });
   });
 });

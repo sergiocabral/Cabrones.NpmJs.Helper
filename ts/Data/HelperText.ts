@@ -1,4 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+import { FilterType } from './FilterType';
 
 /**
  * Utilitários para texto (string).
@@ -117,5 +118,29 @@ export class HelperText {
       .toLowerCase()
       .replace(regexDiscardChars, '-')
       .replace(regexSpaces, '');
+  }
+
+  /**
+   * Verifica se um texto é valido para um determinado filtro.
+   * @param text Texto de entrada.
+   * @param filter Filtro como string, RegExp, ou lista mista de ambos.
+   * @return Retrona true quando o filtro é correspondente.
+   */
+  public static matchFilter(text: string, filter: FilterType): boolean {
+    if (!Array.isArray(filter)) {
+      filter = [filter];
+    }
+    for (const filterTest of filter) {
+      if (filterTest instanceof RegExp) {
+        if (filterTest.test(text)) {
+          return true;
+        }
+      } else {
+        if (String(filterTest) == text) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
