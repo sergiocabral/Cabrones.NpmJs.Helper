@@ -49,5 +49,20 @@ describe('Classe HelperFileSystem', () => {
 
       expect(parts).toStrictEqual(['  ', '  espaço  ', '', '  ']);
     });
+    test('Pode especificar outros separadores', () => {
+      // Arrange, Given
+
+      const path = 'part1:part2///part3|part4';
+      const separators: string[] = ['|', '///', ':']
+
+      // Act, When
+
+      const parts = HelperFileSystem.splitPath(path, separators);
+
+      // Assert, Then
+
+      expect(parts.length).toBe(4);
+      expect(parts).toStrictEqual(['part1', 'part2', 'part3', 'part4']);
+    });
   });
 });
