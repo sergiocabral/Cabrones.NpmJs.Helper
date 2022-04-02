@@ -193,6 +193,9 @@ export class HelperFileSystem {
     limitCount?: number
   ): string[] {
     const result: string[] = [];
+    if (limitCount !== undefined && limitCount <= 0) {
+      return result;
+    }
     directoryPath = fs.realpathSync(directoryPath);
     const items = fs.readdirSync(directoryPath);
     for (const item of items) {
@@ -208,9 +211,16 @@ export class HelperFileSystem {
       }
     }
     const parentDirectoryPath = pathNode.dirname(directoryPath);
-    if (parentDirectoryPath !== directoryPath) {
+    if (
+      parentDirectoryPath !== directoryPath &&
+      (limitCount === undefined || result.length < limitCount)
+    ) {
       result.push(
-        ...this.findFilesOut(parentDirectoryPath, filter, limitCount)
+        ...this.findFilesOut(
+          parentDirectoryPath,
+          filter,
+          limitCount === undefined ? limitCount : limitCount - result.length
+        )
       );
     }
     return result;

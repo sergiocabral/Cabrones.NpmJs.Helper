@@ -1,8 +1,4 @@
-import {
-  FileSystemInfo,
-  HelperFileSystem,
-  HelperText
-} from '../../ts';
+import { FileSystemInfo, HelperFileSystem, HelperText } from '../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';

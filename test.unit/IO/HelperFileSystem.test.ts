@@ -1,5 +1,6 @@
 import {
   HelperFileSystem,
+  HelperText,
   InvalidArgumentError,
   InvalidExecutionError
 } from '../../ts';
@@ -44,7 +45,10 @@ describe('Classe HelperFileSystem', () => {
       // Arrange, Given
 
       const file = `test-dir-${Math.random()}`;
-      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(
+        file,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -821,16 +825,16 @@ describe('Classe HelperFileSystem', () => {
       const directoryInto = `${directoryBase}/dir1/dir2`;
 
       HelperFileSystem.createRecursive(
-          `${directoryBase}/file1.txt`,
-          `Created by test. Delete me, please.`
+        `${directoryBase}/file1.txt`,
+        `Created by test. Delete me, please.`
       );
       HelperFileSystem.createRecursive(
-          `${directoryBase}/dir1/file2.txt`,
-          `Created by test. Delete me, please.`
+        `${directoryBase}/dir1/file2.txt`,
+        `Created by test. Delete me, please.`
       );
       HelperFileSystem.createRecursive(
-          `${directoryBase}/dir1/dir2/file3.txt`,
-          `Created by test. Delete me, please.`
+        `${directoryBase}/dir1/dir2/file3.txt`,
+        `Created by test. Delete me, please.`
       );
 
       // Act, When
@@ -840,9 +844,157 @@ describe('Classe HelperFileSystem', () => {
       // Assert, Then
 
       expect(allPaths.length).toBeGreaterThanOrEqual(3);
-      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/file1.txt`)))).toBeDefined();
-      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`)))).toBeDefined();
-      expect(allPaths.find(path => path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`)))).toBeDefined();
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        )
+      ).toBeDefined();
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+        )
+      ).toBeDefined();
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`))
+        )
+      ).toBeDefined();
     });
-  })
+    test('localizar arquivos com limitação', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+      const directoryInto = `${directoryBase}/dir1/dir2`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file1.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file2.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file3.txt`,
+        `Created by test. Delete me, please.`
+      );
+
+      const limitCount = 2;
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(
+        directoryInto,
+        undefined,
+        limitCount
+      );
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(2);
+      expect(
+        allPaths[0].endsWith(
+          pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`)
+        )
+      ).toBe(true);
+      expect(
+        allPaths[1].endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+      ).toBe(true);
+    });
+    test('localizar arquivos com limitação maior que o total de arquivo não deve limitar', () => {
+      // Arrange, Given
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+      const directoryInto = `${directoryBase}/dir1/dir2`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file1.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file2.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file3.txt`,
+        `Created by test. Delete me, please.`
+      );
+
+      const limitCount = Number.MAX_SAFE_INTEGER;
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(
+        directoryInto,
+        undefined,
+        limitCount
+      );
+
+      // Assert, Then
+
+      expect(allPaths.length).toBeGreaterThanOrEqual(3);
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        )
+      ).toBeDefined();
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+        )
+      ).toBeDefined();
+      expect(
+        allPaths.find(path =>
+          path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`))
+        )
+      ).toBeDefined();
+    });
+    test('localizar arquivos com filtro', () => {
+      // Arrange, Given
+
+      const uniqueMark = Math.floor(Math.random() * 1000).toString();
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+      const directoryInto = `${directoryBase}/dir1/dir2`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/file1-${uniqueMark}.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/file2-${uniqueMark}.txt`,
+        `Created by test. Delete me, please.`
+      );
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir1/dir2/file3-${uniqueMark}.txt`,
+        `Created by test. Delete me, please.`
+      );
+
+      const filter: FilterType = new RegExp(
+        HelperText.escapeRegExp(uniqueMark)
+      );
+
+      // Act, When
+
+      const allPaths = HelperFileSystem.findFilesOut(directoryInto, filter);
+
+      // Assert, Then
+
+      expect(allPaths.length).toBe(3);
+      expect(
+        allPaths[0].endsWith(
+          pathNode.join(`${directoryBase}/dir1/dir2/file3-${uniqueMark}.txt`)
+        )
+      ).toBe(true);
+      expect(
+        allPaths[1].endsWith(
+          pathNode.join(`${directoryBase}/dir1/file2-${uniqueMark}.txt`)
+        )
+      ).toBe(true);
+      expect(
+        allPaths[2].endsWith(
+          pathNode.join(`${directoryBase}/file1-${uniqueMark}.txt`)
+        )
+      ).toBe(true);
+    });
+  });
 });
