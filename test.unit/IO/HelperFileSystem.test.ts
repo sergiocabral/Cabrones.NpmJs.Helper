@@ -3,15 +3,13 @@ import {
   InvalidArgumentError,
   InvalidExecutionError
 } from '../../ts';
-import * as fs from "fs";
+import * as fs from 'fs';
 
 describe('Classe HelperFileSystem', () => {
   afterEach(() => {
-    const items = fs
-        .readdirSync('.')
-        .filter(item => item.startsWith('test-'));
+    const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
     for (const item of items) {
-      HelperFileSystem.deleteRecursive(item)
+      HelperFileSystem.deleteRecursive(item);
     }
   });
   test('Não deve permitir instanciar', () => {
@@ -283,7 +281,10 @@ describe('Classe HelperFileSystem', () => {
       fs.mkdirSync(directoryBase);
       fs.mkdirSync(`${directoryBase}/subdir`);
       fs.mkdirSync(`${directoryBase}/subdir2`);
-      fs.writeFileSync(`${directoryBase}/subdir2/file2`, 'Created by test. Delete me, please.');
+      fs.writeFileSync(
+        `${directoryBase}/subdir2/file2`,
+        'Created by test. Delete me, please.'
+      );
 
       // Act, When
 
@@ -320,7 +321,8 @@ describe('Classe HelperFileSystem', () => {
 
       // Act, When
 
-      const action = () => HelperFileSystem.createRecursive(directoryBase, createFile);
+      const action = () =>
+        HelperFileSystem.createRecursive(directoryBase, createFile);
 
       // Assert, Then
 

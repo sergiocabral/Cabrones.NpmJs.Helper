@@ -13,6 +13,11 @@ export interface IFindFileSystemInfoConfiguration {
   checkIfFileOrDirectory: boolean;
 
   /**
+   * Verifica o caminho real e absoluto.
+   */
+  fillAbsolutePath: boolean;
+
+  /**
    * Aplica um filtro no nome durante a pesquisa.
    */
   nameFilter: RegExp[];

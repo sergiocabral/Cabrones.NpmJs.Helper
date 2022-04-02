@@ -1,5 +1,6 @@
 import { FileSystemInfo, HelperFileSystem } from '../../ts';
 import * as fs from 'fs';
+import { default as pathNode } from 'path';
 import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
@@ -258,6 +259,206 @@ describe('Classe FileSystemInfo', () => {
 
       expect(sut.parents.length).toBe(1);
       expect(sut.parents).toStrictEqual(['dir']);
+    });
+  });
+  describe('absolutePath', () => {
+    test('Parâmetro não é especificado', () => {
+      // Arrange, Given
+
+      const path = `test-file-delete-me-${Math.random()}`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeUndefined();
+    });
+    test('Parâmetro é especificado mas path não existe e não é raiz', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillAbsolutePath: true
+      };
+
+      const path = `dir1/dir2/file`;
+      const expectedPath = pathNode.join(fs.realpathSync('.'), path);
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeDefined();
+      expect(sut.absolutePath).toBe(expectedPath);
+    });
+    test('Parâmetro é especificado mas path não existe e tem barras duplicadas e não é raiz', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillAbsolutePath: true
+      };
+
+      const path = `dir1//\\dir2/\\file`;
+      const expectedPath = pathNode.join(fs.realpathSync('.'), path);
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeDefined();
+      expect(sut.absolutePath).toBe(expectedPath);
+    });
+    test('Parâmetro é especificado mas path não existe e é raiz Unix', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillAbsolutePath: true
+      };
+
+      const path = `/dir1/dir2/file`;
+      const expectedPath = path.replace(/\\|\//g, pathNode.sep);
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeDefined();
+      expect(sut.absolutePath).toBe(expectedPath);
+    });
+    test('Parâmetro é especificado mas path não existe e tem barras duplicadas e é raiz Unix', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillAbsolutePath: true
+      };
+
+      const path = `/dir1//\\dir2/\\file`;
+      const expectedPath = pathNode.join(path.replace(/\\|\//g, pathNode.sep));
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeDefined();
+      expect(sut.absolutePath).toBe(expectedPath);
+    });
+    test('Parâmetro é especificado mas path não existe e tem barras duplicadas e é raiz Windows', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillAbsolutePath: true
+      };
+
+      const path = `w:/dir1//\\dir2/\\file`;
+      const expectedPath = pathNode.join(path.replace(/\\|\//g, pathNode.sep));
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.absolutePath).toBeDefined();
+      expect(sut.absolutePath).toBe(expectedPath);
+    });
+    test('Deve ser igual se path existir e não é absoluto', () => {
+      // Arrange, Given
+
+      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
+        checkExistence: true,
+        fillAbsolutePath: true
+      };
+
+      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
+        checkExistence: false,
+        fillAbsolutePath: true
+      };
+
+      const directory = `test-dir-delete-me-${Math.random()}`;
+      const file = `test-file-delete-me-${Math.random()}`;
+      const path = `${directory}/${file}`;
+
+      HelperFileSystem.createRecursive(path, true);
+
+      // Act, When
+
+      const sut1 = new FileSystemInfo(path, configurationCheckExist);
+      const sut2 = new FileSystemInfo(path, configurationNotCheckExist);
+
+      // Assert, Then
+
+      expect(sut1.absolutePath).toBe(sut2.absolutePath);
+    });
+    test('Deve ser igual se path existir e é absoluto', () => {
+      // Arrange, Given
+
+      const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
+        checkExistence: true,
+        fillAbsolutePath: true
+      };
+
+      const configurationNotCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
+        checkExistence: false,
+        fillAbsolutePath: true
+      };
+
+      const directory = `test-dir-delete-me-${Math.random()}`;
+      const file = `test-file-delete-me-${Math.random()}`;
+      const path = pathNode.join(fs.realpathSync('.'), `${directory}/${file}`);
+
+      HelperFileSystem.createRecursive(path, true);
+
+      // Act, When
+
+      const sut1 = new FileSystemInfo(path, configurationCheckExist);
+      const sut2 = new FileSystemInfo(path, configurationNotCheckExist);
+
+      // Assert, Then
+
+      expect(sut1.absolutePath).toBe(sut2.absolutePath);
+    });
+  });
+  describe('Carregar parent', () => {
+    test('Parâmetro não é especificado', () => {
+      // Arrange, Given
+
+      const path = `/dir/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path);
+
+      // Assert, Then
+
+      expect(sut.parent).toBeUndefined();
+    });
+    test('Parâmetro é especificado mas path não existe', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillParent: true
+      };
+
+      const directory = `test-dir-delete-me-${Math.random()}`;
+      const file = `test-file-delete-me-${Math.random()}`;
+      const path = `${directory}${file}.log`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      //expect(sut.parent).toBeDefined();
     });
   });
 });

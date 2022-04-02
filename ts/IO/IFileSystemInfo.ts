@@ -23,6 +23,11 @@ export interface IFileSystemInfo {
   exists: boolean;
 
   /**
+   * Caminho absoluto.
+   */
+  absolutePath: string | undefined;
+
+  /**
    * Sinaliza ser arquivo.
    */
   isFile: boolean;

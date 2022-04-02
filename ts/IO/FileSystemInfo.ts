@@ -2,6 +2,7 @@ import { IFileSystemInfo } from './IFileSystemInfo';
 import { IFindFileSystemInfoConfiguration } from './IFindFileSystemInfoConfiguration';
 import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
+import { default as pathNode } from 'path';
 
 /**
  * Representação de um arquivo ou diretório.
@@ -43,6 +44,31 @@ export class FileSystemInfo implements IFileSystemInfo {
       this.parents.pop();
     }
 
+    this.absolutePath = undefined;
+    if (configuration?.fillAbsolutePath) {
+      if (this.exists) {
+        this.absolutePath = fs.realpathSync(path);
+      } else {
+        const parts = pathNode.join(path).split(pathNode.sep);
+
+        this.absolutePath = parts
+          .filter(item => Boolean(item))
+          .join(pathNode.sep);
+
+        const rootWindows = parts.length && /^[A-Z]:$/i.test(parts[0]);
+        const rootUnix = parts.length && parts[0] === '';
+
+        if (rootUnix) {
+          this.absolutePath = pathNode.sep + this.absolutePath;
+        } else if (!rootWindows) {
+          this.absolutePath = pathNode.join(
+            fs.realpathSync('.'),
+            this.absolutePath
+          );
+        }
+      }
+    }
+
     this.parent = undefined;
     this.children = [];
     this.size = 0;
@@ -62,6 +88,11 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Sinaliza se existe ou não.
    */
   public readonly exists: boolean;
+
+  /**
+   * Caminho absoluto.
+   */
+  public readonly absolutePath: string | undefined;
 
   /**
    * Sinaliza ser arquivo.
