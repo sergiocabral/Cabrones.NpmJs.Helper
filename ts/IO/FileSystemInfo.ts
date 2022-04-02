@@ -29,7 +29,8 @@ export class FileSystemInfo implements IFileSystemInfo {
     this.exists =
       configuration?.checkExistence ||
       configuration?.loadStats ||
-      configuration?.fillChildren
+      configuration?.fillChildren ||
+      configuration?.fillDirectorySize
         ? fs.existsSync(path)
         : false;
 
@@ -102,6 +103,10 @@ export class FileSystemInfo implements IFileSystemInfo {
         const childPath = pathNode.join(path, child);
         this.children.push(new FileSystemInfo(childPath, configuration));
       }
+    }
+
+    if (configuration?.fillDirectorySize && this.exists) {
+      this.size = HelperFileSystem.getDirectorySize(path);
     }
   }
 

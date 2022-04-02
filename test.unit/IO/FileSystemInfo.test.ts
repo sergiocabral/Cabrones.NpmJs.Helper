@@ -543,9 +543,9 @@ describe('Classe FileSystemInfo', () => {
 
       const directoryBase = `test-dir-delete-me-${Math.random()}`;
 
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, "123");
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, "123");
-      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, "123");
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, 'Created by test. Delete me, please.');
 
       // Act, When
 

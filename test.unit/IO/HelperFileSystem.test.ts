@@ -451,4 +451,53 @@ describe('Classe HelperFileSystem', () => {
       expect(fileContentReaded).toBe(fileContent);
     });
   });
+  describe('getDirectorySize()', () => {
+    test('Se caminho não existe deve lançar erro', () => {
+      // Arrange, Given
+
+      const directory = '/dir1/dir2';
+
+      // Act, When
+
+      const action = () => HelperFileSystem.getDirectorySize(directory)
+
+      // Assert, Then
+
+      expect(action).toThrowError();
+    });
+    test('Se caminho é um arquivo deve lançar erro', () => {
+      // Arrange, Given
+
+      const file = `test-file-${Math.random()}`;
+      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const action = () => HelperFileSystem.getDirectorySize(file)
+
+      // Assert, Then
+
+      expect(action).toThrowError();
+    });
+    test('Deve calcular o tamanho em bytes do diretório', () => {
+      // Arrange, Given
+
+      const content = `Created by test. Delete me, please. ${Math.random()}`;
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, content);
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, content);
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, content);
+
+      const expectedSize = content.length * 3;
+
+      // Act, When
+
+      const size = HelperFileSystem.getDirectorySize(directoryBase);
+
+      // Assert, Then
+
+      expect(size).toBe(expectedSize);
+    });
+  });
 });

@@ -128,4 +128,21 @@ export class HelperFileSystem {
     return HelperFileSystem.splitPath(path).filter(item => Boolean(item))
       .length;
   }
+
+  /**
+   * Calcula o tamanho de um diretório em bytes.
+   */
+  public static getDirectorySize(path: string): number {
+    let size = 0;
+    const items = fs.readdirSync(path).map(item => pathNode.join(path, item));
+    for (const itemPath of items) {
+      const stats = fs.lstatSync(itemPath);
+      if (stats.isDirectory()) {
+        size += this.getDirectorySize(itemPath);
+      } else {
+        size += stats.size;
+      }
+    }
+    return size;
+  }
 }
