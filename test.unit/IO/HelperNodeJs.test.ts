@@ -1,7 +1,6 @@
 import {
   HelperFileSystem,
   HelperNodeJs,
-  HelperObject,
   InvalidExecutionError
 } from '../../ts';
 import fs from 'fs';
