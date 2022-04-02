@@ -638,4 +638,76 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.size).toBe(expectedSize);
     });
   });
+  describe('children usando filter', () => {
+    test('Filtro de arquivo', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true,
+        fileFilter: [
+            /fileA1/,
+            /fileA3/
+        ]
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA1.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA2.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dir/fileA3.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/fileA1.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/fileA2.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/fileA3.txt`, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const sut = new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(3);
+      expect(sut.children[0].name).toBe('dir');
+      expect(sut.children[1].name).toBe('fileA1.txt');
+      expect(sut.children[2].name).toBe('fileA3.txt');
+      expect(sut.children[0].children.length).toBe(2);
+      expect(sut.children[0].children[0].name).toBe('fileA1.txt');
+      expect(sut.children[0].children[1].name).toBe('fileA3.txt');
+    });
+    test('Filtro de diretório', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true,
+        directoryFilter: [
+            /dirA1/,
+            /dirA3/
+        ]
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA1/fileA1.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA2/fileA2.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/fileA3.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/dirA1/fileA4.txt`, 'Created by test. Delete me, please.');
+      HelperFileSystem.createRecursive(`${directoryBase}/dirA3/dirA2/fileA5.txt`, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const sut = new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(2);
+      expect(sut.children[0].name).toBe('dirA1');
+      expect(sut.children[1].name).toBe('dirA3');
+      expect(sut.children[0].children.length).toBe(1);
+      expect(sut.children[0].children[0].name).toBe('fileA1.txt');
+      expect(sut.children[1].children.length).toBe(2);
+      expect(sut.children[1].children[0].name).toBe('dirA1');
+      expect(sut.children[1].children[1].name).toBe('fileA3.txt');
+      expect(sut.children[1].children[0].children.length).toBe(1);
+      expect(sut.children[1].children[0].children[0].name).toBe('fileA4.txt');
+    });
+  });
 });

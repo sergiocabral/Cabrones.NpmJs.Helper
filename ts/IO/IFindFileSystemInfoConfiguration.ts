@@ -23,9 +23,14 @@ export interface IFindFileSystemInfoConfiguration {
   fillDirectorySize: boolean;
 
   /**
-   * Aplica um filtro no nome durante a pesquisa.
+   * Aplica um filtro no nome do arquivo durante a pesquisa.
    */
-  nameFilter: RegExp[];
+  fileFilter: RegExp[];
+
+  /**
+   * Aplica um filtro no nome do diretório durante a pesquisa.
+   */
+  directoryFilter: RegExp[];
 
   /**
    * Carrega os nomes de todos os diretórios pai.

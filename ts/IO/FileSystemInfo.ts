@@ -103,6 +103,23 @@ export class FileSystemInfo implements IFileSystemInfo {
       const children = this.isDirectory ? fs.readdirSync(path) : [];
       for (const child of children) {
         const childPath = pathNode.join(path, child);
+
+        if (configuration.directoryFilter || configuration.fileFilter) {
+          const stats = fs.lstatSync(childPath);
+          const regexValid: RegExp[] | undefined = stats.isDirectory()
+            ? configuration.directoryFilter
+            : stats.isFile()
+            ? configuration.fileFilter
+            : undefined;
+
+          const ignore =
+            regexValid !== undefined &&
+            regexValid.findIndex(filter => filter.test(child)) < 0;
+
+          if (ignore) {
+            continue;
+          }
+        }
         this.children.push(new FileSystemInfo(childPath, configuration));
       }
     }
