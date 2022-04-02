@@ -4,6 +4,8 @@ import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { Stats } from 'fs';
+import { FilterType } from '../Data/FilterType';
+import { HelperText } from '../Data/HelperText';
 
 /**
  * Representação de um arquivo ou diretório.
@@ -106,15 +108,14 @@ export class FileSystemInfo implements IFileSystemInfo {
 
         if (configuration.directoryFilter || configuration.fileFilter) {
           const stats = fs.lstatSync(childPath);
-          const regexValid: RegExp[] | undefined = stats.isDirectory()
+          const filter: FilterType | undefined = stats.isDirectory()
             ? configuration.directoryFilter
             : stats.isFile()
             ? configuration.fileFilter
             : undefined;
 
           const ignore =
-            regexValid !== undefined &&
-            regexValid.findIndex(filter => filter.test(child)) < 0;
+            filter !== undefined && !HelperText.matchFilter(child, filter);
 
           if (ignore) {
             continue;

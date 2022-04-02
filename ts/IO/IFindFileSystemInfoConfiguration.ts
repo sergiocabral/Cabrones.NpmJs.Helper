@@ -1,6 +1,8 @@
 /**
  * Configuração durante a busca de arquivos e diretórios.
  */
+import { FilterType } from '../Data/FilterType';
+
 export interface IFindFileSystemInfoConfiguration {
   /**
    * Verifica existência em disco.
@@ -25,12 +27,12 @@ export interface IFindFileSystemInfoConfiguration {
   /**
    * Aplica um filtro no nome do arquivo durante a pesquisa.
    */
-  fileFilter: RegExp[];
+  fileFilter: FilterType;
 
   /**
    * Aplica um filtro no nome do diretório durante a pesquisa.
    */
-  directoryFilter: RegExp[];
+  directoryFilter: FilterType;
 
   /**
    * Carrega os nomes de todos os diretórios pai.

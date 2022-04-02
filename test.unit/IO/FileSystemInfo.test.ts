@@ -1,15 +1,28 @@
-import { FileSystemInfo, HelperFileSystem } from '../../ts';
+import {
+  FileSystemInfo,
+  HelperFileSystem,
+  HelperText
+} from '../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
+  const originals: Record<string, any> = {};
+
+  beforeEach(() => {
+    originals['HelperText.matchFilter'] = HelperText.matchFilter;
+  });
+
   afterEach(() => {
+    HelperText.matchFilter = originals['HelperText.matchFilter'];
+
     const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
     for (const item of items) {
       HelperFileSystem.deleteRecursive(item);
     }
   });
+
   test('Aceita qualquer caminho', () => {
     // Arrange, Given
 
@@ -769,6 +782,58 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.children[1].children[1].name).toBe('fileA3.txt');
       expect(sut.children[1].children[0].children.length).toBe(1);
       expect(sut.children[1].children[0].children[0].name).toBe('fileA4.txt');
+    });
+    test('Filtro de arquivo deve usar HelperText.matchFilter', () => {
+      // Arrange, Given
+
+      const mockFunction = jest.fn();
+      HelperText.matchFilter = mockFunction;
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true,
+        fileFilter: 'filtro'
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir/fileA1.txt`,
+        'Created by test. Delete me, please.'
+      );
+
+      // Act, When
+
+      new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(mockFunction).toBeCalledTimes(1);
+    });
+    test('Filtro de diretório deve usar HelperText.matchFilter', () => {
+      // Arrange, Given
+
+      const mockFunction = jest.fn();
+      HelperText.matchFilter = mockFunction;
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true,
+        directoryFilter: 'filtro'
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(
+        `${directoryBase}/dir/fileA1.txt`,
+        'Created by test. Delete me, please.'
+      );
+
+      // Act, When
+
+      new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(mockFunction).toBeCalledTimes(1);
     });
   });
 });
