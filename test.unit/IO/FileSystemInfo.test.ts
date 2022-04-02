@@ -558,4 +558,84 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.children[0].children[0].children.length).toBe(2);
     });
   });
+  describe('size', () => {
+    test('Se não especificado deve ter valor negativo mesmo que exista', () => {
+      // Arrange, Given
+
+      const file = `test-file-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const sut = new FileSystemInfo(file);
+
+      // Assert, Then
+
+      expect(sut.size).toBe(-1);
+    });
+    test('se não existe retorna -1', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillDirectorySize: true
+      };
+
+      const file = `dir1/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(file, configuration);
+
+      // Assert, Then
+
+      expect(sut.size).toBe(-1);
+    });
+    test('Retorna o tamanho de arquivo', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        loadStats: true
+      };
+
+      const content = `Created by test. Delete me, please. ${Math.random()}`;
+      const file = `test-file-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(file, content);
+
+      const expectedSize = content.length;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(file, configuration);
+
+      // Assert, Then
+
+      expect(sut.size).toBe(expectedSize);
+    });
+    test('Retorna o tamanho de diretório', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillDirectorySize: true
+      };
+
+      const content = `Created by test. Delete me, please. ${Math.random()}`;
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, content);
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, content);
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, content);
+
+      const expectedSize = content.length * 3;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(sut.size).toBe(expectedSize);
+    });
+  });
 });

@@ -40,7 +40,9 @@ export class FileSystemInfo implements IFileSystemInfo {
     this.isFile = false;
     this.size = -1;
     if (
-      (configuration?.loadStats || configuration?.fillChildren) &&
+      (configuration?.loadStats ||
+        configuration?.fillChildren ||
+        configuration?.fillDirectorySize) &&
       this.exists
     ) {
       lstat = fs.lstatSync(path);
@@ -105,7 +107,7 @@ export class FileSystemInfo implements IFileSystemInfo {
       }
     }
 
-    if (configuration?.fillDirectorySize && this.exists) {
+    if (configuration?.fillDirectorySize && this.isDirectory) {
       this.size = HelperFileSystem.getDirectorySize(path);
     }
   }
