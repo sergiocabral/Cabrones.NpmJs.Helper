@@ -1,14 +1,12 @@
-import {FileSystemInfo, HelperFileSystem} from '../../ts';
+import { FileSystemInfo, HelperFileSystem } from '../../ts';
 import * as fs from 'fs';
 import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
   afterEach(() => {
-    const items = fs
-        .readdirSync('.')
-        .filter(item => item.startsWith('test-'));
+    const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
     for (const item of items) {
-      HelperFileSystem.deleteRecursive(item)
+      HelperFileSystem.deleteRecursive(item);
     }
   });
   test('Aceita qualquer caminho', () => {
@@ -261,5 +259,5 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.parents.length).toBe(1);
       expect(sut.parents).toStrictEqual(['dir']);
     });
-  })
+  });
 });
