@@ -19,6 +19,8 @@ export class FileSystemInfo implements IFileSystemInfo {
   ) {
     // TODO: Implementar classe.
 
+    const regexWindowsRootDirectory = /^[A-Z]:[\\/]?$/i;
+
     const parts = HelperFileSystem.splitPath(path);
 
     this.name = parts[parts.length - 1];
@@ -55,7 +57,8 @@ export class FileSystemInfo implements IFileSystemInfo {
           .filter(item => Boolean(item))
           .join(pathNode.sep);
 
-        const rootWindows = parts.length && /^[A-Z]:$/i.test(parts[0]);
+        const rootWindows =
+          parts.length && regexWindowsRootDirectory.test(parts[0]);
         const rootUnix = parts.length && parts[0] === '';
 
         if (rootUnix) {
@@ -70,8 +73,19 @@ export class FileSystemInfo implements IFileSystemInfo {
     }
 
     this.parent = undefined;
-    this.children = [];
+    if (configuration?.fillParent) {
+      const parentDirectory = pathNode.dirname(pathNode.join(path));
+      if (
+        parentDirectory !== '.' &&
+        !regexWindowsRootDirectory.test(parentDirectory)
+      ) {
+        this.parent = new FileSystemInfo(parentDirectory, configuration);
+      }
+    }
+
     this.size = 0;
+
+    this.children = [];
   }
 
   /**

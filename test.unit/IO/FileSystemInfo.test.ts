@@ -321,7 +321,7 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `/dir1/dir2/file`;
-      const expectedPath = path.replace(/\\|\//g, pathNode.sep);
+      const expectedPath = path.replace(/[\\/]/g, pathNode.sep);
 
       // Act, When
 
@@ -340,7 +340,7 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `/dir1//\\dir2/\\file`;
-      const expectedPath = pathNode.join(path.replace(/\\|\//g, pathNode.sep));
+      const expectedPath = pathNode.join(path.replace(/[\\/]/g, pathNode.sep));
 
       // Act, When
 
@@ -359,7 +359,7 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `w:/dir1//\\dir2/\\file`;
-      const expectedPath = pathNode.join(path.replace(/\\|\//g, pathNode.sep));
+      const expectedPath = pathNode.join(path.replace(/[\\/]/g, pathNode.sep));
 
       // Act, When
 
@@ -370,7 +370,7 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.absolutePath).toBeDefined();
       expect(sut.absolutePath).toBe(expectedPath);
     });
-    test('Deve ser igual se path existir e não é absoluto', () => {
+    test('Deve ser igual se path existir e é relativo', () => {
       // Arrange, Given
 
       const configurationCheckExist: Partial<IFindFileSystemInfoConfiguration> = {
@@ -441,16 +441,14 @@ describe('Classe FileSystemInfo', () => {
 
       expect(sut.parent).toBeUndefined();
     });
-    test('Parâmetro é especificado mas path não existe', () => {
+    test('Parâmetro é especificado para path relativo', () => {
       // Arrange, Given
 
       const configuration: Partial<IFindFileSystemInfoConfiguration> = {
         fillParent: true
       };
 
-      const directory = `test-dir-delete-me-${Math.random()}`;
-      const file = `test-file-delete-me-${Math.random()}`;
-      const path = `${directory}${file}.log`;
+      const path = `dir1/dir2/file`;
 
       // Act, When
 
@@ -458,7 +456,34 @@ describe('Classe FileSystemInfo', () => {
 
       // Assert, Then
 
-      //expect(sut.parent).toBeDefined();
+      expect(sut.parent).toBeDefined();
+      expect(sut.parent?.parent).toBeDefined();
+      expect(sut.parent?.parent?.parent).toBeUndefined();
+      expect(sut.name).toBe("file");
+      expect(sut.parent?.name).toBe("dir2");
+      expect(sut.parent?.parent?.name).toBe("dir1");
+    });
+    test('Parâmetro é especificado para path absoluto', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillParent: true
+      };
+
+      const path = `c:/dir1/dir2/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.parent).toBeDefined();
+      expect(sut.parent?.parent).toBeDefined();
+      expect(sut.parent?.parent?.parent).toBeUndefined();
+      expect(sut.name).toBe("file");
+      expect(sut.parent?.name).toBe("dir2");
+      expect(sut.parent?.parent?.name).toBe("dir1");
     });
   });
 });
