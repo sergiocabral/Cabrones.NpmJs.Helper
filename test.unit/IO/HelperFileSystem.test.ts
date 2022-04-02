@@ -3,6 +3,7 @@ import {
   InvalidArgumentError,
   InvalidExecutionError
 } from '../../ts';
+import * as fs from "fs";
 
 describe('Classe HelperFileSystem', () => {
   test('Não deve permitir instanciar', () => {
@@ -222,6 +223,56 @@ describe('Classe HelperFileSystem', () => {
 
       expect(receivedExtension).not.toBe(extension);
       expect(receivedExtension).toBe(`${mark}${extension}`);
+    });
+  });
+  describe('deleteRecursive', () => {
+    test('Se caminho não existir não dá erro e retorna zero.', () => {
+      // Arrange, Given
+
+      const path = '/non/exists/file/or/dir';
+
+      // Act, When
+
+      const affected = HelperFileSystem.deleteRecursive(path);
+
+      // Assert, Then
+
+      expect(affected).toBe(0);
+    });
+    test('Deve excluir arquivo e retorna 1 (um)', () => {
+      // Arrange, Given
+
+      const file = `temp-file-${Math.random()}`;
+      fs.writeFileSync(file, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const affected = HelperFileSystem.deleteRecursive(file);
+      const fileExists = fs.existsSync(file);
+
+      // Assert, Then
+
+      expect(fileExists).toBe(false);
+      expect(affected).toBe(1);
+    });
+    test('Deve excluir diretórios e retorna o total excluído', () => {
+      // Arrange, Given
+
+      const directoryBase = `temp-dir-${Math.random()}`;
+      fs.mkdirSync(directoryBase);
+      fs.mkdirSync(`${directoryBase}/subdir`);
+      fs.mkdirSync(`${directoryBase}/subdir2`);
+      fs.writeFileSync(`${directoryBase}/subdir2/file2`, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const affected = HelperFileSystem.deleteRecursive(directoryBase);
+      const fileExists = fs.existsSync(directoryBase);
+
+      // Assert, Then
+
+      expect(fileExists).toBe(false);
+      expect(affected).toBe(4);
     });
   });
 });

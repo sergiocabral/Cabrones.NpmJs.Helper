@@ -1,6 +1,8 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { HelperText } from '../Data/HelperText';
+import * as fs from 'fs';
+import { default as pathNode } from 'path';
 
 /**
  * Utilitário para arquivo e diretórios.
@@ -60,5 +62,33 @@ export class HelperFileSystem {
     }
 
     return '';
+  }
+
+  /**
+   * Apaga recursivamente todos os itens no caminho.
+   * @param path Caminho
+   * @return Retorna o total de itens excluídos.
+   */
+  public static deleteRecursive(path: string): number {
+    if (!fs.existsSync(path)) {
+      return 0;
+    }
+
+    const isDirectory = fs.lstatSync(path).isDirectory();
+
+    if (!isDirectory) {
+      fs.unlinkSync(path);
+      return 1;
+    }
+
+    let affected = 1;
+    const items = fs.readdirSync(path);
+    for (const item of items) {
+      affected += this.deleteRecursive(pathNode.join(path, item));
+    }
+
+    fs.rmdirSync(path);
+
+    return affected;
   }
 }
