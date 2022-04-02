@@ -18,6 +18,11 @@ export interface IFileSystemInfo {
   extension: string;
 
   /**
+   * Sinaliza se existe ou não.
+   */
+  exists: boolean;
+
+  /**
    * Sinaliza ser diretório.
    */
   isDirectory: boolean;
@@ -36,9 +41,4 @@ export interface IFileSystemInfo {
    * Arquivos e diretórios filhos.
    */
   children: IFileSystemInfo[];
-
-  /**
-   * Sinaliza se existe ou não.
-   */
-  exists: boolean;
 }

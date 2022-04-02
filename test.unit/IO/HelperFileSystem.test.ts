@@ -179,5 +179,21 @@ describe('Classe HelperFileSystem', () => {
       expect(receivedExtension).not.toBe(`${mark2}${extensionFirst}`);
       expect(receivedExtension).toBe(`${mark1}${extensionSecond}${mark2}${extensionFirst}`);
     });
+    test('Deve pegar a extensão junto com o marcador', () => {
+      // Arrange, Given
+
+      const mark = '@@';
+      const extension = 'exe';
+      const filename = `file${mark}${extension}`;
+
+      // Act, When
+
+      const receivedExtension = HelperFileSystem.getExtension(filename, [mark]);
+
+      // Assert, Then
+
+      expect(receivedExtension).not.toBe(extension);
+      expect(receivedExtension).toBe(`${mark}${extension}`);
+    });
   });
 });
