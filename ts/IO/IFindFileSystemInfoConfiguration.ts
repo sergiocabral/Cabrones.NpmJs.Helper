@@ -18,9 +18,14 @@ export interface IFindFileSystemInfoConfiguration {
   nameFilter: RegExp[];
 
   /**
-   * Localiza todos os diretórios pai.
+   * Carrega os nomes de todos os diretórios pai.
    */
   fillParents: boolean;
+
+  /**
+   * Carrega os dados o diretório pai.
+   */
+  fillParent: boolean;
 
   /**
    * Consulta o tamanho do arquivo.

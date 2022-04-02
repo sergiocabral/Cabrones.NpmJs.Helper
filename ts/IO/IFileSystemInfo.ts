@@ -33,9 +33,9 @@ export interface IFileSystemInfo {
   isDirectory: boolean;
 
   /**
-   * Tamanho em bytes.
+   * Diretórios ancestrais.
    */
-  size: number;
+  parents: string[];
 
   /**
    * Diretório pai.
@@ -46,4 +46,9 @@ export interface IFileSystemInfo {
    * Arquivos e diretórios filhos.
    */
   children: IFileSystemInfo[];
+
+  /**
+   * Tamanho em bytes.
+   */
+  size: number;
 }

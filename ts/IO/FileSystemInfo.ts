@@ -34,9 +34,18 @@ export class FileSystemInfo implements IFileSystemInfo {
         // Ignore
       }
     }
+
+    this.parents = [];
+    if (configuration?.fillParents) {
+      this.parents = HelperFileSystem.splitPath(path).filter(directory =>
+        Boolean(directory)
+      );
+      this.parents.pop();
+    }
+
+    this.parent = undefined;
     this.children = [];
     this.size = 0;
-    this.parent = undefined;
   }
 
   /**
@@ -65,9 +74,9 @@ export class FileSystemInfo implements IFileSystemInfo {
   public readonly isDirectory: boolean;
 
   /**
-   * Tamanho em bytes.
+   * Diretórios ancestrais.
    */
-  public readonly size: number;
+  public readonly parents: string[];
 
   /**
    * Diretório pai.
@@ -78,4 +87,9 @@ export class FileSystemInfo implements IFileSystemInfo {
    * Arquivos e diretórios filhos.
    */
   public readonly children: IFileSystemInfo[];
+
+  /**
+   * Tamanho em bytes.
+   */
+  public readonly size: number;
 }

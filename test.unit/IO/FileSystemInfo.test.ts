@@ -199,4 +199,72 @@ describe('Classe FileSystemInfo', () => {
       expect(sutFile.isFile).toBe(false);
     });
   });
+  describe('Lista de diretórios pai', () => {
+    test('Parâmetro não especificado', () => {
+      // Arrange, Given
+
+      const path = `/dir1/dir2/dir3/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path);
+
+      // Assert, Then
+
+      expect(sut.parents.length).toBe(0);
+    });
+    test('Parâmetro é especificado e tem diretórios pai', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillParents: true
+      };
+
+      const path = `/dir1/dir2/dir3/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.parents.length).toBe(3);
+      expect(sut.parents).toStrictEqual(['dir1', 'dir2', 'dir3']);
+    });
+    test('Parâmetro é especificado e não tem diretórios pai', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillParents: true
+      };
+
+      const path = `/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.parents.length).toBe(0);
+    });
+    test('Parâmetro é especificado e tem diretórios pai e barras duplicadas', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillParents: true
+      };
+
+      const path = `/\\/\\//dir//file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.parents.length).toBe(1);
+      expect(sut.parents).toStrictEqual(['dir']);
+    });
+  })
 });
