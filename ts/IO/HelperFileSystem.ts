@@ -95,11 +95,15 @@ export class HelperFileSystem {
   /**
    * Cria recursivamente todos os itens de um caminho
    * @param path Caminho.
-   * @param isFile Sinaliza que é para criar um arquivo.
+   * @param createAsFileContent Se especificado cria como conteúdo de arquivo. Do contrário criar como diretório.
    */
-  public static createRecursive(path: string, isFile = false): number {
+  public static createRecursive(
+    path: string,
+    createAsFileContent?: string
+  ): number {
     if (fs.existsSync(path)) {
       const isDirectory = fs.lstatSync(path).isDirectory();
+      const isFile = createAsFileContent !== undefined;
 
       if (isDirectory === isFile) {
         throw new InvalidExecutionError(
@@ -116,9 +120,9 @@ export class HelperFileSystem {
 
     const absolutePath = fs.realpathSync(path);
 
-    if (isFile) {
+    if (createAsFileContent !== undefined) {
       fs.rmdirSync(absolutePath);
-      fs.writeFileSync(absolutePath, '');
+      fs.writeFileSync(absolutePath, createAsFileContent);
     }
 
     return HelperFileSystem.splitPath(path).filter(item => Boolean(item))

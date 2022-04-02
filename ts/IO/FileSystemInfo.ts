@@ -27,7 +27,9 @@ export class FileSystemInfo implements IFileSystemInfo {
     this.name = parts[parts.length - 1];
     this.extension = HelperFileSystem.getExtension(path);
     this.exists =
-      configuration?.checkExistence || configuration?.loadStats
+      configuration?.checkExistence ||
+      configuration?.loadStats ||
+      configuration?.fillChildren
         ? fs.existsSync(path)
         : false;
 
@@ -36,7 +38,10 @@ export class FileSystemInfo implements IFileSystemInfo {
     this.isDirectory = false;
     this.isFile = false;
     this.size = -1;
-    if (configuration?.loadStats && this.exists) {
+    if (
+      (configuration?.loadStats || configuration?.fillChildren) &&
+      this.exists
+    ) {
       lstat = fs.lstatSync(path);
       this.isDirectory = lstat.isDirectory();
       this.isFile = lstat.isFile();
@@ -91,6 +96,13 @@ export class FileSystemInfo implements IFileSystemInfo {
     }
 
     this.children = [];
+    if (configuration?.fillChildren && lstat !== undefined) {
+      const children = this.isDirectory ? fs.readdirSync(path) : [];
+      for (const child of children) {
+        const childPath = pathNode.join(path, child);
+        this.children.push(new FileSystemInfo(childPath, configuration));
+      }
+    }
   }
 
   /**

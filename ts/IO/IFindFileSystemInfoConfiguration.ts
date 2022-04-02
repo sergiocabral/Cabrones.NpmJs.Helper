@@ -36,4 +36,9 @@ export interface IFindFileSystemInfoConfiguration {
    * Carrega os dados o diretório pai.
    */
   fillParent: boolean;
+
+  /**
+   * Carrega os itens filhos.
+   */
+  fillChildren: boolean;
 }

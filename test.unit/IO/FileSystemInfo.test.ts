@@ -387,7 +387,7 @@ describe('Classe FileSystemInfo', () => {
       const file = `test-file-delete-me-${Math.random()}`;
       const path = `${directory}/${file}`;
 
-      HelperFileSystem.createRecursive(path, true);
+      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
 
       // Act, When
 
@@ -415,7 +415,7 @@ describe('Classe FileSystemInfo', () => {
       const file = `test-file-delete-me-${Math.random()}`;
       const path = pathNode.join(fs.realpathSync('.'), `${directory}/${file}`);
 
-      HelperFileSystem.createRecursive(path, true);
+      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
 
       // Act, When
 
@@ -484,6 +484,78 @@ describe('Classe FileSystemInfo', () => {
       expect(sut.name).toBe("file");
       expect(sut.parent?.name).toBe("dir2");
       expect(sut.parent?.parent?.name).toBe("dir1");
+    });
+  });
+  describe('children', () => {
+    test('Se não especificado deve ter a lista vazia se caminho existe', () => {
+      // Arrange, Given
+
+      const path = `dir1/dir2/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(0);
+    });
+    test('Se não especificado deve ter a lista vazia mesmo se caminho existe', () => {
+      // Arrange, Given
+
+      const directory = `test-dir-delete-me-${Math.random()}`;
+      const file = `test-file-delete-me-${Math.random()}`;
+      const path = `${directory}/${file}`;
+
+      HelperFileSystem.createRecursive(path, 'Created by test. Delete me, please.');
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(0);
+    });
+    test('Deve ter a lista vazia se caminho não existe', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true
+      };
+
+      const path = `dir1/dir2/file`;
+
+      // Act, When
+
+      const sut = new FileSystemInfo(path, configuration);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(0);
+    });
+    test('Se especificado deve ter a lista carregada se caminho existe', () => {
+      // Arrange, Given
+
+      const configuration: Partial<IFindFileSystemInfoConfiguration> = {
+        fillChildren: true
+      };
+
+      const directoryBase = `test-dir-delete-me-${Math.random()}`;
+
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file1.txt`, "123");
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/dir2/file2.txt`, "123");
+      HelperFileSystem.createRecursive(`${directoryBase}/dir1/file3.txt`, "123");
+
+      // Act, When
+
+      const sut = new FileSystemInfo(directoryBase, configuration);
+
+      // Assert, Then
+
+      expect(sut.children.length).toBe(1);
+      expect(sut.children[0].children.length).toBe(2);
+      expect(sut.children[0].children[0].children.length).toBe(2);
     });
   });
 });

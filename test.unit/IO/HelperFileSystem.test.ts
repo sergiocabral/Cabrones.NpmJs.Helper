@@ -315,7 +315,7 @@ describe('Classe HelperFileSystem', () => {
     test('se já existir diretório e criar arquivo lança erro', () => {
       // Arrange, Given
 
-      const createFile = true;
+      const createFile = 'Created by test. Delete-me, please.';
       const directoryBase = `test-dir-${Math.random()}`;
       fs.mkdirSync(directoryBase);
 
@@ -331,7 +331,7 @@ describe('Classe HelperFileSystem', () => {
     test('se já existir arquivo e criar arquivo retorna zero', () => {
       // Arrange, Given
 
-      const createFile = true;
+      const createFile = 'Created by test. Delete-me, please.';
       const file = `test-file-${Math.random()}`;
       fs.writeFileSync(file, 'Created by test. Delete me, please.');
 
@@ -398,7 +398,7 @@ describe('Classe HelperFileSystem', () => {
     test('criar arquivo', () => {
       // Arrange, Given
 
-      const createFile = true;
+      const createFile = 'Created by test. Delete-me, please.';
       const file = `test-dir-${Math.random()}/dir2/dir3/file`;
       const existsBefore = fs.existsSync(file);
 
@@ -418,7 +418,7 @@ describe('Classe HelperFileSystem', () => {
     test('criar arquivo com barras repetidas', () => {
       // Arrange, Given
 
-      const createFile = true;
+      const createFile = 'Created by test. Delete-me, please.';
       const file = `test-dir-${Math.random()}/\\   \\dir2/dir3////file`;
       const existsBefore = fs.existsSync(file);
 
@@ -434,6 +434,21 @@ describe('Classe HelperFileSystem', () => {
       expect(existsAfter).toBe(true);
       expect(isFile).toBe(true);
       expect(affected).toBe(5);
+    });
+    test('criar arquivo com respectivo conteúdo', () => {
+      // Arrange, Given
+
+      const fileContent = `Created by test. Delete me, please. ${Math.random().toString()}`;
+      const file = `test-file-${Math.random()}`;
+
+      // Act, When
+
+      HelperFileSystem.createRecursive(file, fileContent);
+      const fileContentReaded = fs.readFileSync(file).toString();
+
+      // Assert, Then
+
+      expect(fileContentReaded).toBe(fileContent);
     });
   });
 });
