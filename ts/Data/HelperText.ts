@@ -1,8 +1,8 @@
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+
 /**
  * Utilitários para texto (string).
  */
-import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-
 export class HelperText {
   /**
    * Construtor proibido.
