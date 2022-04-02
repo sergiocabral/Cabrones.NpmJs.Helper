@@ -10,7 +10,7 @@
     "format+lint": "npm run format && npm run lint",
     "build": "tsc",
     "test": "jest --runInBand --config jest.config.ts",
-    "build:prod": "npm run format && npm run lint && npm run build && npm run test",
+    "build:prod": "npm run build && npm run format && npm run lint && npm run test",
     "version": "npm run build:prod && git add -A ts",
     "prepare": "npm run build",
     "postversion": "git push && git push --tags"
