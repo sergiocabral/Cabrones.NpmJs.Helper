@@ -1,4 +1,4 @@
-import { HelperText, ITranslate, Translate } from '../../../ts';
+import { HelperText, ITranslate, Translate } from '../../ts';
 
 describe('Prototype para String', () => {
   const originals: Record<string, any> = {};

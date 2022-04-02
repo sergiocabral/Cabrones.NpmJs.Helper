@@ -1,4 +1,4 @@
-import { HelperNumeric } from '../../../ts';
+import { HelperNumeric } from '../../ts';
 
 describe('Prototype para Number', () => {
   const originals: Record<string, any> = {};

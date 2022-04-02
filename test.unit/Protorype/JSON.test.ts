@@ -1,6 +1,6 @@
 // noinspection JSUnusedLocalSymbols
 
-import { HelperObject } from '../../../ts';
+import { HelperObject } from '../../ts';
 
 describe('Prototype para JSON', () => {
   const originals: Record<string, any> = {};

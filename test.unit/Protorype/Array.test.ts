@@ -1,4 +1,4 @@
-import { HelperList } from '../../../ts';
+import { HelperList } from '../../ts';
 
 describe('Prototype para Array', () => {
   const originals: Record<string, any> = {};
