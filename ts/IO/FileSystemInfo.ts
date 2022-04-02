@@ -20,7 +20,7 @@ export class FileSystemInfo implements IFileSystemInfo {
     const parts = HelperFileSystem.splitPath(path);
 
     this.name = parts[parts.length - 1];
-    this.extension = '';
+    this.extension = HelperFileSystem.getExtension(path);;
     this.children = [];
     this.size = 0;
     this.parent = undefined;
