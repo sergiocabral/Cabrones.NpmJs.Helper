@@ -44,6 +44,8 @@ import { CommandLineArgument } from './IO/CommandLine/CommandLineArgument';
 import { CommandLineConfiguration } from './IO/CommandLine/CommandLineConfiguration';
 import { FileSystemInfo } from './IO/FileSystem/FileSystemInfo';
 import { HelperFileSystem } from './IO/FileSystem/HelperFileSystem';
+import { FileSystemFields } from './IO/FileSystem/FileSystemFields';
+import { FileSystemMonitoring } from './IO/FileSystem/FileSystemMonitoring';
 import { HelperNodeJs } from './IO/NodeJS/HelperNodeJs';
 import { IPackageJson } from './IO/NodeJS/IPackageJson';
 import sha256 from './3rdParty/sha256';
@@ -101,6 +103,8 @@ export {
   CommandLineConfiguration,
   FileSystemInfo,
   HelperFileSystem,
+  FileSystemFields,
+  FileSystemMonitoring,
   HelperNodeJs,
   IPackageJson
 };
