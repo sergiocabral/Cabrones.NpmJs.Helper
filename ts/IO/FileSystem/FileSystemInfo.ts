@@ -4,8 +4,8 @@ import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { Stats } from 'fs';
-import { FilterType } from '../Data/FilterType';
-import { HelperText } from '../Data/HelperText';
+import { FilterType } from '../../Data/FilterType';
+import { HelperText } from '../../Data/HelperText';
 
 /**
  * Representação de um arquivo ou diretório.

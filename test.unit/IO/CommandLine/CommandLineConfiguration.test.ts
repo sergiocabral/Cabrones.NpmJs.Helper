@@ -1,4 +1,4 @@
-import { CommandLineConfiguration, InvalidArgumentError } from '../../ts';
+import { CommandLineConfiguration, InvalidArgumentError } from '../../../ts';
 
 describe('CommandLineConfiguration', () => {
   describe('Estáticos', () => {

@@ -1,7 +1,7 @@
 /**
  * Configuração durante a busca de arquivos e diretórios.
  */
-import { FilterType } from '../Data/FilterType';
+import { FilterType } from '../../Data/FilterType';
 
 export interface IFindFileSystemInfoConfiguration {
   /**

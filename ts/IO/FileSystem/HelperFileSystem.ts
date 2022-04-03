@@ -1,9 +1,9 @@
-import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { InvalidArgumentError } from '../Error/InvalidArgumentError';
-import { HelperText } from '../Data/HelperText';
+import { InvalidExecutionError } from '../../Error/InvalidExecutionError';
+import { InvalidArgumentError } from '../../Error/InvalidArgumentError';
+import { HelperText } from '../../Data/HelperText';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { FilterType } from '../Data/FilterType';
+import { FilterType } from '../../Data/FilterType';
 import { Stats } from 'fs';
 
 /**

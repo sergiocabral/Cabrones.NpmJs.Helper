@@ -1,7 +1,7 @@
-import { FileSystemInfo, HelperFileSystem, HelperText } from '../../ts';
+import { FileSystemInfo, HelperFileSystem, HelperText } from '../../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { IFindFileSystemInfoConfiguration } from '../../ts/IO/IFindFileSystemInfoConfiguration';
+import { IFindFileSystemInfoConfiguration } from '../../../ts/IO/FileSystem/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
   const originals: Record<string, any> = {};

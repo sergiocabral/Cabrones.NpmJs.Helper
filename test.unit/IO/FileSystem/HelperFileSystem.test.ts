@@ -3,10 +3,10 @@ import {
   HelperText,
   InvalidArgumentError,
   InvalidExecutionError
-} from '../../ts';
+} from '../../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { FilterType } from '../../ts/Data/FilterType';
+import { FilterType } from '../../../ts/Data/FilterType';
 
 describe('Classe HelperFileSystem', () => {
   afterEach(() => {

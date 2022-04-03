@@ -1,5 +1,5 @@
-import { CommandLineArgument } from '../../ts';
-import { ICommandLineConfiguration } from '../../ts/IO/ICommandLineConfiguration';
+import { CommandLineArgument } from '../../../ts';
+import { ICommandLineConfiguration } from '../../../ts/IO/CommandLine/ICommandLineConfiguration';
 
 describe('CommandLineArgument', () => {
   describe('Teste da instância', function () {

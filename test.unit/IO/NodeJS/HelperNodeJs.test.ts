@@ -2,7 +2,7 @@ import {
   HelperFileSystem,
   HelperNodeJs,
   InvalidExecutionError
-} from '../../ts';
+} from '../../../ts';
 import fs from 'fs';
 
 describe('Classe HelperNodeJs', () => {
