@@ -45,7 +45,7 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
       keyof FileSystemFields,
       unknown
     >;
-    const right: Record<string, unknown> = fields1 as Record<
+    const right: Record<string, unknown> = fields2 as Record<
       keyof FileSystemFields,
       unknown
     >;
