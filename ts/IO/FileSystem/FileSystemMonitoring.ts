@@ -19,6 +19,9 @@ export class FileSystemMonitoring {
     interval: number,
     getStarted = true
   ) {
+    if (path.trim() === '') {
+      throw new InvalidArgumentError('Empty path.');
+    }
     this.interval = interval;
     if (getStarted) {
       this.start();
@@ -46,18 +49,24 @@ export class FileSystemMonitoring {
    * Intervalo entre cada verificação
    */
   public set interval(value: number) {
+    value = Math.floor(value);
     if (!Number.isFinite(value) || value <= 0) {
       throw new InvalidArgumentError('Interval must be greater than zero.');
     }
-    this.stop();
+    const alreadyStarted = this.isActive;
+    if (alreadyStarted) {
+      this.stop();
+    }
     this.intervalValue = value;
-    this.start();
+    if (alreadyStarted) {
+      this.start();
+    }
   }
 
   /**
    * Últimos dados de verificação.
    */
-  public lastFieldsValue: Partial<IFileSystemFields> = new FileSystemFields();
+  private lastFieldsValue: Partial<IFileSystemFields> = new FileSystemFields();
 
   /**
    * Últimos dados de verificação.
