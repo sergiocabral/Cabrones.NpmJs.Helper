@@ -1,4 +1,4 @@
-import {FileSystemMonitoring, InvalidArgumentError} from "../../../ts";
+import { FileSystemMonitoring, InvalidArgumentError } from '../../../ts';
 
 // TODO: lastFields
 // TODO: isActive
@@ -18,17 +18,18 @@ describe('Classe FileSystemMonitoring', () => {
       const sut = new FileSystemMonitoring(path, interval);
 
       // Assert, Then
-       expect(sut.path).toBe(path);
-       expect(sut.interval).toBe(interval);
+      expect(sut.path).toBe(path);
+      expect(sut.interval).toBe(interval);
     });
     test('Não aceita path vazio', () => {
       // Arrange, Given
 
-      const emptyPath = "";
+      const emptyPath = '';
 
       // Act, When
 
-      const action = () => new FileSystemMonitoring(emptyPath, Math.random() * 100);
+      const action = () =>
+        new FileSystemMonitoring(emptyPath, Math.random() * 100);
 
       // Assert, Then
       expect(action).toThrowError(InvalidArgumentError);
@@ -36,11 +37,12 @@ describe('Classe FileSystemMonitoring', () => {
     test('Não aceita path em branco', () => {
       // Arrange, Given
 
-      const emptyPath = "     ";
+      const emptyPath = '     ';
 
       // Act, When
 
-      const action = () => new FileSystemMonitoring(emptyPath, Math.random() * 100);
+      const action = () =>
+        new FileSystemMonitoring(emptyPath, Math.random() * 100);
 
       // Assert, Then
       expect(action).toThrowError(InvalidArgumentError);
@@ -52,7 +54,8 @@ describe('Classe FileSystemMonitoring', () => {
 
       // Act, When
 
-      const action = () => new FileSystemMonitoring(Math.random().toString(), zero);
+      const action = () =>
+        new FileSystemMonitoring(Math.random().toString(), zero);
 
       // Assert, Then
 
@@ -66,7 +69,8 @@ describe('Classe FileSystemMonitoring', () => {
 
       // Act, When
 
-      const action = () => new FileSystemMonitoring(Math.random().toString(), lessThanZero);
+      const action = () =>
+        new FileSystemMonitoring(Math.random().toString(), lessThanZero);
 
       // Assert, Then
 
@@ -77,7 +81,10 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
       // Act, When
 
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100
+      );
 
       // Assert, Then
       expect(sut.isActive).toBe(true);
@@ -89,7 +96,11 @@ describe('Classe FileSystemMonitoring', () => {
 
       // Act, When
 
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100, active);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100,
+        active
+      );
 
       // Assert, Then
 
@@ -102,11 +113,14 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const zero = 0;
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100
+      );
 
       // Act, When
 
-      const action = () => sut.interval = zero;
+      const action = () => (sut.interval = zero);
 
       // Assert, Then
 
@@ -117,11 +131,14 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const lessThanZero = Math.random() * 100 * -1;
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100
+      );
 
       // Act, When
 
-      const action = () => sut.interval = lessThanZero;
+      const action = () => (sut.interval = lessThanZero);
 
       // Assert, Then
 
@@ -132,7 +149,10 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const greaterThanZero = Math.random() * 100;
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100
+      );
 
       // Act, When
 
@@ -149,7 +169,10 @@ describe('Classe FileSystemMonitoring', () => {
       const interval = Math.random() * 100;
       const intervalAsInteger = Math.floor(interval);
 
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100
+      );
 
       // Act, When
 
@@ -164,7 +187,11 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const active = false;
-      const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100, active);
+      const sut = new FileSystemMonitoring(
+        Math.random().toString(),
+        Math.random() * 100,
+        active
+      );
 
       // Act, When
 
@@ -184,7 +211,10 @@ describe('Classe FileSystemMonitoring', () => {
   test('clearListeners', () => {
     // Arrange, Given
 
-    const sut = new FileSystemMonitoring(Math.random().toString(), Math.random() * 100);
+    const sut = new FileSystemMonitoring(
+      Math.random().toString(),
+      Math.random() * 100
+    );
 
     sut.onCreated.add(jest.fn());
     sut.onDeleted.add(jest.fn());
