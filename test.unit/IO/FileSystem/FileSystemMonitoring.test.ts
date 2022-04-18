@@ -1,11 +1,21 @@
-import { FileSystemMonitoring, InvalidArgumentError } from '../../../ts';
+import {
+  FileSystemMonitoring,
+  HelperFileSystem,
+  InvalidArgumentError
+} from '../../../ts';
+import fs from 'fs';
 
-// TODO: lastFields
-// TODO: isActive
 // TODO: start
 // TODO: stop
 
 describe('Classe FileSystemMonitoring', () => {
+  afterEach(() => {
+    const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
+    for (const item of items) {
+      HelperFileSystem.deleteRecursive(item);
+    }
+  });
+
   describe('Instancia da classe', () => {
     test('Instanciando com valores válidos', () => {
       // Arrange, Given
@@ -88,6 +98,19 @@ describe('Classe FileSystemMonitoring', () => {
 
       // Assert, Then
       expect(sut.isActive).toBe(true);
+    });
+    test('Por padrão interval é 1 segundo', () => {
+      // Arrange, Given
+
+      const oneSecond = 1000;
+
+      // Act, When
+
+      const sut = new FileSystemMonitoring(Math.random().toString());
+
+      // Assert, Then
+
+      expect(sut.interval).toBe(oneSecond);
     });
     test('Pode especificar não instanciar ativo', () => {
       // Arrange, Given
@@ -229,5 +252,37 @@ describe('Classe FileSystemMonitoring', () => {
 
     expect(beforeClear).toBe(2);
     expect(afterClear).toBe(0);
+  });
+  describe('lastFields', () => {
+    test('Deve atualizar propriedade dos campos após modificação do arquivo', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const intervalToWaitFor = 1;
+        const file = `test-file-${Math.random()}.txt`;
+
+        const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+        setTimeout(() => {
+          // Act, When
+
+          const before = sut.lastFields;
+          fs.writeFileSync(file, Math.random().toString());
+
+          setTimeout(() => {
+            const after = sut.lastFields;
+
+            // Assert, Then
+
+            expect(before).toBeDefined();
+            expect(after).toBeDefined();
+            expect(before?.exists).toBe(false);
+            expect(after?.exists).toBe(true);
+
+            resolve();
+          }, intervalToWaitFor * 2);
+        }, intervalToWaitFor * 2);
+      });
+    });
   });
 });

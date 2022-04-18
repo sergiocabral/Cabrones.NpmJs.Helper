@@ -16,7 +16,7 @@ export class FileSystemMonitoring {
    */
   public constructor(
     public readonly path: string,
-    interval: number,
+    interval = 1000,
     getStarted = true
   ) {
     if (path.trim() === '') {
@@ -71,10 +71,10 @@ export class FileSystemMonitoring {
   /**
    * Últimos dados de verificação.
    */
-  public get lastFields(): IFileSystemFields | undefined {
-    return this.lastFieldsValue !== undefined
-      ? (JSON.parse(JSON.stringify(this.lastFieldsValue)) as IFileSystemFields)
-      : undefined;
+  public get lastFields(): IFileSystemFields {
+    return JSON.parse(
+      JSON.stringify(this.lastFieldsValue)
+    ) as IFileSystemFields;
   }
 
   /**
