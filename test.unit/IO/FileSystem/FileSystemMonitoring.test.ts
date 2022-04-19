@@ -5,15 +5,19 @@ import {
 } from '../../../ts';
 import fs from 'fs';
 
-// TODO: start
-// TODO: stop
+// TODO: onCreated
+// TODO: onDeleted
 
 describe('Classe FileSystemMonitoring', () => {
-  afterEach(() => {
-    const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
-    for (const item of items) {
-      HelperFileSystem.deleteRecursive(item);
-    }
+  afterAll(() => {
+    setTimeout(() => {
+      const items = fs
+        .readdirSync('.')
+        .filter(item => item.startsWith('test-'));
+      for (const item of items) {
+        HelperFileSystem.deleteRecursive(item);
+      }
+    }, 100);
   });
 
   describe('Instancia da classe', () => {
@@ -253,31 +257,133 @@ describe('Classe FileSystemMonitoring', () => {
     expect(beforeClear).toBe(2);
     expect(afterClear).toBe(0);
   });
-  describe('lastFields', () => {
-    test('Deve atualizar propriedade dos campos após modificação do arquivo', async () => {
+  test('Deve atualizar lastFields após modificação do arquivo', async () => {
+    return new Promise<void>(resolve => {
+      // Arrange, Given
+
+      const intervalToWaitFor = 1;
+      const file = `test-file-${Math.random()}.txt`;
+
+      const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+      setTimeout(() => {
+        // Act, When
+
+        const before = sut.lastFields;
+        fs.writeFileSync(file, Math.random().toString());
+
+        setTimeout(() => {
+          const after = sut.lastFields;
+
+          // Assert, Then
+
+          expect(before.exists).toBe(false);
+          expect(after.exists).toBe(true);
+
+          resolve();
+        }, intervalToWaitFor * 2);
+      }, intervalToWaitFor * 2);
+    });
+  });
+  describe('start', () => {
+    test('múltiplas chamadas não devem resultar em erros', () => {
+      // Arrange, Given
+
+      const sut = new FileSystemMonitoring(Math.random().toString());
+
+      // Act, When
+
+      const multipleStart = () => {
+        sut.start();
+        sut.start();
+        sut.start();
+      };
+
+      // Assert, Then
+
+      expect(multipleStart).not.toThrowError();
+    });
+    test('deve monitorar apenas após start', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const getStarted = false;
+        const intervalToWaitFor = 1;
+        const file = `test-file-${Math.random()}.txt`;
+
+        const sut = new FileSystemMonitoring(
+          file,
+          intervalToWaitFor,
+          getStarted
+        );
+
+        const beforeInstance = sut.lastFields;
+        fs.writeFileSync(file, Math.random().toString());
+
+        setTimeout(() => {
+          // Act, When
+
+          const beforeStart = sut.lastFields;
+          sut.start();
+
+          setTimeout(() => {
+            const afterStart = sut.lastFields;
+
+            // Assert, Then
+
+            expect(beforeInstance.exists).toBeUndefined();
+            expect(beforeStart.exists).toBeUndefined();
+            expect(afterStart.exists).toBe(true);
+
+            resolve();
+          }, intervalToWaitFor * 2);
+        }, intervalToWaitFor * 2);
+      });
+    });
+  });
+  describe('stop', () => {
+    test('múltiplas chamadas não devem resultar em erros', () => {
+      // Arrange, Given
+
+      const sut = new FileSystemMonitoring(Math.random().toString());
+
+      // Act, When
+
+      const multipleStop = () => {
+        sut.stop();
+        sut.stop();
+        sut.stop();
+      };
+
+      // Assert, Then
+
+      expect(multipleStop).not.toThrowError();
+    });
+    test('deve parar de monitorar apenas após stop', async () => {
       return new Promise<void>(resolve => {
         // Arrange, Given
 
         const intervalToWaitFor = 1;
         const file = `test-file-${Math.random()}.txt`;
+        fs.writeFileSync(file, Math.random().toString());
 
         const sut = new FileSystemMonitoring(file, intervalToWaitFor);
 
         setTimeout(() => {
           // Act, When
 
-          const before = sut.lastFields;
-          fs.writeFileSync(file, Math.random().toString());
+          const beforeStop = sut.lastFields;
+          sut.stop();
+          fs.unlinkSync(file);
 
           setTimeout(() => {
-            const after = sut.lastFields;
+            const afterStop = sut.lastFields;
 
             // Assert, Then
 
-            expect(before).toBeDefined();
-            expect(after).toBeDefined();
-            expect(before?.exists).toBe(false);
-            expect(after?.exists).toBe(true);
+            expect(beforeStop.exists).toBe(true);
+            expect(afterStop.exists).toBe(true);
+            expect(fs.existsSync(file)).toBe(false);
 
             resolve();
           }, intervalToWaitFor * 2);

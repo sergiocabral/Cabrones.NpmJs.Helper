@@ -99,8 +99,8 @@ export class FileSystemMonitoring {
 
     this.isActiveValue = true;
     const monitoring = () => {
-      this.verify();
       if (this.isActiveValue) {
+        this.verify();
         setTimeout(monitoring, this.interval);
       }
     };
