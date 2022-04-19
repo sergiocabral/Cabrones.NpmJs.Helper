@@ -4,9 +4,8 @@ import {
   InvalidArgumentError
 } from '../../../ts';
 import fs from 'fs';
-
-// TODO: onCreated
-// TODO: onDeleted
+import { IFileSystemFields } from '../../../ts/IO/FileSystem/IFileSystemFields';
+import { IFileSystemMonitoringEventData } from '../../../ts/IO/FileSystem/IFileSystemMonitoringEventData';
 
 describe('Classe FileSystemMonitoring', () => {
   afterAll(() => {
@@ -17,7 +16,7 @@ describe('Classe FileSystemMonitoring', () => {
       for (const item of items) {
         HelperFileSystem.deleteRecursive(item);
       }
-    }, 100);
+    }, 100); // TODO: Jest did not exit one second after the test run has completed.
   });
 
   describe('Instancia da classe', () => {
@@ -387,6 +386,88 @@ describe('Classe FileSystemMonitoring', () => {
 
             resolve();
           }, intervalToWaitFor * 2);
+        }, intervalToWaitFor * 2);
+      });
+    });
+  });
+
+  describe('Teste dos eventos', function () {
+    test('onCreated', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const intervalToWaitFor = 1;
+        const file = `test-file-${Math.random()}.txt`;
+
+        const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+        let eventReceived:
+          | undefined
+          | [boolean, IFileSystemMonitoringEventData];
+
+        // Act, When
+
+        sut.onCreated.add((result, data) => {
+          eventReceived = [result, data];
+        });
+
+        fs.writeFileSync(file, Math.random().toString());
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(eventReceived).toBeDefined();
+
+          if (eventReceived) {
+            const result = eventReceived[0];
+            const eventData = eventReceived[1];
+
+            expect(result).toBe(true);
+            expect(eventData.before.exists).toBe(false);
+            expect(eventData.after.exists).toBe(true);
+          }
+
+          resolve();
+        }, intervalToWaitFor * 2);
+      });
+    });
+    test('onDeleted', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const intervalToWaitFor = 1;
+        const file = `test-file-${Math.random()}.txt`;
+        fs.writeFileSync(file, Math.random().toString());
+
+        const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+        let eventReceived:
+            | undefined
+            | [boolean, IFileSystemMonitoringEventData];
+
+        // Act, When
+
+        sut.onDeleted.add((result, data) => {
+          eventReceived = [result, data];
+        });
+
+        fs.unlinkSync(file);
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(eventReceived).toBeDefined();
+
+          if (eventReceived) {
+            const result = eventReceived[0];
+            const eventData = eventReceived[1];
+
+            expect(result).toBe(true);
+            expect(eventData.before.exists).toBe(true);
+            expect(eventData.after.exists).toBe(false);
+          }
+
+          resolve();
         }, intervalToWaitFor * 2);
       });
     });

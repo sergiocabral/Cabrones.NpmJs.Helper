@@ -115,6 +115,7 @@ export class FileSystemMonitoring {
     if (this.lastTimeout !== undefined) {
       clearTimeout(this.lastTimeout);
       this.lastTimeout = undefined;
+      // TODO: Teste de cobertura aqui
     }
   }
 
