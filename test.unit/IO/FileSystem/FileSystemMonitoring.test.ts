@@ -4,19 +4,21 @@ import {
   InvalidArgumentError
 } from '../../../ts';
 import fs from 'fs';
-import { IFileSystemFields } from '../../../ts/IO/FileSystem/IFileSystemFields';
 import { IFileSystemMonitoringEventData } from '../../../ts/IO/FileSystem/IFileSystemMonitoringEventData';
 
 describe('Classe FileSystemMonitoring', () => {
-  afterAll(() => {
-    setTimeout(() => {
-      const items = fs
-        .readdirSync('.')
-        .filter(item => item.startsWith('test-'));
-      for (const item of items) {
-        HelperFileSystem.deleteRecursive(item);
-      }
-    }, 100); // TODO: Jest did not exit one second after the test run has completed.
+  afterAll(async () => {
+    return new Promise<void>(resolve => {
+      setTimeout(() => {
+        const items = fs
+          .readdirSync('.')
+          .filter(item => item.startsWith('test-'));
+        for (const item of items) {
+          HelperFileSystem.deleteRecursive(item);
+        }
+        resolve();
+      }, 100);
+    });
   });
 
   describe('Instancia da classe', () => {
@@ -31,8 +33,13 @@ describe('Classe FileSystemMonitoring', () => {
       const sut = new FileSystemMonitoring(path, interval);
 
       // Assert, Then
+
       expect(sut.path).toBe(path);
       expect(sut.interval).toBe(interval);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('Não aceita path vazio', () => {
       // Arrange, Given
@@ -101,6 +108,10 @@ describe('Classe FileSystemMonitoring', () => {
 
       // Assert, Then
       expect(sut.isActive).toBe(true);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('Por padrão interval é 1 segundo', () => {
       // Arrange, Given
@@ -114,6 +125,10 @@ describe('Classe FileSystemMonitoring', () => {
       // Assert, Then
 
       expect(sut.interval).toBe(oneSecond);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('Pode especificar não instanciar ativo', () => {
       // Arrange, Given
@@ -152,6 +167,10 @@ describe('Classe FileSystemMonitoring', () => {
 
       expect(zero).toBe(0);
       expect(action).toThrowError(InvalidArgumentError);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('não aceita valor menor que zero', () => {
       // Arrange, Given
@@ -170,6 +189,10 @@ describe('Classe FileSystemMonitoring', () => {
 
       expect(lessThanZero).toBeLessThan(0);
       expect(action).toThrowError(InvalidArgumentError);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('aceita valores maiores que zero', () => {
       // Arrange, Given
@@ -188,6 +211,10 @@ describe('Classe FileSystemMonitoring', () => {
 
       expect(greaterThanZero).toBeGreaterThan(0);
       expect(greaterThanZero).toBeGreaterThanOrEqual(sut.interval);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('os valores são armazenados como inteiro', () => {
       // Arrange, Given
@@ -208,6 +235,10 @@ describe('Classe FileSystemMonitoring', () => {
 
       expect(sut.interval).not.toBe(interval);
       expect(sut.interval).toBe(intervalAsInteger);
+
+      // Tear Down
+
+      sut.stop();
     });
     test('se mudar o valor quando a instância não é ativa não deve iniciar o timer', () => {
       // Arrange, Given
@@ -255,6 +286,10 @@ describe('Classe FileSystemMonitoring', () => {
 
     expect(beforeClear).toBe(2);
     expect(afterClear).toBe(0);
+
+    // Tear Down
+
+    sut.stop();
   });
   test('Deve atualizar lastFields após modificação do arquivo', async () => {
     return new Promise<void>(resolve => {
@@ -279,6 +314,10 @@ describe('Classe FileSystemMonitoring', () => {
           expect(before.exists).toBe(false);
           expect(after.exists).toBe(true);
 
+          // Tear Down
+
+          sut.stop();
+
           resolve();
         }, intervalToWaitFor * 2);
       }, intervalToWaitFor * 2);
@@ -301,6 +340,10 @@ describe('Classe FileSystemMonitoring', () => {
       // Assert, Then
 
       expect(multipleStart).not.toThrowError();
+
+      // Tear Down
+
+      sut.stop();
     });
     test('deve monitorar apenas após start', async () => {
       return new Promise<void>(resolve => {
@@ -333,6 +376,10 @@ describe('Classe FileSystemMonitoring', () => {
             expect(beforeInstance.exists).toBeUndefined();
             expect(beforeStart.exists).toBeUndefined();
             expect(afterStart.exists).toBe(true);
+
+            // Tear Down
+
+            sut.stop();
 
             resolve();
           }, intervalToWaitFor * 2);
@@ -390,7 +437,6 @@ describe('Classe FileSystemMonitoring', () => {
       });
     });
   });
-
   describe('Teste dos eventos', function () {
     test('onCreated', async () => {
       return new Promise<void>(resolve => {
@@ -427,6 +473,10 @@ describe('Classe FileSystemMonitoring', () => {
             expect(eventData.after.exists).toBe(true);
           }
 
+          // Tear Down
+
+          sut.stop();
+
           resolve();
         }, intervalToWaitFor * 2);
       });
@@ -442,8 +492,8 @@ describe('Classe FileSystemMonitoring', () => {
         const sut = new FileSystemMonitoring(file, intervalToWaitFor);
 
         let eventReceived:
-            | undefined
-            | [boolean, IFileSystemMonitoringEventData];
+          | undefined
+          | [boolean, IFileSystemMonitoringEventData];
 
         // Act, When
 
@@ -466,6 +516,10 @@ describe('Classe FileSystemMonitoring', () => {
             expect(eventData.before.exists).toBe(true);
             expect(eventData.after.exists).toBe(false);
           }
+
+          // Tear Down
+
+          sut.stop();
 
           resolve();
         }, intervalToWaitFor * 2);
