@@ -20,7 +20,6 @@ describe('Classe FileSystemMonitoring', () => {
       }, 100);
     });
   });
-
   describe('Instancia da classe', () => {
     test('Instanciando com valores válidos', () => {
       // Arrange, Given
@@ -258,38 +257,70 @@ describe('Classe FileSystemMonitoring', () => {
 
       expect(sut.isActive).toBe(false);
     });
-    test('se mudar o valor quando a instância é ativa reinicia o timer', () => {
+    test('se mudar o valor quando a instância é ativa faz uma verificação imediatamente', () => {
       // Arrange, Given
+
+      const file = `test-file-${Math.random()}.txt`;
+
+      const sut = new FileSystemMonitoring(file);
+      fs.writeFileSync(file, Math.random().toString());
+
       // Act, When
+
+      const readFirst = sut.lastFields;
+      sut.interval = Math.random() * 100;
+      const readAfter = sut.lastFields;
+
       // Assert, Then
-      // TODO: Implementar, linhas 58, 62
+
+      expect(readFirst.exists).toBe(false);
+      expect(readAfter.exists).toBe(true);
+
+      // Tear Down
+
+      sut.stop();
     });
-  });
-  test('clearListeners', () => {
-    // Arrange, Given
+    test('deve poder mudar a frequência do timer', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
 
-    const sut = new FileSystemMonitoring(
-      Math.random().toString(),
-      Math.random() * 100
-    );
+        const graterIntervalToWaitFor = 10;
+        const minorIntervalToWaitFor = 2;
+        const file = `test-file-${Math.random()}.txt`;
+        fs.writeFileSync(file, Math.random().toString());
 
-    sut.onCreated.add(jest.fn());
-    sut.onDeleted.add(jest.fn());
+        const sut = new FileSystemMonitoring(file, minorIntervalToWaitFor);
 
-    // Act, When
+        const readFirst = sut.lastFields;
 
-    const beforeClear = sut.onCreated.size + sut.onDeleted.size;
-    sut.clearListeners();
-    const afterClear = sut.onCreated.size + sut.onDeleted.size;
+        setTimeout(() => {
+          // Act, When
 
-    // Assert, Then
+          sut.interval = graterIntervalToWaitFor;
+          fs.unlinkSync(file);
 
-    expect(beforeClear).toBe(2);
-    expect(afterClear).toBe(0);
+          setTimeout(() => {
+            const readSecond = sut.lastFields;
 
-    // Tear Down
+            setTimeout(() => {
+              const readThird = sut.lastFields;
 
-    sut.stop();
+              // Assert, Then
+
+              expect(readFirst.exists).toBe(true);
+              expect(readSecond.exists).toBe(true);
+              expect(readThird.exists).toBe(false);
+
+              // Tear Down
+
+              sut.stop();
+
+              resolve();
+            }, graterIntervalToWaitFor * 2);
+          }, minorIntervalToWaitFor * 2);
+        }, minorIntervalToWaitFor * 2);
+      });
+    });
   });
   test('Deve atualizar lastFields após modificação do arquivo', async () => {
     return new Promise<void>(resolve => {
@@ -438,6 +469,32 @@ describe('Classe FileSystemMonitoring', () => {
     });
   });
   describe('Teste dos eventos', function () {
+    test('clearListeners', () => {
+      // Arrange, Given
+
+      const sut = new FileSystemMonitoring(
+          Math.random().toString(),
+          Math.random() * 100
+      );
+
+      sut.onCreated.add(jest.fn());
+      sut.onDeleted.add(jest.fn());
+
+      // Act, When
+
+      const beforeClear = sut.onCreated.size + sut.onDeleted.size;
+      sut.clearListeners();
+      const afterClear = sut.onCreated.size + sut.onDeleted.size;
+
+      // Assert, Then
+
+      expect(beforeClear).toBe(2);
+      expect(afterClear).toBe(0);
+
+      // Tear Down
+
+      sut.stop();
+    });
     test('onCreated', async () => {
       return new Promise<void>(resolve => {
         // Arrange, Given

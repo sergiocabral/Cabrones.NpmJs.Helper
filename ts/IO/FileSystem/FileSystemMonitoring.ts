@@ -101,7 +101,7 @@ export class FileSystemMonitoring {
     const monitoring = () => {
       if (this.isActiveValue) {
         this.verify();
-        setTimeout(monitoring, this.interval);
+        this.lastTimeout = setTimeout(monitoring, this.interval);
       }
     };
     monitoring();
@@ -115,7 +115,6 @@ export class FileSystemMonitoring {
     if (this.lastTimeout !== undefined) {
       clearTimeout(this.lastTimeout);
       this.lastTimeout = undefined;
-      // TODO: Teste de cobertura aqui
     }
   }
 
