@@ -4,4 +4,4 @@
 export type ResultEvent<TData = unknown> = (
   success: boolean,
   data?: TData
-) => void;
+) => void | Promise<void>;

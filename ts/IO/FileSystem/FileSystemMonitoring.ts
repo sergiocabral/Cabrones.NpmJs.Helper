@@ -149,9 +149,17 @@ export class FileSystemMonitoring {
     if (diff.length > 0) {
       if (diff.includes('exists')) {
         if (currentFields.exists) {
-          this.trigger(this.onCreated, this.lastFieldsValue, currentFields);
+          void this.trigger(
+            this.onCreated,
+            this.lastFieldsValue,
+            currentFields
+          );
         } else {
-          this.trigger(this.onDeleted, this.lastFieldsValue, currentFields);
+          void this.trigger(
+            this.onDeleted,
+            this.lastFieldsValue,
+            currentFields
+          );
         }
       }
       this.lastFieldsValue = currentFields;
@@ -161,13 +169,13 @@ export class FileSystemMonitoring {
   /**
    * Sinaliza o evento em uma listas
    */
-  private trigger(
+  private async trigger(
     listeners: Set<ResultEvent<IFileSystemMonitoringEventData>>,
     before: Partial<IFileSystemFields>,
     after: Partial<IFileSystemFields>
-  ): void {
+  ): Promise<void> {
     for (const listener of listeners) {
-      listener(true, {
+      await listener(true, {
         instance: this,
         before,
         after
