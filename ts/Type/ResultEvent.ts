@@ -3,5 +3,5 @@
  */
 export type ResultEvent<TData = unknown> = (
   success: boolean,
-  data: TData
+  data?: TData
 ) => void;

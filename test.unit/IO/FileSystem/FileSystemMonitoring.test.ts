@@ -25,7 +25,7 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const path = Math.random().toString();
-      const interval = Math.floor(Math.random() * 100);
+      const interval = Math.floor(Math.random() * 1000);
 
       // Act, When
 
@@ -48,7 +48,7 @@ describe('Classe FileSystemMonitoring', () => {
       // Act, When
 
       const action = () =>
-        new FileSystemMonitoring(emptyPath, Math.random() * 100);
+        new FileSystemMonitoring(emptyPath, Math.random() * 1000);
 
       // Assert, Then
       expect(action).toThrowError(InvalidArgumentError);
@@ -61,7 +61,7 @@ describe('Classe FileSystemMonitoring', () => {
       // Act, When
 
       const action = () =>
-        new FileSystemMonitoring(emptyPath, Math.random() * 100);
+        new FileSystemMonitoring(emptyPath, Math.random() * 1000);
 
       // Assert, Then
       expect(action).toThrowError(InvalidArgumentError);
@@ -84,7 +84,7 @@ describe('Classe FileSystemMonitoring', () => {
     test('Não aceita interval menor que zero', () => {
       // Arrange, Given
 
-      const lessThanZero = Math.random() * 100 * -1;
+      const lessThanZero = Math.random() * 1000 * -1;
 
       // Act, When
 
@@ -102,7 +102,7 @@ describe('Classe FileSystemMonitoring', () => {
 
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100
+        Math.random() * 1000
       );
 
       // Assert, Then
@@ -138,7 +138,7 @@ describe('Classe FileSystemMonitoring', () => {
 
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100,
+        Math.random() * 1000,
         active
       );
 
@@ -155,7 +155,7 @@ describe('Classe FileSystemMonitoring', () => {
       const zero = 0;
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100
+        Math.random() * 1000
       );
 
       // Act, When
@@ -174,10 +174,10 @@ describe('Classe FileSystemMonitoring', () => {
     test('não aceita valor menor que zero', () => {
       // Arrange, Given
 
-      const lessThanZero = Math.random() * 100 * -1;
+      const lessThanZero = Math.random() * 1000 * -1;
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100
+        Math.random() * 1000
       );
 
       // Act, When
@@ -196,10 +196,10 @@ describe('Classe FileSystemMonitoring', () => {
     test('aceita valores maiores que zero', () => {
       // Arrange, Given
 
-      const greaterThanZero = Math.random() * 100;
+      const greaterThanZero = Math.random() * 1000;
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100
+        Math.random() * 1000
       );
 
       // Act, When
@@ -218,12 +218,12 @@ describe('Classe FileSystemMonitoring', () => {
     test('os valores são armazenados como inteiro', () => {
       // Arrange, Given
 
-      const interval = Math.random() * 100;
+      const interval = Math.random() * 1000;
       const intervalAsInteger = Math.floor(interval);
 
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100
+        Math.random() * 1000
       );
 
       // Act, When
@@ -245,7 +245,7 @@ describe('Classe FileSystemMonitoring', () => {
       const active = false;
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
-        Math.random() * 100,
+        Math.random() * 1000,
         active
       );
 
@@ -268,7 +268,7 @@ describe('Classe FileSystemMonitoring', () => {
       // Act, When
 
       const readFirst = sut.lastFields;
-      sut.interval = Math.random() * 100;
+      sut.interval = Math.random() * 1000;
       const readAfter = sut.lastFields;
 
       // Assert, Then
@@ -473,8 +473,8 @@ describe('Classe FileSystemMonitoring', () => {
       // Arrange, Given
 
       const sut = new FileSystemMonitoring(
-          Math.random().toString(),
-          Math.random() * 100
+        Math.random().toString(),
+        Math.random() * 1000
       );
 
       sut.onCreated.add(jest.fn());
@@ -506,7 +506,7 @@ describe('Classe FileSystemMonitoring', () => {
 
         let eventReceived:
           | undefined
-          | [boolean, IFileSystemMonitoringEventData];
+          | [boolean, IFileSystemMonitoringEventData | undefined];
 
         // Act, When
 
@@ -526,8 +526,9 @@ describe('Classe FileSystemMonitoring', () => {
             const eventData = eventReceived[1];
 
             expect(result).toBe(true);
-            expect(eventData.before.exists).toBe(false);
-            expect(eventData.after.exists).toBe(true);
+            expect(eventData).toBeDefined();
+            expect(eventData?.before.exists).toBe(false);
+            expect(eventData?.after.exists).toBe(true);
           }
 
           // Tear Down
@@ -550,7 +551,7 @@ describe('Classe FileSystemMonitoring', () => {
 
         let eventReceived:
           | undefined
-          | [boolean, IFileSystemMonitoringEventData];
+          | [boolean, IFileSystemMonitoringEventData | undefined];
 
         // Act, When
 
@@ -570,8 +571,9 @@ describe('Classe FileSystemMonitoring', () => {
             const eventData = eventReceived[1];
 
             expect(result).toBe(true);
-            expect(eventData.before.exists).toBe(true);
-            expect(eventData.after.exists).toBe(false);
+            expect(eventData).toBeDefined();
+            expect(eventData?.before.exists).toBe(true);
+            expect(eventData?.after.exists).toBe(false);
           }
 
           // Tear Down
