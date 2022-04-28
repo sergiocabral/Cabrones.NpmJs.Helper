@@ -25,5 +25,6 @@ module.exports = {
         "import"
     ],
     "rules": {
+        "no-cond-assign": 0
     }
 };
