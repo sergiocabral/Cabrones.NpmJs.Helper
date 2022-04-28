@@ -98,13 +98,13 @@ export class FileSystemMonitoring {
     }
 
     this.isActiveValue = true;
-    const monitoring = () => {
+    const monitoring = (triggerEvent = true) => {
       if (this.isActiveValue) {
-        this.verify();
+        this.verify(triggerEvent);
         this.lastTimeout = setTimeout(monitoring, this.interval);
       }
     };
-    monitoring();
+    monitoring(false);
   }
 
   /**
@@ -142,24 +142,27 @@ export class FileSystemMonitoring {
 
   /**
    * Realiza a verificação do arquivo.
+   * @param triggerEvent Dispara evento se houver.
    */
-  private verify(): void {
+  private verify(triggerEvent: boolean): void {
     const currentFields = new FileSystemFields(this.path);
     const diff = currentFields.diff(this.lastFieldsValue);
     if (diff.length > 0) {
-      if (diff.includes('exists')) {
-        if (currentFields.exists) {
-          void this.trigger(
-            this.onCreated,
-            this.lastFieldsValue,
-            currentFields
-          );
-        } else {
-          void this.trigger(
-            this.onDeleted,
-            this.lastFieldsValue,
-            currentFields
-          );
+      if (triggerEvent) {
+        if (diff.includes('exists')) {
+          if (currentFields.exists) {
+            void this.trigger(
+              this.onCreated,
+              this.lastFieldsValue,
+              currentFields
+            );
+          } else {
+            void this.trigger(
+              this.onDeleted,
+              this.lastFieldsValue,
+              currentFields
+            );
+          }
         }
       }
       this.lastFieldsValue = currentFields;

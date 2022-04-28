@@ -495,6 +495,37 @@ describe('Classe FileSystemMonitoring', () => {
 
       sut.stop();
     });
+    test('eventos não devem ser disparados com start()', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const intervalToWaitFor = 1;
+        const file = `test-file-${Math.random()}.txt`;
+
+        fs.writeFileSync(file, Math.random().toString());
+
+        const sut = new FileSystemMonitoring(file, intervalToWaitFor, false);
+
+        let triggered = false;
+        sut.onCreated.add(() => { triggered = true; });
+
+        // Act, When
+
+        sut.start();
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(triggered).toBe(false);
+
+          // Tear Down
+
+          sut.stop();
+
+          resolve();
+        }, intervalToWaitFor * 2);
+      });
+    });
     test('onCreated', async () => {
       return new Promise<void>(resolve => {
         // Arrange, Given
