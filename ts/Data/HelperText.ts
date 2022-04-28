@@ -143,4 +143,17 @@ export class HelperText {
     }
     return false;
   }
+
+  /**
+   * Formata um erro em texto.
+   * @param error
+   */
+  public static formatError(error: unknown): string {
+    let errorAsText;
+    return error instanceof Error
+      ? error.message
+      : (errorAsText = String(error).trim())
+      ? errorAsText
+      : 'Unknown error.';
+  }
 }

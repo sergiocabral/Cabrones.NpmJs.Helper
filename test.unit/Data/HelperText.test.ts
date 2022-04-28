@@ -318,4 +318,61 @@ describe('Classe HelperText', () => {
       expect(resultForNotMatch).toBe(false);
     });
   });
+
+  describe('formatError', () => {
+    test('quando é do tipo Error retorna .message', () => {
+      // Arrange, Given
+
+      const error = new Error(Math.random().toString());
+
+      // Act, When
+
+      const result = HelperText.formatError(error);
+
+      // Assert, Then
+
+      expect(result).toBe(error.message);
+    });
+    test('quando é um tipo qualquer exibe ele como texto', () => {
+      // Arrange, Given
+
+      const number = Math.random();
+
+      // Act, When
+
+      const result = HelperText.formatError(number);
+
+      // Assert, Then
+
+      expect(result).toBe(String(number));
+    });
+    test('quando é um texto em branco exibe Unknown error', () => {
+      // Arrange, Given
+
+      const blankText = '   ';
+      const expectedResult = 'Unknown error.';
+
+      // Act, When
+
+      const result = HelperText.formatError(blankText);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('quando é um texto vazio exibe Unknown error', () => {
+      // Arrange, Given
+
+      const blankText = '';
+      const expectedResult = 'Unknown error.';
+
+      // Act, When
+
+      const result = HelperText.formatError(blankText);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+  });
 });
