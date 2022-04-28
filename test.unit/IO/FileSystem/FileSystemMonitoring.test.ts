@@ -507,7 +507,9 @@ describe('Classe FileSystemMonitoring', () => {
         const sut = new FileSystemMonitoring(file, intervalToWaitFor, false);
 
         let triggered = false;
-        sut.onCreated.add(() => { triggered = true; });
+        sut.onCreated.add(() => {
+          triggered = true;
+        });
 
         // Act, When
 

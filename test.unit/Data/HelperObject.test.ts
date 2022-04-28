@@ -1,6 +1,6 @@
 // noinspection JSPrimitiveTypeWrapperUsage,JSUnusedLocalSymbols
 
-import {HelperObject, InvalidExecutionError, ResultEvent} from '../../ts';
+import { HelperObject, InvalidExecutionError, ResultEvent } from '../../ts';
 
 abstract class ClassBase {
   public thisValue = 123;
@@ -834,14 +834,24 @@ Methods:
       const receivedValues: [boolean, number?][] = [];
 
       const eventArray: ResultEvent<number>[] = [
-        (success: boolean, data?: number) => { receivedValues.push([success, data]); },
-        (success: boolean, data?: number) => { receivedValues.push([success, data]); },
-        (success: boolean, data?: number) => { receivedValues.push([success, data]); },
-      ] ;
+        (success: boolean, data?: number) => {
+          receivedValues.push([success, data]);
+        },
+        (success: boolean, data?: number) => {
+          receivedValues.push([success, data]);
+        },
+        (success: boolean, data?: number) => {
+          receivedValues.push([success, data]);
+        }
+      ];
 
       // Act, When
 
-      await HelperObject.triggerEventArray(eventArray, originalValue[0], originalValue[1]);
+      await HelperObject.triggerEventArray(
+        eventArray,
+        originalValue[0],
+        originalValue[1]
+      );
 
       // Assert, Then
 
@@ -859,13 +869,23 @@ Methods:
       const receivedValues: [boolean, string?][] = [];
 
       const eventSet: Set<ResultEvent<string>> = new Set<ResultEvent<string>>();
-      eventSet.add((success: boolean, data?: string) => { receivedValues.push([success, data]); });
-      eventSet.add((success: boolean, data?: string) => { receivedValues.push([success, data]); });
-      eventSet.add((success: boolean, data?: string) => { receivedValues.push([success, data]); });
+      eventSet.add((success: boolean, data?: string) => {
+        receivedValues.push([success, data]);
+      });
+      eventSet.add((success: boolean, data?: string) => {
+        receivedValues.push([success, data]);
+      });
+      eventSet.add((success: boolean, data?: string) => {
+        receivedValues.push([success, data]);
+      });
 
       // Act, When
 
-      await HelperObject.triggerEventSet(eventSet, originalValue[0], originalValue[1]);
+      await HelperObject.triggerEventSet(
+        eventSet,
+        originalValue[0],
+        originalValue[1]
+      );
 
       // Assert, Then
 
