@@ -826,28 +826,22 @@ Methods:
     });
   });
   describe('triggerEvent', function () {
-    test('triggerEventArray', async () => {
+    test('deve executar todas as funções da lista', async () => {
       // Arrange, Given
+
+      const listener = (success: boolean, data?: number) => {
+        receivedValues.push([success, data]);
+      };
+
+      const eventArray: ResultEvent<number>[] = [listener, listener, listener];
 
       const originalValue: [boolean, number] = [true, Math.random()];
 
       const receivedValues: [boolean, number?][] = [];
 
-      const eventArray: ResultEvent<number>[] = [
-        (success: boolean, data?: number) => {
-          receivedValues.push([success, data]);
-        },
-        (success: boolean, data?: number) => {
-          receivedValues.push([success, data]);
-        },
-        (success: boolean, data?: number) => {
-          receivedValues.push([success, data]);
-        }
-      ];
-
       // Act, When
 
-      await HelperObject.triggerEventArray(
+      await HelperObject.triggerEvent(
         eventArray,
         originalValue[0],
         originalValue[1]
@@ -861,39 +855,85 @@ Methods:
         expect(receivedValue[1]).toBe(originalValue[1]);
       }
     });
-    test('triggerEventSet', async () => {
+    test('deve retorna a mesma quanidade de resultados que as funções da lista', async () => {
       // Arrange, Given
 
-      const originalValue: [boolean, string] = [true, Math.random().toString()];
-
-      const receivedValues: [boolean, string?][] = [];
-
-      const eventSet: Set<ResultEvent<string>> = new Set<ResultEvent<string>>();
-      eventSet.add((success: boolean, data?: string) => {
-        receivedValues.push([success, data]);
-      });
-      eventSet.add((success: boolean, data?: string) => {
-        receivedValues.push([success, data]);
-      });
-      eventSet.add((success: boolean, data?: string) => {
-        receivedValues.push([success, data]);
-      });
+      const listener = () => {};
+      const eventArray: ResultEvent<number>[] = [listener, listener, listener];
 
       // Act, When
 
-      await HelperObject.triggerEventSet(
-        eventSet,
-        originalValue[0],
-        originalValue[1]
+      const results = await HelperObject.triggerEvent(
+        eventArray,
+        true,
+        Math.random()
       );
 
       // Assert, Then
 
-      expect(receivedValues.length).toBe(eventSet.size);
-      for (const receivedValue of receivedValues) {
-        expect(receivedValue[0]).toBe(originalValue[0]);
-        expect(receivedValue[1]).toBe(originalValue[1]);
-      }
+      expect(results.length).toBe(eventArray.length);
+    });
+    test('deve retornar os erros para funções que deram erros', async () => {
+      // Arrange, Given
+
+      const error = 'error';
+      const listenerNoError = () => {};
+      const listenerWithError = () => {
+        throw error;
+      };
+
+      const eventArray: ResultEvent<number>[] = [
+        listenerNoError,
+        listenerWithError,
+        listenerNoError,
+        listenerWithError
+      ];
+
+      // Act, When
+
+      const results = await HelperObject.triggerEvent(
+        eventArray,
+        true,
+        Math.random()
+      );
+
+      // Assert, Then
+
+      expect(results[0]).toBeUndefined();
+      expect(results[1]).toBe(error);
+      expect(results[2]).toBeUndefined();
+      expect(results[3]).toBe(error);
+    });
+    test('deve para no primeiro erro se for especificado', async () => {
+      // Arrange, Given
+
+      const runWithErrors = false;
+
+      const listenerNoError = () => {};
+      const listenerWithError = () => {
+        throw 'error';
+      };
+
+      const eventArray: ResultEvent<number>[] = [
+        listenerNoError,
+        listenerWithError,
+        listenerWithError
+      ];
+
+      // Act, When
+
+      const results = await HelperObject.triggerEvent(
+        eventArray,
+        true,
+        Math.random(),
+        runWithErrors
+      );
+
+      // Assert, Then
+
+      expect(results.length).toBe(2);
+      expect(results[0]).toBeUndefined();
+      expect(results[1]).toBeDefined();
     });
   });
 });

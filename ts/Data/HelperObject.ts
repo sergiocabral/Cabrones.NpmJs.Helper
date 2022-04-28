@@ -271,30 +271,26 @@ export class HelperObject {
    * @param listeners Lista
    * @param success Resultado de sucesso.
    * @param data Dados associados.
+   * @param runWithErrors Continua a execução dos listeners mesmo que haja erros.
    */
-  public static async triggerEventArray<TData>(
-    listeners: ResultEvent<TData>[],
+  public static async triggerEvent<TData>(
+    listeners: Iterable<ResultEvent<TData>>,
     success: boolean,
-    data?: TData
-  ): Promise<void> {
+    data?: TData,
+    runWithErrors = true
+  ): Promise<unknown[]> {
+    const errors: unknown[] = [];
     for (const listener of listeners) {
-      await listener(success, data);
+      try {
+        await listener(success, data);
+        errors.push(undefined);
+      } catch (error) {
+        errors.push(error);
+        if (!runWithErrors) {
+          break;
+        }
+      }
     }
-  }
-
-  /**
-   * Dispara um evento em uma lista de ouvintes.
-   * @param listeners Lista
-   * @param success Resultado de sucesso.
-   * @param data Dados associados.
-   */
-  public static async triggerEventSet<TData>(
-    listeners: Set<ResultEvent<TData>>,
-    success: boolean,
-    data?: TData
-  ): Promise<void> {
-    for (const listener of listeners) {
-      await listener(success, data);
-    }
+    return errors;
   }
 }
