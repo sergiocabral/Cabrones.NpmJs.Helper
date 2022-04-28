@@ -1,4 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
+import { ResultEvent } from '../Type/ResultEvent';
 
 /**
  * Utilitários para objetos, classes, etc.
@@ -263,5 +264,37 @@ export class HelperObject {
   >(instance: TInstance, name: TProperty): TValue | undefined {
     const instanceAsRecord = instance as unknown as Record<TProperty, TValue>;
     return instanceAsRecord[name];
+  }
+
+  /**
+   * Dispara um evento em uma lista de ouvintes.
+   * @param listeners Lista
+   * @param success Resultado de sucesso.
+   * @param data Dados associados.
+   */
+  public static async triggerEventArray<TData>(
+    listeners: ResultEvent<TData>[],
+    success: boolean,
+    data?: TData
+  ): Promise<void> {
+    for (const listener of listeners) {
+      await listener(success, data);
+    }
+  }
+
+  /**
+   * Dispara um evento em uma lista de ouvintes.
+   * @param listeners Lista
+   * @param success Resultado de sucesso.
+   * @param data Dados associados.
+   */
+  public static async triggerEventSet<TData>(
+    listeners: Set<ResultEvent<TData>>,
+    success: boolean,
+    data?: TData
+  ): Promise<void> {
+    for (const listener of listeners) {
+      await listener(success, data);
+    }
   }
 }
