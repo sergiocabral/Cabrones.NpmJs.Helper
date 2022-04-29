@@ -112,4 +112,30 @@ describe('Class Logger', () => {
       expect(mockMergeValues.mock.calls[0][1]).toBe(defaultValues);
     });
   });
+  test('deve poder trocar a lista de logger depois de instanciado', () => {
+    // Arrange, Given
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = { post: mockPost1 };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = { post: mockPost2 };
+
+    const sut = new Logger([]);
+
+    // Act, When
+
+    sut.post(Math.random().toString());
+    sut.writers = [logger1];
+    sut.post(Math.random().toString());
+    sut.writers = [logger2];
+    sut.post(Math.random().toString());
+    sut.writers.length = 0;
+    sut.post(Math.random().toString());
+
+    // Assert, Then
+
+    expect(mockPost1).toBeCalledTimes(1);
+    expect(mockPost2).toBeCalledTimes(1);
+  });
 });

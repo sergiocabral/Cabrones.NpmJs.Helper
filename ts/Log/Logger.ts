@@ -11,7 +11,7 @@ export class Logger implements ILogWriter {
    * Construtor.
    * @param writers Lista de escritores de log
    */
-  public constructor(private writers: ILogWriter[]) {}
+  public constructor(public writers: ILogWriter[]) {}
 
   /**
    * Logger padrão.
