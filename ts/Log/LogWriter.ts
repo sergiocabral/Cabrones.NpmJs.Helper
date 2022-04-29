@@ -37,11 +37,55 @@ export abstract class LogWriter implements ILogWriter {
     values: unknown | (() => unknown),
     defaultValues?: Record<string, unknown | (() => unknown)>
   ): unknown {
-    values = !HelperObject.isFunction(values)
-      ? values
-      : (values as () => unknown)();
+    const extractValue = (input: unknown | (() => unknown)) =>
+      !HelperObject.isFunction(input) ? input : (input as () => unknown)();
+    const doNotTreatAsObject = (values: unknown): boolean =>
+      values === undefined || values === null || values instanceof Date;
 
-    return values;
+    if (
+      values !== undefined &&
+      defaultValues !== undefined &&
+      Object.keys(defaultValues).length > 0
+    ) {
+      values = extractValue(values);
+
+      if (
+        !Array.isArray(values) &&
+        typeof values === 'object' &&
+        !doNotTreatAsObject(values)
+      ) {
+        values = {
+          ...values,
+          ...defaultValues
+        };
+      } else {
+        const valuesArray = Array.isArray(values) ? values : [values];
+        for (const defaultValuesKey in defaultValues) {
+          valuesArray.push(defaultValues[defaultValuesKey]);
+        }
+        values = valuesArray;
+      }
+
+      return values;
+    } else if (
+      values !== undefined &&
+      (defaultValues === undefined || Object.keys(defaultValues).length === 0)
+    ) {
+      return extractValue(values);
+    } else if (
+      values === undefined &&
+      defaultValues !== undefined &&
+      Object.keys(defaultValues).length > 0
+    ) {
+      for (const defaultValuesKey in defaultValues) {
+        defaultValues[defaultValuesKey] = extractValue(
+          defaultValues[defaultValuesKey]
+        );
+      }
+      return defaultValues;
+    }
+
+    return undefined;
   }
 
   /**
