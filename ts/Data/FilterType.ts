@@ -1,4 +1,6 @@
+import { IndividualFilterType } from './IndividualFilterType';
+
 /**
  * Tipo usado para realizado filtragem de texto.
  */
-export type FilterType = RegExp | string | Array<RegExp | string>;
+export type FilterType = IndividualFilterType | Array<IndividualFilterType>;
