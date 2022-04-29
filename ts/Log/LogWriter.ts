@@ -29,6 +29,18 @@ export abstract class LogWriter implements ILogWriter {
   public static defaultLogLevel: LogLevel = LogLevel.Debug;
 
   /**
+   * Faz a junção aplicando os valores atuais sobre os valores padrão.
+   * @param values Valores atuais.
+   * @param defaultValues Valores padrão.
+   */
+  public static mergeValues(
+    values: unknown | (() => unknown),
+    defaultValues?: Record<string, unknown | (() => unknown)>
+  ): unknown {
+    return values;
+  }
+
+  /**
    * Posta uma mensagem de log.
    * @param messageTemplate Mensagem como template.
    * @param values Valores associados.
@@ -53,6 +65,11 @@ export abstract class LogWriter implements ILogWriter {
     const logMessage: ILogMessage = { message, timestamp, level, section };
     this.write(logMessage, messageTemplate, values);
   }
+
+  /**
+   * Valores padrão associados a cada log.
+   */
+  public readonly defaultValues: Record<string, unknown | (() => unknown)> = {};
 
   /**
    * Função para personalizar a exibição de uma mensagem de log.

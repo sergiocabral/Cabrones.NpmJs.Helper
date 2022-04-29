@@ -52,4 +52,9 @@ export class Logger implements ILogWriter {
       writer.post(messageTemplate, values, level, section);
     }
   }
+
+  /**
+   * Valores padrão associados a cada log.
+   */
+  public readonly defaultValues: Record<string, unknown | (() => unknown)> = {};
 }

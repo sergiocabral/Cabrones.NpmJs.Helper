@@ -20,6 +20,11 @@ export interface ILogWriter {
   ): void;
 
   /**
+   * Valores padrão associados a cada log.
+   */
+  defaultValues?: Record<string, unknown | (() => unknown)>;
+
+  /**
    * Função para personalizar a exibição de uma mensagem de log.
    */
   customFactoryMessage?: (message: ILogMessage) => string;
