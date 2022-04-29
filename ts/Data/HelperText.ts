@@ -22,25 +22,23 @@ export class HelperText {
       values === undefined || values === null || values instanceof Date;
     const doNotTreatAsString = (values: unknown): boolean =>
       values === undefined || values === null;
+    const isArray = Array.isArray(values);
     let text = template;
-    if (Array.isArray(values)) {
-      for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
-        text = HelperText.replaceAll(
-          text,
-          `{${valueIndex}}`,
-          String(values[valueIndex])
-        );
-      }
-    } else if (typeof values === 'object' && !doNotTreatAsObject(values)) {
+    if (!isArray && typeof values === 'object' && !doNotTreatAsObject(values)) {
       const objectValue = values as Record<string, unknown>;
       const properties = Object.keys(objectValue);
       for (const property of properties) {
         const value = String(objectValue[property]);
         text = HelperText.replaceAll(text, `{${property}}`, value);
       }
-    } else if (!doNotTreatAsString(values)) {
-      const stringValue = values as string;
-      text = HelperText.replaceAll(text, `{0}`, stringValue);
+    } else {
+      const array = isArray ? values : [values];
+      for (let index = 0; index < array.length; index++) {
+        const value: unknown = array[index];
+        if (!doNotTreatAsString(value)) {
+          text = HelperText.replaceAll(text, `{${index}}`, String(value));
+        }
+      }
     }
     return text;
   }
