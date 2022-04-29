@@ -1,6 +1,6 @@
 import { LogLevel, LogWriter, LogWriterToConsole } from '../../ts';
 
-describe('Class LogWriterToConsoleLevel', () => {
+describe('Class LogWriterToConsole', () => {
   const originals: Record<string, any> = {};
 
   beforeEach(() => {
@@ -142,8 +142,6 @@ describe('Class LogWriterToConsoleLevel', () => {
     test('getConsoleFunction deve retorna a função para log pelo nome', () => {
       // Arrange, Given
 
-      const sut = new LogWriterToConsole();
-
       const correlationExpected: {
         [index: string]: (message: string) => void;
       } = {
@@ -168,7 +166,7 @@ describe('Class LogWriterToConsoleLevel', () => {
           | 'log'
           | 'debug';
         correlationVerified[functionName] =
-          sut.getConsoleFunction(functionName);
+          LogWriterToConsole.getConsoleFunction(functionName);
       }
 
       // Assert, Then

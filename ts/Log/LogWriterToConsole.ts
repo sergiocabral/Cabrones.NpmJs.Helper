@@ -11,7 +11,7 @@ export class LogWriterToConsole extends LogWriter {
    * @param functionName Nome da função de log.
    * @protected
    */
-  public getConsoleFunction(
+  public static getConsoleFunction(
     functionName: 'error' | 'warn' | 'info' | 'log' | 'debug'
   ): (message: string) => void {
     switch (functionName) {
@@ -39,22 +39,22 @@ export class LogWriterToConsole extends LogWriter {
     let log;
     switch (message.level) {
       case LogLevel.Debug:
-        log = this.getConsoleFunction('log');
+        log = LogWriterToConsole.getConsoleFunction('log');
         break;
       case LogLevel.Information:
-        log = this.getConsoleFunction('info');
+        log = LogWriterToConsole.getConsoleFunction('info');
         break;
       case LogLevel.Warning:
-        log = this.getConsoleFunction('warn');
+        log = LogWriterToConsole.getConsoleFunction('warn');
         break;
       case LogLevel.Error:
       case LogLevel.Critical:
       case LogLevel.Fatal:
-        log = this.getConsoleFunction('error');
+        log = LogWriterToConsole.getConsoleFunction('error');
         break;
       case LogLevel.Verbose:
       default:
-        log = this.getConsoleFunction('debug');
+        log = LogWriterToConsole.getConsoleFunction('debug');
         break;
     }
 
