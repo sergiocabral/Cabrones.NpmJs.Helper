@@ -37,6 +37,10 @@ export abstract class LogWriter implements ILogWriter {
     values: unknown | (() => unknown),
     defaultValues?: Record<string, unknown | (() => unknown)>
   ): unknown {
+    values = !HelperObject.isFunction(values)
+      ? values
+      : (values as () => unknown)();
+
     return values;
   }
 
@@ -57,9 +61,7 @@ export abstract class LogWriter implements ILogWriter {
     if (level < this.minimumLevel) return;
     messageTemplate =
       typeof messageTemplate === 'string' ? messageTemplate : messageTemplate();
-    values = !HelperObject.isFunction(values)
-      ? values
-      : (values as () => unknown)();
+    values = LogWriter.mergeValues(values, this.defaultValues);
     const message = HelperText.querystring(messageTemplate, values);
     const timestamp = new Date();
     const logMessage: ILogMessage = { message, timestamp, level, section };
@@ -69,7 +71,7 @@ export abstract class LogWriter implements ILogWriter {
   /**
    * Valores padrão associados a cada log.
    */
-  public readonly defaultValues: Record<string, unknown | (() => unknown)> = {};
+  public defaultValues: Record<string, unknown | (() => unknown)> = {};
 
   /**
    * Função para personalizar a exibição de uma mensagem de log.
