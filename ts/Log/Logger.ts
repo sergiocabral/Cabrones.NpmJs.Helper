@@ -1,6 +1,7 @@
 import { LogLevel } from './LogLevel';
 import { ILogWriter } from './ILogWriter';
 import { LogWriterToConsole } from './LogWriterToConsole';
+import { LogWriter } from './LogWriter';
 
 /**
  * Agrupador de escritores de log.
@@ -48,13 +49,14 @@ export class Logger implements ILogWriter {
     level?: LogLevel,
     section?: string
   ): void {
+    const mergedValues = LogWriter.mergeValues(values, this.defaultValues);
     for (const writer of this.writers) {
-      writer.post(messageTemplate, values, level, section);
+      writer.post(messageTemplate, mergedValues, level, section);
     }
   }
 
   /**
    * Valores padrão associados a cada log.
    */
-  public readonly defaultValues: Record<string, unknown | (() => unknown)> = {};
+  public defaultValues: Record<string, unknown | (() => unknown)> = {};
 }
