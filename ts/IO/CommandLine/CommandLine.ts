@@ -2,6 +2,8 @@ import { CommandLineArgument } from './CommandLineArgument';
 import { CommandLineConfiguration } from './CommandLineConfiguration';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
 
+// TODO: Trocar argValues para FilterType
+
 /**
  * Manipulação de texto para linha de comando.
  */

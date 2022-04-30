@@ -4,7 +4,7 @@ import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { Stats } from 'fs';
-import { FilterType } from '../../Data/FilterType';
+import { FiltersType } from '../../Type/FiltersType';
 import { HelperText } from '../../Data/HelperText';
 
 /**
@@ -109,7 +109,7 @@ export class FileSystemInfo implements IFileSystemInfo {
           (configuration.directoryFilter || configuration.fileFilter) &&
           (stats = HelperFileSystem.getStats(childPath)) !== undefined
         ) {
-          const filter: FilterType | undefined = stats.isDirectory()
+          const filter: FiltersType | undefined = stats.isDirectory()
             ? configuration.directoryFilter
             : configuration.fileFilter;
 

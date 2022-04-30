@@ -1,7 +1,7 @@
 /**
  * Configuração durante a busca de arquivos e diretórios.
  */
-import { FilterType } from '../../Data/FilterType';
+import { FiltersType } from '../../Type/FiltersType';
 
 export interface IFindFileSystemInfoConfiguration {
   /**
@@ -27,12 +27,12 @@ export interface IFindFileSystemInfoConfiguration {
   /**
    * Aplica um filtro no nome do arquivo durante a pesquisa.
    */
-  fileFilter: FilterType;
+  fileFilter: FiltersType;
 
   /**
    * Aplica um filtro no nome do diretório durante a pesquisa.
    */
-  directoryFilter: FilterType;
+  directoryFilter: FiltersType;
 
   /**
    * Carrega os nomes de todos os diretórios pai.

@@ -1,4 +1,4 @@
 /**
  * Tipo usado para realizado filtragem de texto.
  */
-export type IndividualFilterType = RegExp | string;
+export type FilterType = RegExp | string;

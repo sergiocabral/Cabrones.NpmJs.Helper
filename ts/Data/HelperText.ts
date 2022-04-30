@@ -1,5 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { FilterType } from './FilterType';
+import { FiltersType } from '../Type/FiltersType';
 
 /**
  * Utilitários para texto (string).
@@ -124,7 +124,7 @@ export class HelperText {
    * @param filter Filtro como string, RegExp, ou lista mista de ambos.
    * @return Retrona true quando o filtro é correspondente.
    */
-  public static matchFilter(text: string, filter: FilterType): boolean {
+  public static matchFilter(text: string, filter: FiltersType): boolean {
     if (!Array.isArray(filter)) {
       filter = [filter];
     }

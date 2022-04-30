@@ -6,7 +6,7 @@ import {
 } from '../../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { FilterType } from '../../../ts/Data/FilterType';
+import { FiltersType } from '../../../ts/Type/FiltersType';
 
 describe('Classe HelperFileSystem', () => {
   afterEach(() => {
@@ -731,7 +731,7 @@ describe('Classe HelperFileSystem', () => {
           `Created by test. Delete me, please.`
         );
 
-        const filter: FilterType = 'file3.txt';
+        const filter: FiltersType = 'file3.txt';
 
         // Act, When
 
@@ -762,7 +762,7 @@ describe('Classe HelperFileSystem', () => {
           `Created by test. Delete me, please.`
         );
 
-        const filter: FilterType = /file[13]/;
+        const filter: FiltersType = /file[13]/;
 
         // Act, When
 
@@ -796,7 +796,7 @@ describe('Classe HelperFileSystem', () => {
           `Created by test. Delete me, please.`
         );
 
-        const filter: FilterType = ['file2.txt', /file[13]/];
+        const filter: FiltersType = ['file2.txt', /file[13]/];
 
         // Act, When
 
@@ -1034,7 +1034,7 @@ describe('Classe HelperFileSystem', () => {
         `Created by test. Delete me, please.`
       );
 
-      const filter: FilterType = new RegExp(
+      const filter: FiltersType = new RegExp(
         HelperText.escapeRegExp(uniqueMark)
       );
 

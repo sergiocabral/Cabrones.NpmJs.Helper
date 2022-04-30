@@ -1,5 +1,5 @@
 import { HelperText, InvalidExecutionError } from '../../ts';
-import { FilterType } from '../../ts/Data/FilterType';
+import { FiltersType } from '../../ts/Type/FiltersType';
 
 describe('Classe HelperText', () => {
   test('Não deve permitir instanciar', () => {
@@ -262,7 +262,7 @@ describe('Classe HelperText', () => {
 
       const textMatch = Math.random().toString();
       const textNotMatch = Math.random().toString();
-      const filter: FilterType = textMatch;
+      const filter: FiltersType = textMatch;
 
       // Act, When
 
@@ -280,7 +280,9 @@ describe('Classe HelperText', () => {
       const textMatch = Math.random().toString();
       const textMatchToo = `qualquer ${textMatch} coisa`;
       const textNotMatch = Math.random().toString();
-      const filter: FilterType = new RegExp(HelperText.escapeRegExp(textMatch));
+      const filter: FiltersType = new RegExp(
+        HelperText.escapeRegExp(textMatch)
+      );
 
       // Act, When
 
@@ -300,7 +302,7 @@ describe('Classe HelperText', () => {
       const textMatch1 = Math.random().toString();
       const textMatch2 = Math.random().toString();
       const textNotMatch = Math.random().toString();
-      const filter: FilterType = [
+      const filter: FiltersType = [
         textMatch1,
         new RegExp(`^${HelperText.escapeRegExp(textMatch2)}$`)
       ];

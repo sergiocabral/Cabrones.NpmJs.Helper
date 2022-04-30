@@ -3,7 +3,7 @@ import { InvalidArgumentError } from '../../Error/InvalidArgumentError';
 import { HelperText } from '../../Data/HelperText';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { FilterType } from '../../Data/FilterType';
+import { FiltersType } from '../../Type/FiltersType';
 import { Stats } from 'fs';
 
 /**
@@ -156,7 +156,7 @@ export class HelperFileSystem {
    */
   public static findFilesInto(
     directoryPath: string,
-    filter?: FilterType,
+    filter?: FiltersType,
     limitCount?: number
   ): string[] {
     const result: string[] = [];
@@ -189,7 +189,7 @@ export class HelperFileSystem {
    */
   public static findFilesOut(
     directoryPath: string,
-    filter?: FilterType,
+    filter?: FiltersType,
     limitCount?: number
   ): string[] {
     const result: string[] = [];
