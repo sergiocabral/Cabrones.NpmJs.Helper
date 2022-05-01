@@ -1,4 +1,4 @@
-import { CommandLine } from '../../../ts';
+import { CommandLine, HelperText } from '../../../ts';
 import { ICommandLineConfiguration } from '../../../ts/IO/CommandLine/ICommandLineConfiguration';
 
 describe('CommandLine', () => {
@@ -151,7 +151,7 @@ describe('CommandLine', () => {
       expect(sut.args[0].name).toBe('--name');
       expect(sut.args[0].value).toBe('go horse');
     });
-    test('Dois argumento com valor', () => {
+    test('Dois argumentos com valor', () => {
       // Arrange, Given
 
       const commandLineText = '--name="go horse" -a=1';
@@ -167,7 +167,7 @@ describe('CommandLine', () => {
       expect(sut.args[1].name).toBe('-a');
       expect(sut.args[1].value).toBe('1');
     });
-    test('Dois argumento com valor e um sem valor', () => {
+    test('Dois argumentos com valor e um sem valor', () => {
       // Arrange, Given
 
       const commandLineText = '--name="go horse" -a=1 --confirm';
@@ -185,7 +185,7 @@ describe('CommandLine', () => {
       expect(sut.args[2].name).toBe('--confirm');
       expect(sut.args[2].value).toBeUndefined();
     });
-    test('Dois argumento com valor e um sem valor e outro apenas com atribuição', () => {
+    test('Dois argumentos com valor e um sem valor e outro apenas com atribuição', () => {
       // Arrange, Given
 
       const commandLineText = '--name="go horse" -a=1 --confirm --value=';
@@ -250,7 +250,7 @@ describe('CommandLine', () => {
       expect(values).toStrictEqual(['0.1 BTC', '0.1 ETH', '0.1 XMR']);
     });
   });
-  describe('Validações de busca por argumentos e valores', () => {
+  describe('TEXTO: Validações de busca por argumentos e valores', () => {
     test('caseInsensitiveForName', () => {
       // Arrange, Given
 
@@ -562,6 +562,392 @@ describe('CommandLine', () => {
           sut.hasArgumentNameWithValue(['--coin', '--token'], [undefined]);
         const emptyListForArgs = sut.hasArgumentNameWithValue([], ['BTC']);
         const emptyListForValues = sut.hasArgumentNameWithValue(['--coin'], []);
+
+        // Assert, Then
+
+        expect(expectedTrueForMultipleArg).toBe(true);
+        expect(expectedFalseForMultipleArg).toBe(false);
+        expect(expectedTrueForMultipleValue).toBe(true);
+        expect(expectedFalseForMultipleValue).toBe(false);
+        expect(expectedTrueForMultipleArgUndefined).toBe(true);
+        expect(expectedFalseForMultipleArgUndefined).toBe(false);
+        expect(emptyListForArgs).toBe(false);
+        expect(emptyListForValues).toBe(false);
+      });
+    });
+  });
+  describe('REGEX: Validações de busca por argumentos e valores', () => {
+    test('caseInsensitiveForName', () => {
+      // Arrange, Given
+
+      const argName = '--Arg1';
+
+      const sut = new CommandLine(`[${argName}]`);
+
+      // Act, When
+
+      const normalExpectedTrue = sut.hasArgumentName(
+        new RegExp(HelperText.escapeRegExp(argName))
+      );
+
+      const lowerExpectedFalseBeforeCaseInsensitiveForName =
+        sut.hasArgumentName(
+          new RegExp(HelperText.escapeRegExp(argName.toLowerCase()))
+        );
+      const upperExpectedFalseBeforeCaseInsensitiveForName =
+        sut.hasArgumentName(
+          new RegExp(HelperText.escapeRegExp(argName.toUpperCase()))
+        );
+
+      sut.configuration.caseInsensitiveForName = true;
+
+      const lowerExpectedTrueAfterCaseInsensitiveForName = sut.hasArgumentName(
+        new RegExp(HelperText.escapeRegExp(argName.toLowerCase()))
+      );
+      const upperExpectedTrueAfterCaseInsensitiveForName = sut.hasArgumentName(
+        new RegExp(HelperText.escapeRegExp(argName.toUpperCase()))
+      );
+
+      // Assert, Then
+
+      expect(normalExpectedTrue).toBe(true);
+      expect(lowerExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
+      expect(upperExpectedFalseBeforeCaseInsensitiveForName).toBe(false);
+      expect(lowerExpectedTrueAfterCaseInsensitiveForName).toBe(true);
+      expect(upperExpectedTrueAfterCaseInsensitiveForName).toBe(true);
+    });
+    test('caseInsensitiveForValue quando não é undefined', () => {
+      // Arrange, Given
+
+      const argValueText = 'Value';
+
+      const sut = new CommandLine(`[--arg]=[${argValueText}]`);
+
+      // Act, When
+
+      const normalExpectedTrue = sut.hasArgumentValue(
+        new RegExp(HelperText.escapeRegExp(argValueText))
+      );
+
+      const lowerExpectedFalseBeforeCaseInsensitiveForValue =
+        sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp(argValueText.toLowerCase()))
+        );
+      const upperExpectedFalseBeforeCaseInsensitiveForValue =
+        sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp(argValueText.toUpperCase()))
+        );
+
+      sut.configuration.caseInsensitiveForValue = true;
+
+      const lowerExpectedTrueAfterCaseInsensitiveForValue =
+        sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp(argValueText.toLowerCase()))
+        );
+      const upperExpectedTrueAfterCaseInsensitiveForValue =
+        sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp(argValueText.toUpperCase()))
+        );
+
+      // Assert, Then
+
+      expect(normalExpectedTrue).toBe(true);
+      expect(lowerExpectedFalseBeforeCaseInsensitiveForValue).toBe(false);
+      expect(upperExpectedFalseBeforeCaseInsensitiveForValue).toBe(false);
+      expect(lowerExpectedTrueAfterCaseInsensitiveForValue).toBe(true);
+      expect(upperExpectedTrueAfterCaseInsensitiveForValue).toBe(true);
+    });
+    test('hasArgumentName', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '[--coin]=[BTC] [--coin]=[ETH] [--coin]=[XMR]'
+      );
+
+      // Act, When
+
+      const hasArgumentExpectedFalse = sut.hasArgumentName(
+        new RegExp(HelperText.escapeRegExp('--price'))
+      );
+      const hasArgumentExpectedTrue = sut.hasArgumentName(
+        new RegExp(HelperText.escapeRegExp('--coin'))
+      );
+
+      // Assert, Then
+
+      expect(hasArgumentExpectedFalse).toBe(false);
+      expect(hasArgumentExpectedTrue).toBe(true);
+    });
+    test('hasArgumentValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '[--arg1]=[BCH] [--arg2]=[ETH] [--arg3]=[XMR]'
+      );
+
+      // Act, When
+
+      const hasValueExpectedFalse = sut.hasArgumentValue(
+        new RegExp(HelperText.escapeRegExp('BTC'))
+      );
+      const hasValueExpectedTrue = sut.hasArgumentValue(
+        new RegExp(HelperText.escapeRegExp('ETH'))
+      );
+
+      // Assert, Then
+
+      expect(hasValueExpectedFalse).toBe(false);
+      expect(hasValueExpectedTrue).toBe(true);
+    });
+    test('getArgumentValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '[--coin]=[BTC] [--coin]=[ETH] [--coin]=[XMR]'
+      );
+
+      // Act, When
+
+      const nonExistentValue = sut.getArgumentValue(
+        new RegExp(HelperText.escapeRegExp('--price'))
+      );
+      const existentValue = sut.getArgumentValue(
+        new RegExp(HelperText.escapeRegExp('--coin'))
+      );
+
+      // Assert, Then
+
+      expect(nonExistentValue).toBeUndefined();
+      expect(existentValue).toBe('[BTC]');
+    });
+    test('getArgumentValues', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '[--coin]=[BTC] [--coin]=[ETH] [--coin] [--coin]=[XMR]'
+      );
+
+      // Act, When
+
+      const nonExistentValues = sut.getArgumentValues(
+        new RegExp(HelperText.escapeRegExp('--price'))
+      );
+      const existentValues = sut.getArgumentValues(
+        new RegExp(HelperText.escapeRegExp('--coin'))
+      );
+
+      // Assert, Then
+
+      expect(nonExistentValues.length).toBe(0);
+      expect(existentValues.length).toBe(4);
+      expect(existentValues).toStrictEqual([
+        '[BTC]',
+        '[ETH]',
+        undefined,
+        '[XMR]'
+      ]);
+    });
+    test('hasArgumentNameWithValue', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('[--coin]=[BTC] [--price]');
+
+      // Act, When
+
+      const nameAndValueExistsAsText = sut.hasArgumentNameWithValue(
+        [new RegExp(HelperText.escapeRegExp('--coin'))],
+        [new RegExp(HelperText.escapeRegExp('BTC'))]
+      );
+      const nameAndValueExistsAsUndefined = sut.hasArgumentNameWithValue(
+        [new RegExp(HelperText.escapeRegExp('--price'))],
+        [undefined]
+      );
+      const nameExistsValueNotExists = sut.hasArgumentNameWithValue(
+        [new RegExp(HelperText.escapeRegExp('--coin'))],
+        [new RegExp(HelperText.escapeRegExp('ETH'))]
+      );
+      const nameNotExistsValueExists = sut.hasArgumentNameWithValue(
+        [new RegExp(HelperText.escapeRegExp('--price'))],
+        [new RegExp(HelperText.escapeRegExp('BTC'))]
+      );
+
+      // Assert, Then
+
+      expect(nameAndValueExistsAsText).toBe(true);
+      expect(nameAndValueExistsAsUndefined).toBe(true);
+      expect(nameExistsValueNotExists).toBe(false);
+      expect(nameNotExistsValueExists).toBe(false);
+    });
+    describe('Teste de métodos com spread array', () => {
+      test('hasArgumentName', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine(
+          '[--coin]=[BTC] [--coin]=[ETH] [--coin]=[XMR]'
+        );
+
+        // Act, When
+
+        const expectedFalse = sut.hasArgumentName(
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--amount'))
+        );
+        const expectedTrue = sut.hasArgumentName(
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--coin'))
+        );
+        const emptyListExpectedFalse = sut.hasArgumentName();
+
+        // Assert, Then
+
+        expect(expectedFalse).toBe(false);
+        expect(expectedTrue).toBe(true);
+        expect(emptyListExpectedFalse).toBe(false);
+      });
+      test('hasArgumentValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine(
+          '[--arg1]=[BCH] [--arg2]=[ETH] [--arg3]=[XMR]'
+        );
+
+        // Act, When
+
+        const expectedFalse = sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp('BTC')),
+          new RegExp(HelperText.escapeRegExp('DOGE'))
+        );
+        const expectedTrue = sut.hasArgumentValue(
+          new RegExp(HelperText.escapeRegExp('BTC')),
+          new RegExp(HelperText.escapeRegExp('ETH'))
+        );
+        const emptyListExpectedFalse = sut.hasArgumentValue();
+
+        // Assert, Then
+
+        expect(expectedFalse).toBe(false);
+        expect(expectedTrue).toBe(true);
+        expect(emptyListExpectedFalse).toBe(false);
+      });
+      test('getArgumentValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine(
+          '[--coin]=[BTC] [--coin]=[ETH] [--coin]=[XMR]'
+        );
+
+        // Act, When
+
+        const nonExistentValue = sut.getArgumentValue(
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--amount'))
+        );
+        const existentValue = sut.getArgumentValue(
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--coin'))
+        );
+        const emptyList = sut.getArgumentValue();
+
+        // Assert, Then
+
+        expect(nonExistentValue).toBeUndefined();
+        expect(existentValue).toBe('[BTC]');
+        expect(emptyList).toBeUndefined();
+      });
+      test('getArgumentValues', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine(
+          '[--coin]=[BTC] [--coin]=[ETH] [--coin] [--coin]=[XMR] [--destination]=[USDT]'
+        );
+
+        // Act, When
+
+        const nonExistentValues = sut.getArgumentValues(
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--amount'))
+        );
+        const existentValues = sut.getArgumentValues(
+          new RegExp(HelperText.escapeRegExp('--coin')),
+          new RegExp(HelperText.escapeRegExp('--price')),
+          new RegExp(HelperText.escapeRegExp('--destination'))
+        );
+        const emptyList = sut.getArgumentValues();
+
+        // Assert, Then
+
+        expect(nonExistentValues.length).toBe(0);
+        expect(existentValues.length).toBe(5);
+        expect(existentValues).toStrictEqual([
+          '[BTC]',
+          '[ETH]',
+          undefined,
+          '[XMR]',
+          '[USDT]'
+        ]);
+        expect(emptyList.length).toBe(0);
+      });
+      test('hasArgumentNameWithValue', () => {
+        // Arrange, Given
+
+        const sut = new CommandLine(
+          '[--coin]=[BTC] [--token]=[BTC] [--price]=[10] [--price]=[20] [--origin] [--destination]'
+        );
+
+        // Act, When
+
+        const expectedTrueForMultipleArg = sut.hasArgumentNameWithValue(
+          [
+            new RegExp(HelperText.escapeRegExp('--coin')),
+            new RegExp(HelperText.escapeRegExp('--token'))
+          ],
+          [new RegExp(HelperText.escapeRegExp('BTC'))]
+        );
+        const expectedFalseForMultipleArg = sut.hasArgumentNameWithValue(
+          [
+            new RegExp(HelperText.escapeRegExp('--coin')),
+            new RegExp(HelperText.escapeRegExp('--token'))
+          ],
+          [new RegExp(HelperText.escapeRegExp('ETH'))]
+        );
+        const expectedTrueForMultipleValue = sut.hasArgumentNameWithValue(
+          [new RegExp(HelperText.escapeRegExp('--price'))],
+          [
+            new RegExp(HelperText.escapeRegExp('10')),
+            new RegExp(HelperText.escapeRegExp('20'))
+          ]
+        );
+        const expectedFalseForMultipleValue = sut.hasArgumentNameWithValue(
+          [new RegExp(HelperText.escapeRegExp('--price'))],
+          [
+            new RegExp(HelperText.escapeRegExp('70')),
+            new RegExp(HelperText.escapeRegExp('80'))
+          ]
+        );
+        const expectedTrueForMultipleArgUndefined =
+          sut.hasArgumentNameWithValue(
+            [
+              new RegExp(HelperText.escapeRegExp('--origin')),
+              new RegExp(HelperText.escapeRegExp('--destination'))
+            ],
+            [undefined]
+          );
+        const expectedFalseForMultipleArgUndefined =
+          sut.hasArgumentNameWithValue(
+            [
+              new RegExp(HelperText.escapeRegExp('--coin')),
+              new RegExp(HelperText.escapeRegExp('--token'))
+            ],
+            [undefined]
+          );
+        const emptyListForArgs = sut.hasArgumentNameWithValue(
+          [],
+          [new RegExp(HelperText.escapeRegExp('BTC'))]
+        );
+        const emptyListForValues = sut.hasArgumentNameWithValue(
+          [new RegExp(HelperText.escapeRegExp('--coin'))],
+          []
+        );
 
         // Assert, Then
 
