@@ -1,8 +1,8 @@
 import { CommandLineArgument } from './CommandLineArgument';
 import { CommandLineConfiguration } from './CommandLineConfiguration';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
-
-// TODO: Trocar argValues para FilterType
+import { FilterType } from '../../Type/FilterType';
+import { HelperText } from '../../Data/HelperText';
 
 /**
  * Manipulação de texto para linha de comando.
@@ -72,76 +72,123 @@ export class CommandLine {
   }
 
   /**
-   * Normaliza o texto para comparação. Apenas para nome de argumento.
+   * Normaliza o filtro para comparação.
    */
-  private normalizeCaseForName(argName: string): string {
-    return !this.configuration.caseInsensitiveForName
-      ? argName
-      : argName.toLowerCase();
+  private normalizeArgumentFilter(
+    propertyName: 'name' | 'value',
+    argFilter: FilterType | undefined
+  ): RegExp {
+    if (typeof argFilter === 'string') {
+      return new RegExp(
+        `^${HelperText.escapeRegExp(argFilter)}$`,
+        (propertyName === 'name' &&
+          this.configuration.caseInsensitiveForName) ||
+        (propertyName === 'value' && this.configuration.caseInsensitiveForValue)
+          ? 'i'
+          : ''
+      );
+    } else if (argFilter instanceof RegExp) {
+      return (propertyName === 'name' &&
+        this.configuration.caseInsensitiveForName) ||
+        (propertyName === 'value' && this.configuration.caseInsensitiveForValue)
+        ? new RegExp(argFilter, 'i')
+        : argFilter;
+    } else {
+      return new RegExp('^\0$');
+    }
   }
 
   /**
-   * Normaliza o texto para comparação. Apenas para valor de argumento.
+   * Normaliza o texto do nome ou valor do argumento para comparação.
    */
-  private normalizeCaseForValue(
-    argValue: string | undefined
-  ): string | undefined {
-    return !this.configuration.caseInsensitiveForValue || argValue === undefined
-      ? argValue
-      : argValue.toLowerCase();
+  private normalizeArgumentNameOrValue(
+    propertyName: 'name' | 'value',
+    argNameOrValue: string | undefined
+  ): string {
+    if (argNameOrValue === undefined) {
+      return '\0';
+    } else if (
+      (propertyName === 'name' && this.configuration.caseInsensitiveForName) ||
+      (propertyName === 'value' && this.configuration.caseInsensitiveForValue)
+    ) {
+      return argNameOrValue.toLowerCase();
+    } else {
+      return argNameOrValue;
+    }
+  }
+
+  /**
+   * Verifica presença de um argumento por nome.
+   * @param propertyName Nome da pripriedade.
+   * @param argFilter Filtro.
+   */
+  private hasArgumentNameOrValue(
+    propertyName: 'name' | 'value',
+    argFilter: Array<FilterType | undefined>
+  ): boolean {
+    if (argFilter.length === 0) {
+      return false;
+    }
+
+    const filters = argFilter.map(argName =>
+      this.normalizeArgumentFilter(propertyName, argName)
+    );
+
+    return (
+      this.args.find(
+        arg =>
+          filters.find(filter =>
+            filter.test(
+              this.normalizeArgumentNameOrValue(propertyName, arg[propertyName])
+            )
+          ) !== undefined
+      ) !== undefined
+    );
   }
 
   /**
    * Verifica presença de um argumento por nome.
    */
-  public hasArgumentName(...argNames: string[]): boolean {
-    if (argNames.length === 0) {
-      return false;
-    }
-
-    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
-    return (
-      this.args.find(
-        arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
-      ) !== undefined
-    );
+  public hasArgumentName(...argNames: FilterType[]): boolean {
+    return this.hasArgumentNameOrValue('name', argNames);
   }
 
   /**
    * Verifica presença de um valor de argumento.
    */
-  public hasArgumentValue(...argValues: Array<string | undefined>): boolean {
-    if (argValues.length === 0) {
-      return false;
-    }
-
-    argValues = argValues.map(argValue => this.normalizeCaseForValue(argValue));
-
-    return (
-      this.args.find(
-        arg => argValues.indexOf(this.normalizeCaseForValue(arg.value)) >= 0
-      ) !== undefined
-    );
+  public hasArgumentValue(
+    ...argValues: Array<FilterType | undefined>
+  ): boolean {
+    return this.hasArgumentNameOrValue('value', argValues);
   }
 
   /**
    * Verifica presença de um argumento com determinado valor.
    */
   public hasArgumentNameWithValue(
-    argNames: string[],
-    argValues: Array<string | undefined>
+    argNames: FilterType[],
+    argValues: Array<FilterType | undefined>
   ): boolean {
     if (argNames.length === 0 || argValues.length === 0) {
       return false;
     }
 
-    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
-    argValues = argValues.map(argValue => this.normalizeCaseForValue(argValue));
+    const filtersNames = argNames.map(argName =>
+      this.normalizeArgumentFilter('name', argName)
+    );
+    const filtersValues = argValues.map(argValue =>
+      this.normalizeArgumentFilter('value', argValue)
+    );
+
     return (
       this.args.find(
         arg =>
-          argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0 &&
-          argValues.indexOf(this.normalizeCaseForValue(arg.value)) >= 0
+          filtersNames.find(filter =>
+            filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
+          ) !== undefined &&
+          filtersValues.find(filter =>
+            filter.test(this.normalizeArgumentNameOrValue('value', arg.value))
+          ) !== undefined
       ) !== undefined
     );
   }
@@ -149,30 +196,46 @@ export class CommandLine {
   /**
    * Busca o primeiro valor de um argumento
    */
-  public getArgumentValue(...argNames: string[]): string | undefined {
+  public getArgumentValue(...argNames: FilterType[]): string | undefined {
     if (argNames.length === 0) {
       return undefined;
     }
 
-    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
-    const arg = this.args.find(
-      arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
+    const filters = argNames.map(argName =>
+      this.normalizeArgumentFilter('name', argName)
     );
+
+    const arg = this.args.find(
+      arg =>
+        filters.find(filter =>
+          filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
+        ) !== undefined
+    );
+
     return arg?.value;
   }
 
   /**
    * Busca todos os valores de um argumento
    */
-  public getArgumentValues(...argNames: string[]): Array<string | undefined> {
+  public getArgumentValues(
+    ...argNames: FilterType[]
+  ): Array<string | undefined> {
     if (argNames.length === 0) {
       return [];
     }
 
-    argNames = argNames.map(argName => this.normalizeCaseForName(argName));
-    const args = this.args.filter(
-      arg => argNames.indexOf(this.normalizeCaseForName(arg.name)) >= 0
+    const filters = argNames.map(argName =>
+      this.normalizeArgumentFilter('name', argName)
     );
+
+    const args = this.args.filter(
+      arg =>
+        filters.find(filter =>
+          filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
+        ) !== undefined
+    );
+
     return args.map(arg => arg.value);
   }
 
