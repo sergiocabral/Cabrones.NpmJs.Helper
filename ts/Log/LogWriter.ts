@@ -55,8 +55,8 @@ export abstract class LogWriter implements ILogWriter {
         !doNotTreatAsObject(values)
       ) {
         values = {
-          ...values,
-          ...defaultValues
+          ...defaultValues,
+          ...values
         };
       } else {
         const valuesArray = Array.isArray(values) ? values : [values];
