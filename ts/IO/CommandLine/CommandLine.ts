@@ -3,6 +3,7 @@ import { CommandLineConfiguration } from './CommandLineConfiguration';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
 import { FilterType } from '../../Type/FilterType';
 import { HelperText } from '../../Data/HelperText';
+import { HelperList } from '../../Data/HelperList';
 
 /**
  * Manipulação de texto para linha de comando.
@@ -222,6 +223,25 @@ export class CommandLine {
           ) !== undefined
       ) !== undefined
     );
+  }
+
+  /**
+   * Busca o primeiro valor de um argumento
+   */
+  public getArgumentName(...argNames: FilterType[]): string | undefined {
+    const stopAtFirst = true;
+    const args = this.getArguments(argNames, stopAtFirst);
+    return args.length > 0 ? args[0]?.name : undefined;
+  }
+
+  /**
+   * Busca todos os valores de um argumento
+   */
+  public getArgumentNames(
+    ...argNames: FilterType[]
+  ): Array<string | undefined> {
+    const args = this.getArguments(argNames);
+    return HelperList.unique(args.map(arg => arg.name));
   }
 
   /**

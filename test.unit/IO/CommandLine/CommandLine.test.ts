@@ -384,6 +384,41 @@ describe('CommandLine', () => {
       expect(hasValueExpectedFalse).toBe(false);
       expect(hasValueExpectedTrue).toBe(true);
     });
+    test('getArgumentName', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '--coin=BTC --coin=ETH --price=11 --amount=12'
+      );
+
+      // Act, When
+
+      const nonExistentValue = sut.getArgumentName('--destination');
+      const existentValue = sut.getArgumentName('--price', '--coin');
+
+      // Assert, Then
+
+      expect(nonExistentValue).toBeUndefined();
+      expect(existentValue).toBe('--coin');
+    });
+    test('getArgumentNames', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine(
+        '--coin=BTC --coin=ETH --price=11 --amount=12'
+      );
+
+      // Act, When
+
+      const nonExistentValues = sut.getArgumentNames('--destination');
+      const existentValues = sut.getArgumentNames('--price', '--coin');
+
+      // Assert, Then
+
+      expect(nonExistentValues.length).toBe(0);
+      expect(existentValues.length).toBe(2);
+      expect(existentValues).toStrictEqual(['--coin', '--price']);
+    });
     test('getArgumentValue', () => {
       // Arrange, Given
 
