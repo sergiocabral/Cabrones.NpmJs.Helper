@@ -147,6 +147,37 @@ export class CommandLine {
   }
 
   /**
+   * Busca todos os argumentos por nome
+   */
+  private getArguments(
+    argNames: FilterType[],
+    stopAtFirst = false
+  ): CommandLineArgument[] {
+    if (argNames.length === 0) {
+      return [];
+    }
+
+    const filters = argNames.map(argName =>
+      this.normalizeArgumentFilter('name', argName)
+    );
+
+    const result: CommandLineArgument[] = [];
+    for (const arg of this.args) {
+      const match =
+        filters.find(filter =>
+          filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
+        ) !== undefined;
+      if (match) {
+        result.push(arg);
+        if (stopAtFirst) {
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
    * Verifica presença de um argumento por nome.
    */
   public hasArgumentName(...argNames: FilterType[]): boolean {
@@ -197,22 +228,9 @@ export class CommandLine {
    * Busca o primeiro valor de um argumento
    */
   public getArgumentValue(...argNames: FilterType[]): string | undefined {
-    if (argNames.length === 0) {
-      return undefined;
-    }
-
-    const filters = argNames.map(argName =>
-      this.normalizeArgumentFilter('name', argName)
-    );
-
-    const arg = this.args.find(
-      arg =>
-        filters.find(filter =>
-          filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
-        ) !== undefined
-    );
-
-    return arg?.value;
+    const stopAtFirst = true;
+    const args = this.getArguments(argNames, stopAtFirst);
+    return args.length > 0 ? args[0]?.value : undefined;
   }
 
   /**
@@ -221,21 +239,7 @@ export class CommandLine {
   public getArgumentValues(
     ...argNames: FilterType[]
   ): Array<string | undefined> {
-    if (argNames.length === 0) {
-      return [];
-    }
-
-    const filters = argNames.map(argName =>
-      this.normalizeArgumentFilter('name', argName)
-    );
-
-    const args = this.args.filter(
-      arg =>
-        filters.find(filter =>
-          filter.test(this.normalizeArgumentNameOrValue('name', arg.name))
-        ) !== undefined
-    );
-
+    const args = this.getArguments(argNames);
     return args.map(arg => arg.value);
   }
 
