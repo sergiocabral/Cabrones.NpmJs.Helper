@@ -231,7 +231,7 @@ export class CommandLine {
   public getArgumentName(...argNames: FilterType[]): string | undefined {
     const stopAtFirst = true;
     const args = this.getArguments(argNames, stopAtFirst);
-    return args.length > 0 ? args[0]?.name : undefined;
+    return args.length > 0 ? args[0].name : undefined;
   }
 
   /**
@@ -250,7 +250,7 @@ export class CommandLine {
   public getArgumentValue(...argNames: FilterType[]): string | undefined {
     const stopAtFirst = true;
     const args = this.getArguments(argNames, stopAtFirst);
-    return args.length > 0 ? args[0]?.value : undefined;
+    return args.length > 0 ? args[0].value : undefined;
   }
 
   /**

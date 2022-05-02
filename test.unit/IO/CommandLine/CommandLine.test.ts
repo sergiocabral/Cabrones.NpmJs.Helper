@@ -384,6 +384,19 @@ describe('CommandLine', () => {
       expect(hasValueExpectedFalse).toBe(false);
       expect(hasValueExpectedTrue).toBe(true);
     });
+    test('getArgumentName quando não tem argumentos', () => {
+      // Arrange, Given
+
+      const sut = new CommandLine('');
+
+      // Act, When
+
+      const nonExistentValue = sut.getArgumentName('--destination');
+
+      // Assert, Then
+
+      expect(nonExistentValue).toBeUndefined();
+    });
     test('getArgumentName', () => {
       // Arrange, Given
 
