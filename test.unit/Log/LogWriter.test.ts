@@ -596,14 +596,14 @@ describe('Class LogWriter', () => {
 
       expect(resultKeys.length).toBe(4);
       expect(resultValues.length).toBe(resultKeys.length);
-      expect(resultKeys[0]).toBe('property1');
-      expect(resultKeys[1]).toBe('property2');
-      expect(resultKeys[2]).toBe('property3');
-      expect(resultKeys[3]).toBe('property4');
-      expect(resultValues[0]).toBe(values.property1);
-      expect(resultValues[1]).toBe(values.property2);
-      expect(resultValues[2]).toBe(defaultValues.property3);
-      expect(resultValues[3]).toBe(defaultValues.property4);
+      expect(resultKeys[0]).toBe('property3');
+      expect(resultKeys[1]).toBe('property4');
+      expect(resultKeys[2]).toBe('property1');
+      expect(resultKeys[3]).toBe('property2');
+      expect(resultValues[0]).toBe(defaultValues.property3);
+      expect(resultValues[1]).toBe(defaultValues.property4);
+      expect(resultValues[2]).toBe(values.property1);
+      expect(resultValues[3]).toBe(values.property2);
     });
     test('merge de object faz values escrever sobre defaultValues ', () => {
       // Arrange, Given
