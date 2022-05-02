@@ -36,6 +36,12 @@ import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { KeyValue } from './Type/KeyValue';
 import { ResultEvent } from './Type/ResultEvent';
+import { FilterType } from './Type/FilterType';
+import { FiltersType } from './Type/FiltersType';
+import { PrimitiveEmptyType } from './Type/PrimitiveEmptyType';
+import { PrimitiveValueType } from './Type/PrimitiveValueType';
+import { PrimitiveEmptyTypeName } from './Type/PrimitiveEmptyTypeName';
+import { PrimitiveValueTypeName } from './Type/PrimitiveValueTypeName';
 import { ITranslate } from './i18n/ITranslate';
 import { Translate } from './i18n/Translate';
 import { TranslateSet } from './i18n/TranslateSet';
@@ -94,6 +100,12 @@ export {
   LogWriterToConsole,
   KeyValue,
   ResultEvent,
+  FilterType,
+  FiltersType,
+  PrimitiveValueType,
+  PrimitiveValueTypeName,
+  PrimitiveEmptyType,
+  PrimitiveEmptyTypeName,
   sha256,
   ITranslate,
   Translate,
