@@ -1,3 +1,5 @@
+// noinspection JSUnusedLocalSymbols
+
 import { JsonLoader, NotImplementedError } from '../../ts';
 
 const propertyDefaultValueNumber = Math.random();
@@ -287,5 +289,96 @@ describe('Class JsonLoader', () => {
 
     expect(errors).toEqual(errorConfigurationTestB);
     expect(errors).not.toBe(errorConfigurationTestB);
+  });
+
+  describe('Validadores mustBe...', () => {
+    const originals: Record<string, any> = {};
+
+    beforeEach(() => {
+      originals['JsonLoader.mustBeOfType'] = JsonLoader.mustBeOfType;
+      originals['JsonLoader.mustBeList'] = JsonLoader.mustBeList;
+      originals['JsonLoader.mustBeListOfTheSet'] =
+        JsonLoader.mustBeListOfTheSet;
+      originals['JsonLoader.mustBeInTheSet'] = JsonLoader.mustBeInTheSet;
+      originals['JsonLoader.mustBeNumberInTheRange'] =
+        JsonLoader.mustBeNumberInTheRange;
+      originals['JsonLoader.mustMatchRegex'] = JsonLoader.mustMatchRegex;
+    });
+
+    afterEach(() => {
+      JsonLoader.mustBeOfType = originals['JsonLoader.mustBeOfType'];
+      JsonLoader.mustBeList = originals['JsonLoader.mustBeList'];
+      JsonLoader.mustBeListOfTheSet =
+        originals['JsonLoader.mustBeListOfTheSet'];
+      JsonLoader.mustBeInTheSet = originals['JsonLoader.mustBeInTheSet'];
+      JsonLoader.mustBeNumberInTheRange =
+        originals['JsonLoader.mustBeNumberInTheRange'];
+      JsonLoader.mustMatchRegex = originals['JsonLoader.mustMatchRegex'];
+    });
+
+    describe('Validadores de fato', () => {
+      // TODO: Escrever teste para todos os validadores mustBe...
+      test('', () => {
+        // Arrange, Given
+        // Act, When
+        // Assert, Then
+      });
+    });
+    describe('Validadores bypass que chamam os validadorede fato', () => {
+      // TODO: Escrever teste para todos os validadores by-pass
+      test('mustBeBoolean chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult = JsonLoader.mustBeBoolean<ConfigurationTestA>(
+          instance,
+          fieldName
+        );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('boolean');
+        expect(mockMustBe.mock.calls[0][3]).toBe(false);
+      });
+      test('mustBeBooleanOrNotInformed chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeBooleanOrNotInformed<ConfigurationTestA>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('boolean');
+        expect(mockMustBe.mock.calls[0][3]).toBe(true);
+      });
+    });
   });
 });

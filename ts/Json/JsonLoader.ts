@@ -4,8 +4,6 @@ import { PrimitiveValueTypeName } from '../Type/PrimitiveValueTypeName';
 import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
 
-// TODO: Escrever teste para todos os validadores mustBe...
-
 /**
  * Conjunto de informações de configuração.
  */
