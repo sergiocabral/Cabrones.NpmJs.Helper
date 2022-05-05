@@ -234,9 +234,9 @@ export abstract class JsonLoader {
    * @param verification Modo de verificação == ou ===
    * @param canBeNotInformed Aceita que o campo não seja informado com null ou undefined.
    */
-  public static mustBeInTheSet(
+  public static mustBeInTheSet<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     validValues: unknown[],
     verification: 'only value' | 'value and type',
     canBeNotInformed: boolean
@@ -267,7 +267,9 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.constructor.name}.${fieldName} must be ${validTypes.join(
+        `${instance.constructor.name}.${String(
+          fieldName
+        )} must be ${validTypes.join(
           ' or '
         )}, but found: ${typeof value}, ${String(value)}`
       );
@@ -285,9 +287,9 @@ export abstract class JsonLoader {
    * @param type Tipo numérico inteiro ou decimal
    * @param canBeNotInformed Aceita que o campo não seja informado com null ou undefined.
    */
-  public static mustBeNumberInTheRange(
+  public static mustBeNumberInTheRange<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     range: [number | undefined, number | undefined],
     rangeInclusive: [boolean, boolean],
     type: 'integer' | 'decimal',
@@ -357,7 +359,9 @@ export abstract class JsonLoader {
         }
 
         errors.push(
-          `${instance.constructor.name}.${fieldName} must be ${violation.join(
+          `${instance.constructor.name}.${String(
+            fieldName
+          )} must be ${violation.join(
             ' and '
           )}, but found: ${typeof value}, ${String(value)}`
         );
@@ -375,9 +379,9 @@ export abstract class JsonLoader {
    * @param canBeNotInformed Aceita que o campo não seja informado com null ou undefined.
    * @param regexDescription Descrição da regex que será embutida na mensagem.
    */
-  public static mustMatchRegex(
+  public static mustMatchRegex<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     regex: RegExp,
     canBeNotInformed: boolean,
     regexDescription?: string
@@ -395,9 +399,9 @@ export abstract class JsonLoader {
 
     if (!isValid) {
       errors.push(
-        `${
-          instance.constructor.name
-        }.${fieldName} must be a valid ${regexDescription}, but found: ${typeof value}, ${String(
+        `${instance.constructor.name}.${String(
+          fieldName
+        )} must be a valid ${regexDescription}, but found: ${typeof value}, ${String(
           value
         )}`
       );
@@ -415,7 +419,12 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'boolean', false);
+    return JsonLoader.mustBeOfType<TJson>(
+      instance,
+      fieldName,
+      'boolean',
+      false
+    );
   }
 
   /**
@@ -427,7 +436,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'boolean', true);
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'boolean', true);
   }
 
   /**
@@ -439,7 +448,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'string', false);
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'string', false);
   }
 
   /**
@@ -451,7 +460,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'string', true);
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'string', true);
   }
 
   /**
@@ -463,7 +472,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'number', false);
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'number', false);
   }
 
   /**
@@ -475,7 +484,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeOfType(instance, fieldName, 'number', true);
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'number', true);
   }
 
   /**
@@ -487,43 +496,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'any', false);
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser uma lista (array) de boolean
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   */
-  public static mustBeListOfBoolean<TJson extends JsonLoader>(
-    instance: JsonLoader,
-    fieldName: keyof TJson
-  ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'boolean', false);
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser uma lista (array) de string
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   */
-  public static mustBeListOfString<TJson extends JsonLoader>(
-    instance: JsonLoader,
-    fieldName: keyof TJson
-  ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'string', false);
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser uma lista (array) de number
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   */
-  public static mustBeListOfNumber<TJson extends JsonLoader>(
-    instance: JsonLoader,
-    fieldName: keyof TJson
-  ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'number', false);
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'any', false);
   }
 
   /**
@@ -535,7 +508,19 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'any', true);
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'any', true);
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma lista (array) de boolean
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeListOfBoolean<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'boolean', false);
   }
 
   /**
@@ -547,7 +532,19 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'boolean', true);
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'boolean', true);
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma lista (array) de string
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeListOfString<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'string', false);
   }
 
   /**
@@ -559,7 +556,19 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'string', true);
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'string', true);
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma lista (array) de number
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeListOfNumber<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'number', false);
   }
 
   /**
@@ -571,7 +580,7 @@ export abstract class JsonLoader {
     instance: JsonLoader,
     fieldName: keyof TJson
   ): string[] {
-    return JsonLoader.mustBeList(instance, fieldName, 'number', true);
+    return JsonLoader.mustBeList<TJson>(instance, fieldName, 'number', true);
   }
 
   /**
@@ -581,209 +590,18 @@ export abstract class JsonLoader {
    * @param minValue Valor mínimo inclusivo.
    * @param maxValue Valor máximo exclusivo.
    */
-  public static mustBeNumberBeetwen(
+  public static mustBeNumberBeetwen<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     minValue: number,
     maxValue: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [minValue, maxValue],
       [true, true],
       'decimal',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um número menor que um limit
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limit.
-   */
-  public static mustBeNumberLessThan(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [undefined, limit],
-      [false, false],
-      'decimal',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um número menor ou igual a um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeNumberLessThanOrEqual(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [undefined, limit],
-      [true, true],
-      'decimal',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um inteiro entre dois limites
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param minValue Valor mínimo inclusivo.
-   * @param maxValue Valor máximo exclusivo.
-   */
-  public static mustBeIntegerBeetwen(
-    instance: JsonLoader,
-    fieldName: string,
-    minValue: number,
-    maxValue: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [minValue, maxValue],
-      [true, true],
-      'integer',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um inteiro menor que um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeIntegerLessThan(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [undefined, limit],
-      [false, false],
-      'integer',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um inteiro menor ou igual a um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeIntegerLessThanOrEqual(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [undefined, limit],
-      [true, true],
-      'integer',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um número maior que um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limit.
-   */
-  public static mustBeNumberGreaterThan(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [limit, undefined],
-      [false, false],
-      'decimal',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um número maior ou igual a um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeNumberGreaterThanOrEqual(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [limit, undefined],
-      [true, true],
-      'decimal',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um inteiro maior que um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeIntegerGreaterThan(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [limit, undefined],
-      [false, false],
-      'integer',
-      false
-    );
-  }
-
-  /**
-   * Valida e retorna erro se não atender: deve ser um inteiro maior ou igual a um limite.
-   * @param instance Instância do JSON
-   * @param fieldName Nome do campo.
-   * @param limit Range limite.
-   */
-  public static mustBeIntegerGreaterThanOrEqual(
-    instance: JsonLoader,
-    fieldName: string,
-    limit: number
-  ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
-      instance,
-      fieldName,
-      [limit, undefined],
-      [true, true],
-      'integer',
       false
     );
   }
@@ -795,13 +613,13 @@ export abstract class JsonLoader {
    * @param minValue Valor mínimo inclusivo.
    * @param maxValue Valor máximo exclusivo.
    */
-  public static mustBeNumberBeetwenOrNotInformed(
+  public static mustBeNumberBeetwenOrNotInformed<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     minValue: number,
     maxValue: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [minValue, maxValue],
@@ -817,12 +635,33 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limit.
    */
-  public static mustBeNumberLessThanOrNotInformed(
+  public static mustBeNumberLessThan<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [undefined, limit],
+      [false, false],
+      'decimal',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um número menor que um limit
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limit.
+   */
+  public static mustBeNumberLessThanOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    limit: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [undefined, limit],
@@ -838,12 +677,31 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeNumberLessThanOrEqualOrNotInformed(
+  public static mustBeNumberLessThanOrEqual<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [undefined, limit],
+      [true, true],
+      'decimal',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um número menor ou igual a um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeNumberLessThanOrEqualOrNotInformed<
+    TJson extends JsonLoader
+  >(instance: JsonLoader, fieldName: keyof TJson, limit: number): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [undefined, limit],
@@ -860,13 +718,36 @@ export abstract class JsonLoader {
    * @param minValue Valor mínimo inclusivo.
    * @param maxValue Valor máximo exclusivo.
    */
-  public static mustBeIntegerBeetwenOrNotInformed(
+  public static mustBeIntegerBeetwen<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     minValue: number,
     maxValue: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [minValue, maxValue],
+      [true, true],
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro entre dois limites
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param minValue Valor mínimo inclusivo.
+   * @param maxValue Valor máximo exclusivo.
+   */
+  public static mustBeIntegerBeetwenOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    minValue: number,
+    maxValue: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [minValue, maxValue],
@@ -882,12 +763,33 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeIntegerLessThanOrNotInformed(
+  public static mustBeIntegerLessThan<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [undefined, limit],
+      [false, false],
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro menor que um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeIntegerLessThanOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    limit: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [undefined, limit],
@@ -903,12 +805,31 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeIntegerLessThanOrEqualOrNotInformed(
+  public static mustBeIntegerLessThanOrEqual<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [undefined, limit],
+      [true, true],
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro menor ou igual a um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeIntegerLessThanOrEqualOrNotInformed<
+    TJson extends JsonLoader
+  >(instance: JsonLoader, fieldName: keyof TJson, limit: number): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [undefined, limit],
@@ -924,12 +845,33 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limit.
    */
-  public static mustBeNumberGreaterThanOrNotInformed(
+  public static mustBeNumberGreaterThan<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [limit, undefined],
+      [false, false],
+      'decimal',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um número maior que um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limit.
+   */
+  public static mustBeNumberGreaterThanOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    limit: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [limit, undefined],
@@ -945,12 +887,31 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeNumberGreaterThanOrEqualOrNotInformed(
+  public static mustBeNumberGreaterThanOrEqual<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [limit, undefined],
+      [true, true],
+      'decimal',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um número maior ou igual a um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeNumberGreaterThanOrEqualOrNotInformed<
+    TJson extends JsonLoader
+  >(instance: JsonLoader, fieldName: keyof TJson, limit: number): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [limit, undefined],
@@ -966,12 +927,33 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeIntegerGreaterThanOrNotInformed(
+  public static mustBeIntegerGreaterThan<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [limit, undefined],
+      [false, false],
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro maior que um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeIntegerGreaterThanOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    limit: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [limit, undefined],
@@ -987,12 +969,31 @@ export abstract class JsonLoader {
    * @param fieldName Nome do campo.
    * @param limit Range limite.
    */
-  public static mustBeIntegerGreaterThanOrEqualOrNotInformed(
+  public static mustBeIntegerGreaterThanOrEqual<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string,
+    fieldName: keyof TJson,
     limit: number
   ): string[] {
-    return JsonLoader.mustBeNumberInTheRange(
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [limit, undefined],
+      [true, true],
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro maior ou igual a um limite.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param limit Range limite.
+   */
+  public static mustBeIntegerGreaterThanOrEqualOrNotInformed<
+    TJson extends JsonLoader
+  >(instance: JsonLoader, fieldName: keyof TJson, limit: number): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
       instance,
       fieldName,
       [limit, undefined],
@@ -1007,7 +1008,10 @@ export abstract class JsonLoader {
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
    */
-  public static mustBeUuid(instance: JsonLoader, fieldName: string): string[] {
+  public static mustBeUuid<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
     return JsonLoader.mustMatchRegex(
       instance,
       fieldName,
@@ -1022,9 +1026,9 @@ export abstract class JsonLoader {
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
    */
-  public static mustBeUuidOrNotInformed(
+  public static mustBeUuidOrNotInformed<TJson extends JsonLoader>(
     instance: JsonLoader,
-    fieldName: string
+    fieldName: keyof TJson
   ): string[] {
     return JsonLoader.mustMatchRegex(
       instance,
