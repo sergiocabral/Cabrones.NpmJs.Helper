@@ -78,6 +78,15 @@ export abstract class JsonLoader {
   }
 
   /**
+   * Descrição do valor e seu tipo.
+   */
+  private static describeType(value: unknown): string {
+    return value === undefined || value === null
+      ? String(value)
+      : `${typeof value}, ${String(value)}`;
+  }
+
+  /**
    * Valida e retorna erro se não atender: deve ser do tipo especificado ou vazio.
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
@@ -93,7 +102,7 @@ export abstract class JsonLoader {
     const errors = Array<string>();
     const value = HelperObject.getProperty(instance, fieldName);
     const isValid =
-      typeof value === typeName ||
+      (typeof value === typeName && value !== null) ||
       (canBeNotInformed && (value === undefined || value === null));
     if (!isValid) {
       const validTypes: string[] = [typeName];
@@ -105,7 +114,7 @@ export abstract class JsonLoader {
           fieldName
         )} must be a ${validTypes.join(
           ' or '
-        )}, but found: ${typeof value}, ${String(value)}`
+        )}, but found: ${JsonLoader.describeType(value)}`
       );
     }
 
@@ -125,6 +134,8 @@ export abstract class JsonLoader {
     typeName:
       | PrimitiveValueTypeName
       | 'object'
+      | 'undefined'
+      | 'null'
       | 'any'
       | Array<PrimitiveValueTypeName | 'object'>,
     canBeNotInformed: boolean

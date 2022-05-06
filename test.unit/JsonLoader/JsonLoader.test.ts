@@ -1,6 +1,10 @@
 // noinspection JSUnusedLocalSymbols
 
-import { JsonLoader, NotImplementedError } from '../../ts';
+import {
+  JsonLoader,
+  NotImplementedError,
+  PrimitiveValueTypeName
+} from '../../ts';
 
 const propertyDefaultValueNumber = Math.random();
 const propertyDefaultValueDate = new Date();
@@ -20,6 +24,10 @@ class ConfigurationTestA extends JsonLoader {
   propertyNumber = propertyDefaultValueNumber;
   propertyDate = propertyDefaultValueDate;
   propertyConfiguration = new ConfigurationTestB();
+}
+
+class ConfigurationForValidationTest extends JsonLoader {
+  property: unknown = null;
 }
 
 describe('Class JsonLoader', () => {
@@ -314,15 +322,6 @@ describe('Class JsonLoader', () => {
       JsonLoader.mustBeNumberInTheRange =
         originals['JsonLoader.mustBeNumberInTheRange'];
       JsonLoader.mustMatchRegex = originals['JsonLoader.mustMatchRegex'];
-    });
-
-    describe('Validadores de fato', () => {
-      // TODO: Escrever teste para todos os validadores mustBe...
-      test('', () => {
-        // Arrange, Given
-        // Act, When
-        // Assert, Then
-      });
     });
     describe('Validadores bypass que chamam os validadorede fato', () => {
       test('mustBeBoolean chama mustBeOfType', () => {
@@ -1433,6 +1432,192 @@ describe('Class JsonLoader', () => {
         );
         expect(mockMustBe.mock.calls[0][3]).toBe(true);
         expect(mockMustBe.mock.calls[0][4]).toBe('UUID');
+      });
+    });
+    describe('Validadores de fato', () => {
+      describe('mustBeOfType', () => {
+        test('Esperado sucesso: Permitido valor vazio: SIM ou NÃO. Valor informado corresponde ao tipo esperado: SIM. Tipos esperados: number, string, boolean, object', () => {
+          // Arrange, Given
+
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const values: Record<PrimitiveValueTypeName | 'object', unknown> = {
+            number: Math.random() * 1000,
+            string: Math.random().toString(),
+            boolean: Math.floor(Math.random() * 1000) % 2 === 0,
+            object: {}
+          };
+          const canBeNotInformedValues = [false, true];
+
+          const instance = new ConfigurationForValidationTest();
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const property of Object.entries(values)) {
+              const propertyType = property[0];
+              instance[propertyName] = property[1];
+
+              // Act, When
+
+              const receivedResult =
+                JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  propertyType as PrimitiveValueTypeName | 'object',
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedResult.length).toBe(0);
+            }
+        });
+        test('Esperado falha: Permitido valor vazio: NÃO. Valor informado corresponde ao tipo ao tipo esperado: SIM (object). Tipo esperado: object. Mas null é considerado valor vazio', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = false;
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const propertyType = 'object';
+          const propertyValue = null;
+
+          const instance = new ConfigurationForValidationTest();
+          instance[propertyName] = propertyValue;
+
+          const expectedErrorMessage = `${ConfigurationForValidationTest.name}.${propertyName} must be a ${propertyType}, but found: ${propertyValue}`;
+
+          // Act, When
+
+          const receivedResult =
+            JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+              instance,
+              propertyName,
+              propertyType,
+              canBeNotInformed
+            );
+
+          // Assert, Then
+
+          expect(receivedResult.length).toBe(1);
+          expect(receivedResult[0]).toBe(expectedErrorMessage);
+        });
+        test('Esperado falha: Permitido valor vazio: NÃO. Valor informado é vazio: SIM (null, undefined): Tipos esperados: number, string, boolean, object', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = false;
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const propertyTypes: Array<PrimitiveValueTypeName | 'object'> = [
+            'number',
+            'string',
+            'boolean',
+            'object'
+          ];
+          const emptyValues = [null, undefined];
+
+          const instance = new ConfigurationForValidationTest();
+
+          for (const propertyType of propertyTypes)
+            for (const emptyValue of emptyValues) {
+              instance[propertyName] = emptyValue;
+
+              const expectedErrorMessage = `${ConfigurationForValidationTest.name}.${propertyName} must be a ${propertyType}, but found: ${emptyValue}`;
+
+              // Act, When
+
+              const receivedResult =
+                JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  propertyType,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedResult.length).toBe(1);
+              expect(receivedResult[0]).toBe(expectedErrorMessage);
+            }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM. Valor informado é vazio: null, undefined. Tipos esperados: number, string, boolean, object', () => {
+          // Arrange, Given
+
+          const emptyValues = [undefined, null];
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const propertyTypes: Array<PrimitiveValueTypeName | 'object'> = [
+            'number',
+            'string',
+            'boolean',
+            'object'
+          ];
+          const canBeNotInformed = true;
+
+          const instance = new ConfigurationForValidationTest();
+          for (const propertyType of propertyTypes)
+            for (const emptyValue of emptyValues) {
+              instance[propertyName] = emptyValue;
+
+              // Act, When
+
+              const receivedResult =
+                JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  propertyType,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedResult.length).toBe(0);
+            }
+        });
+        test('Esperado falha: Permitido valor vazio: SIM. Valor informado corresponde ao tipo esperado: NÃO. Tipos esperados: number, string, boolean, object', () => {
+          // Arrange, Given
+
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const propertyTypes: Array<PrimitiveValueTypeName | 'object'> = [
+            'number',
+            'string',
+            'boolean',
+            'object'
+          ];
+          const canBeNotInformed = true;
+
+          const instance = new ConfigurationForValidationTest();
+          for (const propertyType of propertyTypes) {
+            instance[propertyName] =
+              propertyType !== 'string'
+                ? Math.random().toString()
+                : Math.random();
+
+            const expectedErrorMessage = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a ${[
+              propertyType,
+              String(null),
+              String(undefined)
+            ].join(' or ')}, but found: ${typeof instance[propertyName]}, ${
+              instance[propertyName]
+            }`;
+
+            // Act, When
+
+            const receivedResult =
+              JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                propertyType,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedResult.length).toBe(1);
+            expect(receivedResult[0]).toBe(expectedErrorMessage);
+          }
+        });
+      });
+      // TODO: Escrever teste para todos os validadores mustBe...
+      test('', () => {
+        // Arrange, Given
+        // Act, When
+        // Assert, Then
       });
     });
   });
