@@ -260,13 +260,12 @@ export abstract class JsonLoader {
     const value = HelperObject.getProperty(instance, fieldName);
 
     const isValid =
-      canBeNotInformed && (value === null || value === undefined)
-        ? true
-        : validValues.indexOf(
-            (validValue: unknown) =>
-              (verification === 'only value' && validValue == value) ||
-              (verification === 'value and type' && validValue === value)
-          ) >= 0;
+      (canBeNotInformed && (value === null || value === undefined)) ||
+      validValues.findIndex(
+        (validValue: unknown) =>
+          (verification === 'only value' && validValue == value) ||
+          (verification === 'value and type' && validValue === value)
+      ) >= 0;
 
     if (!isValid) {
       const validTypes = HelperList.unique(
@@ -286,7 +285,7 @@ export abstract class JsonLoader {
           fieldName
         )} must be ${validTypes.join(
           ' or '
-        )}, but found: ${typeof value}, ${String(value)}`
+        )}, but found: ${JsonLoader.describeType(value)}`
       );
     }
 
