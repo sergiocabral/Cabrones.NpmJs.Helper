@@ -81,9 +81,15 @@ export abstract class JsonLoader {
    * Descrição do valor e seu tipo.
    */
   private static describeType(value: unknown): string {
-    return value === undefined || value === null
-      ? String(value)
-      : `${typeof value}, ${String(value)}`;
+    const isArray = Array.isArray(value);
+    const result = (isArray ? value : [value])
+      .map(item =>
+        item === undefined || item === null
+          ? String(item)
+          : `${typeof item}: ${String(item)}`
+      )
+      .join(', ');
+    return isArray ? `[ ${result} ]` : result;
   }
 
   /**
@@ -137,30 +143,29 @@ export abstract class JsonLoader {
       | 'undefined'
       | 'null'
       | 'any'
-      | Array<PrimitiveValueTypeName | 'object'>,
+      | Array<PrimitiveValueTypeName | 'object' | 'undefined' | 'null' | 'any'>,
     canBeNotInformed: boolean
   ): string[] {
     const errors = Array<string>();
     const value = HelperObject.getProperty(instance, fieldName);
 
-    const acceptAnyType = typeName === 'any';
-    const typesNames = acceptAnyType
-      ? ['any']
-      : Array.isArray(typeName)
+    const typesNames = Array.isArray(typeName)
       ? (typeName as string[])
       : [typeName];
+    const acceptAnyType = typesNames.includes('any');
 
     const isValid =
       (Array.isArray(value) &&
         (acceptAnyType ||
-          value.indexOf((item: unknown) => !typesNames.includes(typeof item)) <
-            0)) ||
+          value.findIndex(
+            (item: unknown) =>
+              !typesNames.includes(item === null ? String(item) : typeof item)
+          ) < 0)) ||
       (canBeNotInformed && (value === undefined || value === null));
 
     if (!isValid) {
       let canBeNotInformedDescription = '';
       if (canBeNotInformed) {
-        typesNames.push(String(null), String(undefined));
         canBeNotInformedDescription = `, or an unspecified list with ${String(
           null
         )} or ${String(undefined)}`;
@@ -171,7 +176,7 @@ export abstract class JsonLoader {
           fieldName
         )} must be a array of items of type ${typesNames.join(
           ' or '
-        )}${canBeNotInformedDescription}, but found: ${typeof value}, ${String(
+        )}${canBeNotInformedDescription}, but found: ${JsonLoader.describeType(
           value
         )}`
       );
