@@ -333,15 +333,18 @@ export abstract class JsonLoader {
       validTypes.push(String(null), String(undefined));
     }
 
-    if (!isValidType) {
+    if (
+      !isValidType &&
+      (!canBeNotInformed || (value !== null && value !== undefined))
+    ) {
       errors.push(
         `${instance.constructor.name}.${String(
           fieldName
         )} must be a ${validTypes.join(
           ' or '
-        )}, but found: ${typeof value}, ${String(value)}`
+        )}, but found: ${JsonLoader.describeType(value)}`
       );
-    } else if (value !== undefined) {
+    } else if (value !== null && value !== undefined) {
       const valueAsNumber = value as number;
 
       const isValidRange1 =
@@ -377,7 +380,7 @@ export abstract class JsonLoader {
             fieldName
           )} must be ${violation.join(
             ' and '
-          )}, but found: ${typeof value}, ${String(value)}`
+          )}, but found: ${JsonLoader.describeType(value)}`
         );
       }
     }

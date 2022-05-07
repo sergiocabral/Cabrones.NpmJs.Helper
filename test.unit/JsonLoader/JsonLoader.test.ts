@@ -1,6 +1,7 @@
 // noinspection JSUnusedLocalSymbols
 
 import {
+  EmptyError,
   HelperList,
   JsonLoader,
   NotImplementedError,
@@ -2633,6 +2634,214 @@ describe('Class JsonLoader', () => {
               expect(receivedErrors[0]).toBe(expectedError);
             }
         });
+      });
+      describe('mustBeNumberInTheRange', () => {
+        test('Pelo menos um dos valores de minValue e maxValue devem ser informados.', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = true;
+
+          const minValue = undefined;
+          const maxValue = undefined;
+
+          const rangeInclusiveValues: [boolean, boolean][] = [
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true]
+          ];
+          const typesValues: Array<'integer' | 'decimal'> = [
+            'integer',
+            'decimal'
+          ];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const rangeInclusive of rangeInclusiveValues)
+            for (const type of typesValues) {
+              // Act, When
+
+              const validate = () =>
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(validate).toThrow(EmptyError);
+            }
+        });
+        test('Esperado sucesso: Aceita vazio: SIM. Valor vazio: SIM.', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = true;
+          const emptyValues = [null, undefined];
+
+          const rangeValues: [number | undefined, number | undefined][] = [
+            [-100, undefined],
+            [undefined, +100],
+            [-100, +100]
+          ];
+          const rangeInclusiveValues: [boolean, boolean][] = [
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true]
+          ];
+          const typesValues: Array<'integer' | 'decimal'> = [
+            'integer',
+            'decimal'
+          ];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const range of rangeValues)
+            for (const rangeInclusive of rangeInclusiveValues)
+              for (const type of typesValues)
+                for (const emptyValue of emptyValues) {
+                  instance[propertyName] = emptyValue;
+
+                  // Act, When
+
+                  const receivedErrors =
+                    JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                      instance,
+                      propertyName,
+                      range,
+                      rangeInclusive,
+                      type,
+                      canBeNotInformed
+                    );
+
+                  // Assert, Then
+
+                  expect(receivedErrors.length).toBe(0);
+                }
+        });
+        test('Esperado erro: Aceita vazio: NÃO. Valor vazio: SIM.', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = false;
+          const emptyValues = [null, undefined];
+
+          const rangeValues: [number | undefined, number | undefined][] = [
+            [-100, undefined],
+            [undefined, +100],
+            [-100, +100]
+          ];
+          const rangeInclusiveValues: [boolean, boolean][] = [
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true]
+          ];
+          const typesValues: Array<'integer' | 'decimal'> = [
+            'integer',
+            'decimal'
+          ];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const range of rangeValues)
+            for (const rangeInclusive of rangeInclusiveValues)
+              for (const type of typesValues)
+                for (const emptyValue of emptyValues) {
+                  instance[propertyName] = emptyValue;
+
+                  const expectedError = `${
+                    ConfigurationForValidationTest.name
+                  }.${propertyName} must be a ${type} number, but found: ${String(
+                    emptyValue
+                  )}`;
+
+                  // Act, When
+
+                  const receivedErrors =
+                    JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                      instance,
+                      propertyName,
+                      range,
+                      rangeInclusive,
+                      type,
+                      canBeNotInformed
+                    );
+
+                  // Assert, Then
+
+                  expect(receivedErrors.length).toBe(1);
+                  expect(receivedErrors[0]).toBe(expectedError);
+                }
+        });
+        test('Esperado erro: Aceita vazio: SIM e NÃO. Valor vazio: NÃO. Valor de tipo inválido: SIM', () => {
+          // Arrange, Given
+
+          const wrongTypeValue = Math.random().toString();
+
+          const canBeNotInformedValues = [true, false];
+          const rangeValues: [number | undefined, number | undefined][] = [
+            [-100, undefined],
+            [undefined, +100],
+            [-100, +100]
+          ];
+          const rangeInclusiveValues: [boolean, boolean][] = [
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true]
+          ];
+          const typesValues: Array<'integer' | 'decimal'> = [
+            'integer',
+            'decimal'
+          ];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const range of rangeValues)
+              for (const rangeInclusive of rangeInclusiveValues)
+                for (const type of typesValues) {
+                  instance[propertyName] = wrongTypeValue;
+
+                  const validTypes = [`${type} number`];
+                  if (canBeNotInformed) {
+                    validTypes.push(String(null), String(undefined));
+                  }
+                  const expectedError = `${
+                    ConfigurationForValidationTest.name
+                  }.${propertyName} must be a ${validTypes.join(
+                    ' or '
+                  )}, but found: ${typeof wrongTypeValue}: ${String(
+                    wrongTypeValue
+                  )}`;
+
+                  // Act, When
+
+                  const receivedErrors =
+                    JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                      instance,
+                      propertyName,
+                      range,
+                      rangeInclusive,
+                      type,
+                      canBeNotInformed
+                    );
+
+                  // Assert, Then
+
+                  expect(receivedErrors.length).toBe(1);
+                  expect(receivedErrors[0]).toBe(expectedError);
+                }
+        });
+        // TODO: mustBeNumberInTheRange: validações de maior/menor (igual) que para inteiro ou não
       });
       // TODO: Escrever teste para todos os validadores mustBe...
       test('', () => {
