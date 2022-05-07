@@ -1,6 +1,7 @@
 // noinspection JSUnusedLocalSymbols
 
 import {
+  HelperList,
   JsonLoader,
   NotImplementedError,
   PrimitiveValueTypeName
@@ -1944,10 +1945,299 @@ describe('Class JsonLoader', () => {
         });
       });
       describe('mustBeListOfTheSet', () => {
-        test('', () => {
+        test('Esperado sucesso: Permitido valor vazio: SIM ou NÃO. Correspondência de valor: SIM, Correspondência de tipo: SIM. Modo de verificação: VALOR + TIPO', () => {
           // Arrange, Given
-          // Act, When
-          // Assert, Then
+
+          const canBeNotInformedValues = [true, false];
+          const validValues = [1, '1', true];
+          const verificationMode = 'value and type';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = [true, 1, '1'];
+
+            // Act, When
+
+            const receivedErrors =
+              JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                validValues,
+                verificationMode,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErrors.length).toBe(0);
+          }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM ou NÃO. Correspondência de valor: SIM, Correspondência de tipo: SIM. Modo de verificação: VALOR + TIPO. Não precisa usar todos os valores da lista', () => {
+          // Arrange, Given
+
+          const canBeNotInformedValues = [true, false];
+          const validValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          const verificationMode = 'value and type';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = [4, 5, 6];
+
+            // Act, When
+
+            const receivedErrors =
+              JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                validValues,
+                verificationMode,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErrors.length).toBe(0);
+          }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM ou NÃO. Correspondência de valor: SIM, Correspondência de tipo: NÃO. Modo de verificação: VALOR', () => {
+          // Arrange, Given
+
+          const canBeNotInformedValues = [true, false];
+          const validValues = ['1', '2', '3'];
+          const verificationMode = 'only value';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = [1, 3];
+
+            // Act, When
+
+            const receivedErrors =
+              JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                validValues,
+                verificationMode,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErrors.length).toBe(0);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: SIM ou NÃO. Correspondência de valor: SIM, Correspondência de tipo: NÃO. Modo de verificação: VALOR + TIPO', () => {
+          // Arrange, Given
+
+          const canBeNotInformedValues = [true, false];
+          const validValues = [1, 2, 3];
+          const verificationMode = 'value and type';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = ['1'];
+
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a array with items being ${validValues
+              .map(item => `"${String(item)}"`)
+              .join(' or ')}${
+              canBeNotInformed
+                ? ', or an unspecified list with null or undefined'
+                : ''
+            }, but found: [ ${(instance[propertyName] as unknown[])
+              .map(item => `${typeof item}: ${String(item)}`)
+              .join(', ')} ]`;
+
+            // Act, When
+
+            const receivedErrors =
+              JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                validValues,
+                verificationMode,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErrors.length).toBe(1);
+            expect(receivedErrors[0]).toBe(expectedError);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: SIM ou NÃO. Correspondência de valor: NÃO, Correspondência de tipo: SIM. Modo de verificação: VALOR', () => {
+          // Arrange, Given
+
+          const canBeNotInformedValues = [true, false];
+          const validValues = [1, 2, 3];
+          const verificationMode = 'value and type';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = [4, 5, 6];
+
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a array with items being ${validValues
+              .map(item => `"${String(item)}"`)
+              .join(' or ')}${
+              canBeNotInformed
+                ? ', or an unspecified list with null or undefined'
+                : ''
+            }, but found: [ ${(instance[propertyName] as unknown[])
+              .map(item => `${typeof item}: ${String(item)}`)
+              .join(', ')} ]`;
+
+            // Act, When
+
+            const receivedErrors =
+              JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                validValues,
+                verificationMode,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErrors.length).toBe(1);
+            expect(receivedErrors[0]).toBe(expectedError);
+          }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM. Informar vazio: null, undefined', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = true;
+          const verificationModes: Array<'only value' | 'value and type'> = [
+            'only value',
+            'value and type'
+          ];
+          const validValues = [1, 2, 3];
+          const values = [undefined, null];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const verificationMode of verificationModes)
+            for (const value of values) {
+              instance[propertyName] = value;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  validValues,
+                  verificationMode,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedErrors.length).toBe(0);
+            }
+        });
+        test('Esperado falha: Permitido valor vazio: NÃO. Informar vazio: null, undefined', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = false;
+          const verificationModes: Array<'only value' | 'value and type'> = [
+            'only value',
+            'value and type'
+          ];
+          const validValues = [1, 2, 3];
+          const values = [undefined, null];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const verificationMode of verificationModes)
+            for (const value of values) {
+              instance[propertyName] = value;
+
+              const expectedError = `${
+                ConfigurationForValidationTest.name
+              }.${propertyName} must be a array with items being ${validValues
+                .map(item => `"${String(item)}"`)
+                .join(' or ')}, but found: ${String(instance[propertyName])}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  validValues,
+                  verificationMode,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedErrors.length).toBe(1);
+              expect(receivedErrors[0]).toBe(expectedError);
+            }
+        });
+        test('Mensagem de erro não deve exibir conjunto de valores com duplicação', () => {
+          // Arrange, Given
+
+          const canBeNotInformedValues = [false, true];
+          const verificationModes: Array<'only value' | 'value and type'> = [
+            'only value',
+            'value and type'
+          ];
+          const validValues = [3, 3, 2, 2, 1, 1, 2, 2, 3, 3];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const verificationMode of verificationModes) {
+              instance[propertyName] = [9, 8, 7];
+
+              const expectedError = `${
+                ConfigurationForValidationTest.name
+              }.${propertyName} must be a array with items being ${HelperList.unique(
+                validValues
+              )
+                .map(item => `"${String(item)}"`)
+                .join(' or ')}${
+                canBeNotInformed
+                  ? ', or an unspecified list with null or undefined'
+                  : ''
+              }, but found: [ ${(instance[propertyName] as unknown[])
+                .map(item => `${typeof item}: ${String(item)}`)
+                .join(', ')} ]`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeListOfTheSet<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  validValues,
+                  verificationMode,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              expect(receivedErrors.length).toBe(1);
+              expect(receivedErrors[0]).toBe(expectedError);
+            }
         });
       });
       // TODO: Escrever teste para todos os validadores mustBe...

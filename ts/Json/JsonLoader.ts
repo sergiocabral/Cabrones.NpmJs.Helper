@@ -207,11 +207,11 @@ export abstract class JsonLoader {
       (Array.isArray(value) &&
         value.filter(
           (item: unknown) =>
-            validValues.filter(
+            validValues.findIndex(
               validValue =>
                 (verification === 'only value' && validValue == item) ||
                 (verification === 'value and type' && validValue === item)
-            ).length === validValues.length
+            ) >= 0
         ).length === value.length) ||
       (canBeNotInformed && (value === null || value === undefined));
 
@@ -222,7 +222,6 @@ export abstract class JsonLoader {
 
       let canBeNotInformedDescription = '';
       if (canBeNotInformed) {
-        validTypes.push(String(null), String(undefined));
         canBeNotInformedDescription = `, or an unspecified list with ${String(
           null
         )} or ${String(undefined)}`;
@@ -233,7 +232,7 @@ export abstract class JsonLoader {
           fieldName
         )} must be a array with items being ${validTypes.join(
           ' or '
-        )}${canBeNotInformedDescription}, but found: ${typeof value}, ${String(
+        )}${canBeNotInformedDescription}, but found: ${JsonLoader.describeType(
           value
         )}`
       );
