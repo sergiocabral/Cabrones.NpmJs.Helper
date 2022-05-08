@@ -3,8 +3,11 @@ import { HelperObject } from '../Data/HelperObject';
 import { PrimitiveValueTypeName } from '../Type/PrimitiveValueTypeName';
 import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
+import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
 // TODO: Criar mustBeInteger
+// TODO: Criar mustBeEquals
+// TODO: Considerar integer como type assim como foi feito com null
 
 /**
  * Conjunto de informações de configuração.
@@ -320,6 +323,22 @@ export abstract class JsonLoader {
       throw new EmptyError('minValue or maxValue must have a value.');
     }
 
+    const diff =
+      minValue === undefined || maxValue === undefined
+        ? Number.MAX_SAFE_INTEGER
+        : (type === 'decimal' ? maxValue : Math.floor(maxValue)) -
+          (type === 'decimal' ? minValue : Math.floor(minValue));
+
+    if (diff < 0) {
+      throw new InvalidArgumentError('minValue is greater then maxValue.');
+    }
+
+    if (diff === 0 && (!rangeInclusive[0] || !rangeInclusive[1])) {
+      throw new InvalidArgumentError(
+        'Range impossible because equality comparison must be inclusive.'
+      );
+    }
+
     const isValidType =
       !canBeNotInformed && (value === null || value === undefined)
         ? false
@@ -362,19 +381,25 @@ export abstract class JsonLoader {
 
       if (!isValidRange1 || !isValidRange2) {
         const violation = Array<string>();
-        if (minValue !== undefined) {
+        if (diff === 0 && minValue !== undefined && maxValue !== undefined) {
           violation.push(
-            `${
-              rangeInclusive[0] ? 'greater than or equal' : 'greater than'
-            } ${minValue}`
+            `equals to ${type === 'integer' ? Math.floor(minValue) : minValue}`
           );
-        }
-        if (maxValue !== undefined) {
-          violation.push(
-            `${
-              rangeInclusive[1] ? 'less than or equal' : 'less than'
-            } ${maxValue}`
-          );
+        } else {
+          if (minValue !== undefined) {
+            violation.push(
+              `${
+                rangeInclusive[0] ? 'greater than or equal' : 'greater than'
+              } ${minValue}`
+            );
+          }
+          if (maxValue !== undefined) {
+            violation.push(
+              `${
+                rangeInclusive[1] ? 'less than or equal' : 'less than'
+              } ${maxValue}`
+            );
+          }
         }
 
         errors.push(
