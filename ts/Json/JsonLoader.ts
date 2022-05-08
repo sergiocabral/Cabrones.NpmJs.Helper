@@ -4,6 +4,8 @@ import { PrimitiveValueTypeName } from '../Type/PrimitiveValueTypeName';
 import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
 
+// TODO: Criar mustBeInteger
+
 /**
  * Conjunto de informações de configuração.
  */
@@ -325,8 +327,7 @@ export abstract class JsonLoader {
         ? false
         : type === 'decimal'
         ? true
-        : (minValue === undefined || value === Math.floor(minValue)) &&
-          (maxValue === undefined || value === Math.floor(maxValue));
+        : value === Math.floor(value);
 
     const validTypes: string[] = [`${type} number`];
     if (canBeNotInformed) {
@@ -350,24 +351,25 @@ export abstract class JsonLoader {
       const isValidRange1 =
         minValue === undefined ||
         (rangeInclusive[0]
-          ? valueAsNumber <= minValue
-          : valueAsNumber < minValue);
+          ? valueAsNumber >= minValue
+          : valueAsNumber > minValue);
 
       const isValidRange2 =
         maxValue === undefined ||
         (rangeInclusive[1]
-          ? valueAsNumber >= maxValue
-          : valueAsNumber > maxValue);
+          ? valueAsNumber <= maxValue
+          : valueAsNumber < maxValue);
 
       if (!isValidRange1 || !isValidRange2) {
         const violation = Array<string>();
-        if (!isValidRange1) {
+        if (minValue !== undefined) {
           violation.push(
             `${
               rangeInclusive[0] ? 'greater than or equal' : 'greater than'
             } ${minValue}`
           );
-        } else if (!isValidRange2) {
+        }
+        if (maxValue !== undefined) {
           violation.push(
             `${
               rangeInclusive[1] ? 'less than or equal' : 'less than'

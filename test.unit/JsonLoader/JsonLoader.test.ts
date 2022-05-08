@@ -2780,7 +2780,7 @@ describe('Class JsonLoader', () => {
                   expect(receivedErrors[0]).toBe(expectedError);
                 }
         });
-        test('Esperado erro: Aceita vazio: SIM e NÃO. Valor vazio: NÃO. Valor de tipo inválido: SIM', () => {
+        test('Esperado erro: Aceita vazio: SIM e NÃO. Valor vazio: NÃO. Valor de tipo inválido: SIM, string', () => {
           // Arrange, Given
 
           const wrongTypeValue = Math.random().toString();
@@ -2841,7 +2841,463 @@ describe('Class JsonLoader', () => {
                   expect(receivedErrors[0]).toBe(expectedError);
                 }
         });
-        // TODO: mustBeNumberInTheRange: validações de maior/menor (igual) que para inteiro ou não
+        test('Esperado erro: Aceita vazio: SIM e NÃO. Valor vazio: NÃO. Valor de tipo inválido: SIM, decimal', () => {
+          // Arrange, Given
+
+          const wrongTypeValue = Math.random().toString();
+
+          const canBeNotInformedValues = [true, false];
+          const rangeValues: [number | undefined, number | undefined][] = [
+            [-100, undefined],
+            [undefined, +100],
+            [-100, +100]
+          ];
+          const rangeInclusiveValues: [boolean, boolean][] = [
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true]
+          ];
+          const type = 'integer';
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const range of rangeValues)
+              for (const rangeInclusive of rangeInclusiveValues) {
+                instance[propertyName] = wrongTypeValue;
+
+                const validTypes = [`${type} number`];
+                if (canBeNotInformed) {
+                  validTypes.push(String(null), String(undefined));
+                }
+                const expectedError = `${
+                  ConfigurationForValidationTest.name
+                }.${propertyName} must be a ${validTypes.join(
+                  ' or '
+                )}, but found: ${typeof wrongTypeValue}: ${String(
+                  wrongTypeValue
+                )}`;
+
+                // Act, When
+
+                const receivedErrors =
+                  JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                    instance,
+                    propertyName,
+                    range,
+                    rangeInclusive,
+                    type,
+                    canBeNotInformed
+                  );
+
+                // Assert, Then
+
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+        });
+        test('decimal, menor que', () => {
+          // Arrange, Given
+
+          const minValue = undefined;
+          const maxValue = Math.random() * 1000;
+          const tests: [boolean, number][] = [
+            [true, maxValue - 0.1],
+            [true, maxValue - 1],
+            [false, maxValue],
+            [false, maxValue + 0.1],
+            [false, maxValue + 1]
+          ];
+
+          const type = 'decimal';
+          const rangeInclusive: [boolean, boolean] = [false, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'less than';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('decimal, menor igual que', () => {
+          // Arrange, Given
+
+          const minValue = undefined;
+          const maxValue = Math.random() * 1000;
+          const tests: [boolean, number][] = [
+            [true, maxValue - 0.1],
+            [true, maxValue - 1],
+            [true, maxValue],
+            [false, maxValue + 0.1],
+            [false, maxValue + 1]
+          ];
+
+          const type = 'decimal';
+          const rangeInclusive: [boolean, boolean] = [false, true];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'less than or equal';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('decimal, maior que', () => {
+          // Arrange, Given
+
+          const minValue = Math.random() * 1000;
+          const maxValue = undefined;
+          const tests: [boolean, number][] = [
+            [false, minValue - 0.1],
+            [false, minValue - 1],
+            [false, minValue],
+            [true, minValue + 0.1],
+            [true, minValue + 1]
+          ];
+
+          const type = 'decimal';
+          const rangeInclusive: [boolean, boolean] = [false, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'greater than';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('decimal, maior igual que', () => {
+          // Arrange, Given
+
+          const minValue = Math.random() * 1000;
+          const maxValue = undefined;
+          const tests: [boolean, number][] = [
+            [false, minValue - 0.1],
+            [false, minValue - 1],
+            [true, minValue],
+            [true, minValue + 0.1],
+            [true, minValue + 1]
+          ];
+
+          const type = 'decimal';
+          const rangeInclusive: [boolean, boolean] = [true, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'greater than or equal';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('integer, menor que', () => {
+          // Arrange, Given
+
+          const minValue = undefined;
+          const maxValue = Math.random() * 1000 + 0.1;
+          const tests: [boolean, number][] = [
+            [true, Math.floor(maxValue) - 1],
+            [true, Math.floor(maxValue)],
+            [false, Math.floor(maxValue) + 1],
+            [false, Math.floor(maxValue) + 2]
+          ];
+
+          const type = 'integer';
+          const rangeInclusive: [boolean, boolean] = [false, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'less than';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('integer, menor igual que', () => {
+          // Arrange, Given
+
+          const minValue = undefined;
+          const maxValue = Math.floor(Math.random() * 1000);
+          const tests: [boolean, number][] = [
+            [true, maxValue - 1],
+            [true, maxValue],
+            [false, maxValue + 1],
+            [false, maxValue + 2]
+          ];
+
+          const type = 'integer';
+          const rangeInclusive: [boolean, boolean] = [false, true];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'less than or equal';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('integer, maior que', () => {
+          // Arrange, Given
+
+          const minValue = Math.random() * 1000 - 0.1;
+          const maxValue = undefined;
+          const tests: [boolean, number][] = [
+            [false, Math.floor(minValue) - 1],
+            [false, Math.floor(minValue)],
+            [true, Math.floor(minValue) + 1],
+            [true, Math.floor(minValue) + 2]
+          ];
+
+          const type = 'integer';
+          const rangeInclusive: [boolean, boolean] = [false, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'greater than';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        test('integer, maior igual que', () => {
+          // Arrange, Given
+
+          const minValue = Math.floor(Math.random() * 1000);
+          const maxValue = undefined;
+          const tests: [boolean, number][] = [
+            [false, minValue - 1],
+            [true, minValue],
+            [true, minValue + 1],
+            [true, minValue + 2]
+          ];
+
+          const type = 'integer';
+          const rangeInclusive: [boolean, boolean] = [true, false];
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues)
+            for (const test of tests) {
+              const isRight = test[0];
+              instance[propertyName] = test[1];
+
+              const violation = 'greater than or equal';
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+
+              // Act, When
+
+              const receivedErrors =
+                JsonLoader.mustBeNumberInTheRange<ConfigurationForValidationTest>(
+                  instance,
+                  propertyName,
+                  [minValue, maxValue],
+                  rangeInclusive,
+                  type,
+                  canBeNotInformed
+                );
+
+              // Assert, Then
+
+              if (isRight) {
+                expect(receivedErrors.length).toBe(0);
+              } else {
+                expect(receivedErrors.length).toBe(1);
+                expect(receivedErrors[0]).toBe(expectedError);
+              }
+            }
+        });
+        // TODO: mustBeNumberInTheRange: maior e menor
+        // TODO: mustBeNumberInTheRange: maior igual e menor
+        // TODO: mustBeNumberInTheRange: maior e menor igual
+        // TODO: mustBeNumberInTheRange: maior igual e menor igual
       });
       // TODO: Escrever teste para todos os validadores mustBe...
       test('', () => {
