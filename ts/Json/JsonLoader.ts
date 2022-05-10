@@ -5,8 +5,6 @@ import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
-// TODO: Criar mustBeInteger
-
 /**
  * Conjunto de informações de configuração.
  */
@@ -547,6 +545,35 @@ export abstract class JsonLoader {
     fieldName: keyof TJson
   ): string[] {
     return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'number', true);
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser inteiro
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeInteger<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeOfType<TJson>(
+      instance,
+      fieldName,
+      'integer',
+      false
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser inteiro ou não informado
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeIntegerOrNotInformed<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeOfType<TJson>(instance, fieldName, 'integer', true);
   }
 
   /**

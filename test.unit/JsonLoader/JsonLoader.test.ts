@@ -486,6 +486,59 @@ describe('Class JsonLoader', () => {
         expect(mockMustBe.mock.calls[0][2]).toBe('number');
         expect(mockMustBe.mock.calls[0][3]).toBe(true);
       });
+      test('mustBeInteger chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult = JsonLoader.mustBeInteger<ConfigurationTestA>(
+          instance,
+          fieldName
+        );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('integer');
+        expect(mockMustBe.mock.calls[0][3]).toBe(false);
+      });
+      test('mustBeIntegerOrNotInformed chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeIntegerOrNotInformed<ConfigurationTestA>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('integer');
+        expect(mockMustBe.mock.calls[0][3]).toBe(true);
+      });
       test('mustBeListOfAny chama mustBeList', () => {
         // Arrange, Given
 
