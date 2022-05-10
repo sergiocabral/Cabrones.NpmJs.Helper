@@ -903,6 +903,39 @@ describe('Class JsonLoader', () => {
         expect(mockMustBe.mock.calls[0][4]).toBe('decimal');
         expect(mockMustBe.mock.calls[0][5]).toBe(true);
       });
+      test('mustBeNumberEqualTo chama mustBeNumberInTheRange', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const target = Math.random();
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5, arg6) => expectedResult
+        );
+        JsonLoader.mustBeNumberInTheRange = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeNumberEqualTo<ConfigurationTestA>(
+            instance,
+            fieldName,
+            target
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toStrictEqual([target, target]);
+        expect(mockMustBe.mock.calls[0][3]).toStrictEqual([true, true]);
+        expect(mockMustBe.mock.calls[0][4]).toBe('decimal');
+        expect(mockMustBe.mock.calls[0][5]).toBe(false);
+      });
       test('mustBeNumberGreaterThan chama mustBeNumberInTheRange', () => {
         // Arrange, Given
 
@@ -1236,6 +1269,39 @@ describe('Class JsonLoader', () => {
         expect(mockMustBe.mock.calls[0][3]).toStrictEqual([true, true]);
         expect(mockMustBe.mock.calls[0][4]).toBe('integer');
         expect(mockMustBe.mock.calls[0][5]).toBe(true);
+      });
+      test('mustBeIntegerEqualTo chama mustBeNumberInTheRange', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const target = Math.random();
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5, arg6) => expectedResult
+        );
+        JsonLoader.mustBeNumberInTheRange = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeIntegerEqualTo<ConfigurationTestA>(
+            instance,
+            fieldName,
+            target
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toStrictEqual([target, target]);
+        expect(mockMustBe.mock.calls[0][3]).toStrictEqual([true, true]);
+        expect(mockMustBe.mock.calls[0][4]).toBe('integer');
+        expect(mockMustBe.mock.calls[0][5]).toBe(false);
       });
       test('mustBeIntegerGreaterThan chama mustBeNumberInTheRange', () => {
         // Arrange, Given
@@ -3993,7 +4059,7 @@ describe('Class JsonLoader', () => {
               const isRight = test[0];
               instance[propertyName] = test[1];
 
-              const violation = 'equals to';
+              const violation = 'equal to';
               const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
               // Act, When
 
@@ -4043,7 +4109,7 @@ describe('Class JsonLoader', () => {
               const isRight = test[0];
               instance[propertyName] = test[1];
 
-              const violation = 'equals to';
+              const violation = 'equal to';
               const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
               // Act, When
 

@@ -6,7 +6,6 @@ import { HelperList } from '../Data/HelperList';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
 // TODO: Criar mustBeInteger
-// TODO: Criar mustBeEquals
 
 /**
  * Conjunto de informações de configuração.
@@ -402,7 +401,7 @@ export abstract class JsonLoader {
         const violation = Array<string>();
         if (diff === 0 && minValue !== undefined && maxValue !== undefined) {
           violation.push(
-            `equals to ${type === 'integer' ? Math.floor(minValue) : minValue}`
+            `equal to ${type === 'integer' ? Math.floor(minValue) : minValue}`
           );
         } else {
           if (minValue !== undefined) {
@@ -903,6 +902,27 @@ export abstract class JsonLoader {
   }
 
   /**
+   * Valida e retorna erro se não atender: deve ser um número igual a outro.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param target Número alvo.
+   */
+  public static mustBeNumberEqualTo<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    target: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [target, target],
+      [true, true],
+      'decimal',
+      false
+    );
+  }
+
+  /**
    * Valida e retorna erro se não atender: deve ser um número maior que um limite.
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
@@ -981,6 +1001,27 @@ export abstract class JsonLoader {
       [true, true],
       'decimal',
       true
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser um inteiro igual a outro.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param target Número alvo.
+   */
+  public static mustBeIntegerEqualTo<TJson extends JsonLoader>(
+    instance: JsonLoader,
+    fieldName: keyof TJson,
+    target: number
+  ): string[] {
+    return JsonLoader.mustBeNumberInTheRange<TJson>(
+      instance,
+      fieldName,
+      [target, target],
+      [true, true],
+      'integer',
+      false
     );
   }
 
