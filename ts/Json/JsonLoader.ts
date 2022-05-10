@@ -455,15 +455,19 @@ export abstract class JsonLoader {
 
     const isValid =
       (canBeNotInformed && (value === null || value === undefined)) ||
-      regex.test(String(value));
+      (value !== null && value !== undefined && regex.test(String(value)));
 
     if (!isValid) {
+      const validTypes: string[] = [regexDescription];
+      if (canBeNotInformed) {
+        validTypes.push(String(null), String(undefined));
+      }
       errors.push(
         `${instance.constructor.name}.${String(
           fieldName
-        )} must be a valid ${regexDescription}, but found: ${typeof value}, ${String(
-          value
-        )}`
+        )} must be a valid ${validTypes.join(
+          ' or '
+        )}, but found: ${JsonLoader.describeType(value)}`
       );
     }
 

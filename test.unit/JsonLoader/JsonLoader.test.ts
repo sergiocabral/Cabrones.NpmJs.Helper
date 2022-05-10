@@ -4187,11 +4187,130 @@ describe('Class JsonLoader', () => {
             }
         });
       });
-      // TODO: Escrever teste para todos os validadores mustBe...
-      test('', () => {
-        // Arrange, Given
-        // Act, When
-        // Assert, Then
+      describe('mustMatchRegex', () => {
+        test('Esperado sucesso: Permitido valor vazio: SIM e NÃO. Valor válido: SIM', () => {
+          const regexCatchAll = /.*/;
+          const value = Math.random();
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = value;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustMatchRegex<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                regexCatchAll,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(0);
+          }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM. Valor vazio: null, undefined', () => {
+          const regexCatchAll = /.*/;
+          const values = [null, undefined];
+          const canBeNotInformed = true;
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const value of values) {
+            instance[propertyName] = value;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustMatchRegex<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                regexCatchAll,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(0);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: NÃO. Valor vazio: null, undefined', () => {
+          const regex = /.*/;
+          const values = [null, undefined];
+          const canBeNotInformed = false;
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const value of values) {
+            instance[propertyName] = value;
+
+            const description = `format for the regex ${regex.toString()}`;
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a valid ${description}, but found: ${String(
+              value
+            )}`;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustMatchRegex<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                regex,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(1);
+            expect(receivedErros[0]).toBe(expectedError);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: SIM e NÃO. Valor válido: NÃO. Exibir descrição da Regex', () => {
+          const regex = /^$/;
+          const description = Math.random().toString();
+          const value = Math.random();
+          const canBeNotInformedValues = [false, true];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = value;
+
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a valid ${
+              !canBeNotInformed
+                ? description
+                : [description, String(null), String(undefined)].join(' or ')
+            }, but found: ${typeof value}: ${String(value)}`;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustMatchRegex<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                regex,
+                canBeNotInformed,
+                description
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(1);
+            expect(receivedErros[0]).toBe(expectedError);
+          }
+        });
       });
     });
   });
