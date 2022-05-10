@@ -7,7 +7,6 @@ import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
 // TODO: Criar mustBeInteger
 // TODO: Criar mustBeEquals
-// TODO: Considerar integer como type assim como foi feito com null
 
 /**
  * Conjunto de informações de configuração.
@@ -107,13 +106,16 @@ export abstract class JsonLoader {
   public static mustBeOfType<TJson extends JsonLoader>(
     instance: JsonLoader,
     fieldName: keyof TJson,
-    typeName: PrimitiveValueTypeName | 'object',
+    typeName: PrimitiveValueTypeName | 'integer' | 'object',
     canBeNotInformed: boolean
   ): string[] {
     const errors = Array<string>();
     const value = HelperObject.getProperty(instance, fieldName);
     const isValid =
       (typeof value === typeName && value !== null) ||
+      (typeof value === 'number' &&
+        typeName === 'integer' &&
+        Math.floor(value) === value) ||
       (canBeNotInformed && (value === undefined || value === null));
     if (!isValid) {
       const validTypes: string[] = [typeName];
@@ -146,9 +148,17 @@ export abstract class JsonLoader {
       | PrimitiveValueTypeName
       | 'object'
       | 'undefined'
+      | 'integer'
       | 'null'
       | 'any'
-      | Array<PrimitiveValueTypeName | 'object' | 'undefined' | 'null' | 'any'>,
+      | Array<
+          | PrimitiveValueTypeName
+          | 'object'
+          | 'undefined'
+          | 'integer'
+          | 'null'
+          | 'any'
+        >,
     canBeNotInformed: boolean
   ): string[] {
     const errors = Array<string>();
@@ -162,10 +172,19 @@ export abstract class JsonLoader {
     const isValid =
       (Array.isArray(value) &&
         (acceptAnyType ||
-          value.findIndex(
-            (item: unknown) =>
-              !typesNames.includes(item === null ? String(item) : typeof item)
-          ) < 0)) ||
+          value.findIndex((item: unknown) => {
+            if (typeof item === 'number') {
+              const numberMustBeInteger = typesNames.includes('integer');
+              return (
+                (!typesNames.includes('number') && !numberMustBeInteger) ||
+                (numberMustBeInteger && Math.floor(item) !== item)
+              );
+            } else {
+              return !typesNames.includes(
+                item === null ? String(item) : typeof item
+              );
+            }
+          }) < 0)) ||
       (canBeNotInformed && (value === undefined || value === null));
 
     if (!isValid) {

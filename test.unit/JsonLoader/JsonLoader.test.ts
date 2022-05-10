@@ -326,7 +326,7 @@ describe('Class JsonLoader', () => {
         originals['JsonLoader.mustBeNumberInTheRange'];
       JsonLoader.mustMatchRegex = originals['JsonLoader.mustMatchRegex'];
     });
-    describe('Validadores bypass que chamam os validadorede fato', () => {
+    describe('Validadores bypass que chamam os validadore de fato', () => {
       test('mustBeBoolean chama mustBeOfType', () => {
         // Arrange, Given
 
@@ -1615,6 +1615,48 @@ describe('Class JsonLoader', () => {
             expect(receivedResult[0]).toBe(expectedErrorMessage);
           }
         });
+        test('Verificação de tipo integer', () => {
+          // Arrange, Given
+
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+          const propertyType = 'integer';
+          const canBeNotInformed = false;
+          const values: [boolean, number][] = [
+            [false, Math.random()],
+            [true, Math.floor(Math.random())]
+          ];
+
+          const instance = new ConfigurationForValidationTest();
+          for (const value of values) {
+            const isValid = value[0];
+            instance[propertyName] = value[1];
+
+            const expectedErrorMessage = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a ${propertyType}, but found: ${typeof value[1]}: ${
+              value[1]
+            }`;
+
+            // Act, When
+
+            const receivedResult =
+              JsonLoader.mustBeOfType<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                propertyType,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            if (isValid) {
+              expect(receivedResult.length).toBe(0);
+            } else {
+              expect(receivedResult.length).toBe(1);
+              expect(receivedResult[0]).toBe(expectedErrorMessage);
+            }
+          }
+        });
       });
       describe('mustBeList', () => {
         test('Esperado sucesso: Permitido valor vazio: SIM ou NÃO. Itens na lista correspondem ao tipo esperado: SIM. Tipos esperados nos itens: number, string, boolean, object, null, undefined, any', () => {
@@ -1905,7 +1947,6 @@ describe('Class JsonLoader', () => {
             expect(returnedErrors.length).toBe(0);
           }
         });
-
         test('Exibir lista de valores inválidos com seus respectivos tipos', () => {
           // Arrange, Given
 
@@ -1944,6 +1985,50 @@ describe('Class JsonLoader', () => {
 
           expect(returnedErrors.length).toBe(1);
           expect(returnedErrors[0]).toBe(expectedError);
+        });
+        test('Verificar tipo integer', () => {
+          // Arrange, Given
+
+          const canBeNotInformed = false;
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyType = 'integer';
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          const values: [boolean, number][] = [
+            [false, Math.random() * 1000],
+            [true, Math.floor(Math.random() * 1000)]
+          ];
+
+          for (const value of values) {
+            const isValid = value[0];
+            instance[propertyName] = [value[1]];
+
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a array of items of type ${propertyType}, but found: [ ${typeof value[1]}: ${
+              value[1]
+            } ]`;
+
+            // Act, When
+
+            const returnedErrors =
+              JsonLoader.mustBeList<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                propertyType,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            if (isValid) {
+              expect(returnedErrors.length).toBe(0);
+            } else {
+              expect(returnedErrors.length).toBe(1);
+              expect(returnedErrors[0]).toBe(expectedError);
+            }
+          }
         });
       });
       describe('mustBeListOfTheSet', () => {
