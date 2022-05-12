@@ -20,6 +20,16 @@ export interface ILogWriter {
   ): void;
 
   /**
+   * Nível mínimo de log para aceitar escrita do log recebido.
+   */
+  minimumLevel?: LogLevel;
+
+  /**
+   * Nível padrão de log quando não informado.
+   */
+  defaultLogLevel?: LogLevel;
+
+  /**
    * Valores padrão associados a cada log.
    */
   defaultValues?: Record<string, unknown | (() => unknown)>;
