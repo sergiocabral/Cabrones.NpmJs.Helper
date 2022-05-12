@@ -14,6 +14,7 @@ const propertyDefaultValueDate = new Date();
 const propertyDefaultValueString = Math.random().toString();
 const errorConfigurationTestB = [Math.random().toString()];
 const nameForConfigurationForNameB = Math.random().toString();
+const nameForConfigurationForNameB2 = Math.random().toString();
 
 class ConfigurationTestC extends JsonLoader {}
 
@@ -36,7 +37,10 @@ class ConfigurationForValidationTest extends JsonLoader {
 
 class ConfigurationForNameA extends JsonLoader {
   property1: unknown = new Date();
-  property2 = new ConfigurationForNameB().setName(nameForConfigurationForNameB);
+  property2 = new ConfigurationForNameB().setName(
+    nameForConfigurationForNameB,
+    this
+  );
   public override errors(): string[] {
     const errors = super.errors();
     errors.push(
@@ -51,6 +55,19 @@ class ConfigurationForNameB extends JsonLoader {
     const errors = super.errors();
     errors.push(
       ...JsonLoader.mustBeBoolean<ConfigurationForNameB>(this, 'property3')
+    );
+    return errors;
+  }
+}
+class ConfigurationForNameD extends JsonLoader {
+  property1: unknown = new Date();
+  property2 = new ConfigurationForNameB().setName(
+    nameForConfigurationForNameB2
+  );
+  public override errors(): string[] {
+    const errors = super.errors();
+    errors.push(
+      ...JsonLoader.mustBeBoolean<ConfigurationForNameD>(this, 'property1')
     );
     return errors;
   }
@@ -4431,6 +4448,60 @@ describe('Class JsonLoader', () => {
 
       expect(receivedErrors).toContain(nameForConfigurationForNameA);
       expect(receivedErrors).toContain(nameForConfigurationForNameB);
+      expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
+      expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
+    });
+    test('Os nomes das configurações devem ser concatenadas se parent for informado', () => {
+      // Arrange, Given
+
+      const nameForConfigurationForNameA = Math.random().toString();
+      const json = {
+        property1: null,
+        property2: {
+          property3: null
+        }
+      };
+      const instance = new ConfigurationForNameA(json)
+        .setName(nameForConfigurationForNameA)
+        .initialize();
+
+      // Act, When
+
+      const receivedErrors = instance.errors().toString();
+
+      // Assert, Then
+
+      expect(receivedErrors).toContain(
+        `${nameForConfigurationForNameA}.${nameForConfigurationForNameB}`
+      );
+      expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
+      expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
+    });
+    test('Os nomes das configurações não devem ser concatenadas se patent não é informado', () => {
+      // Arrange, Given
+
+      const nameForConfigurationForNameD = Math.random().toString();
+      const json = {
+        property1: null,
+        property2: {
+          property3: null
+        }
+      };
+      const instance = new ConfigurationForNameD(json)
+        .setName(nameForConfigurationForNameD)
+        .initialize();
+
+      // Act, When
+
+      const receivedErrors = instance.errors().toString();
+
+      // Assert, Then
+
+      expect(receivedErrors).toContain(nameForConfigurationForNameD);
+      expect(receivedErrors).toContain(nameForConfigurationForNameB2);
+      expect(receivedErrors).not.toContain(
+        `${nameForConfigurationForNameD}.${nameForConfigurationForNameB2}`
+      );
       expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
       expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
     });

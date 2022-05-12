@@ -17,12 +17,22 @@ export abstract class JsonLoader {
   /**
    * Nome da configuração
    */
-  public setName: (name: string) => this;
+  public setName: (name: string, parent?: JsonLoader) => this;
 
   /**
    * Nome da configuração.
    */
   public getName: () => string;
+
+  /**
+   * Nome completo da configuração incluindo ancestrais.
+   */
+  private getFullName: () => string;
+
+  /**
+   * Instância ancetral
+   */
+  private getParent: () => JsonLoader | undefined;
 
   /**
    * Construtor.
@@ -42,11 +52,18 @@ export abstract class JsonLoader {
     }
 
     let name = this.constructor.name;
-    this.setName = (newName: string) => {
+    let parent: JsonLoader | undefined;
+    this.setName = (newName: string, newParent?: JsonLoader) => {
       name = newName;
+      parent = newParent;
       return this;
     };
     this.getName = (): string => name;
+    this.getFullName = (): string => {
+      const parentFullName = parent?.getFullName();
+      return `${parentFullName ? `${parentFullName}.` : ''}${name}`;
+    };
+    this.getParent = (): JsonLoader | undefined => parent;
 
     this.initialize = () => {
       if (initialized) {
@@ -72,10 +89,13 @@ export abstract class JsonLoader {
           ) => unknown;
           instance[key] = new constructor(instance[key]);
           if (instance[key] instanceof JsonLoader) {
-            (instance[key] as JsonLoader).initialize();
+            const innerJson = instance[key] as JsonLoader;
+            innerJson.initialize();
             if (backup[key] instanceof JsonLoader) {
-              (instance[key] as JsonLoader).setName(
-                (backup[key] as JsonLoader).getName()
+              const innerJsonOriginal = backup[key] as JsonLoader;
+              innerJson.setName(
+                innerJsonOriginal.getName(),
+                innerJsonOriginal.getParent() !== undefined ? this : undefined
               );
             }
           }
@@ -142,7 +162,9 @@ export abstract class JsonLoader {
         validTypes.push(String(null), String(undefined));
       }
       errors.push(
-        `${instance.getName()}.${String(fieldName)} must be a ${validTypes.join(
+        `${instance.getFullName()}.${String(
+          fieldName
+        )} must be a ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -213,7 +235,7 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.getName()}.${String(
+        `${instance.getFullName()}.${String(
           fieldName
         )} must be a array of items of type ${typesNames.join(
           ' or '
@@ -269,7 +291,7 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.getName()}.${String(
+        `${instance.getFullName()}.${String(
           fieldName
         )} must be a array with items being ${validTypes.join(
           ' or '
@@ -322,7 +344,9 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.getName()}.${String(fieldName)} must be ${validTypes.join(
+        `${instance.getFullName()}.${String(
+          fieldName
+        )} must be ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -392,7 +416,9 @@ export abstract class JsonLoader {
       (!canBeNotInformed || (value !== null && value !== undefined))
     ) {
       errors.push(
-        `${instance.getName()}.${String(fieldName)} must be a ${validTypes.join(
+        `${instance.getFullName()}.${String(
+          fieldName
+        )} must be a ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -435,7 +461,9 @@ export abstract class JsonLoader {
         }
 
         errors.push(
-          `${instance.getName()}.${String(fieldName)} must be ${violation.join(
+          `${instance.getFullName()}.${String(
+            fieldName
+          )} must be ${violation.join(
             ' and '
           )}, but found: ${JsonLoader.describeType(value)}`
         );
@@ -477,7 +505,7 @@ export abstract class JsonLoader {
         validTypes.push(String(null), String(undefined));
       }
       errors.push(
-        `${instance.getName()}.${String(
+        `${instance.getFullName()}.${String(
           fieldName
         )} must be a valid ${validTypes.join(
           ' or '
