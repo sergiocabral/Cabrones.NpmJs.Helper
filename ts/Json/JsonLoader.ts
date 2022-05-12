@@ -73,6 +73,11 @@ export abstract class JsonLoader {
           instance[key] = new constructor(instance[key]);
           if (instance[key] instanceof JsonLoader) {
             (instance[key] as JsonLoader).initialize();
+            if (backup[key] instanceof JsonLoader) {
+              (instance[key] as JsonLoader).setName(
+                (backup[key] as JsonLoader).getName()
+              );
+            }
           }
         }
       }

@@ -13,6 +13,7 @@ const propertyDefaultValueNumber = Math.random();
 const propertyDefaultValueDate = new Date();
 const propertyDefaultValueString = Math.random().toString();
 const errorConfigurationTestB = [Math.random().toString()];
+const nameForConfigurationForNameB = Math.random().toString();
 
 class ConfigurationTestC extends JsonLoader {}
 
@@ -30,7 +31,29 @@ class ConfigurationTestA extends JsonLoader {
 }
 
 class ConfigurationForValidationTest extends JsonLoader {
-  property: unknown = null;
+  property: unknown = new Date();
+}
+
+class ConfigurationForNameA extends JsonLoader {
+  property1: unknown = new Date();
+  property2 = new ConfigurationForNameB().setName(nameForConfigurationForNameB);
+  public override errors(): string[] {
+    const errors = super.errors();
+    errors.push(
+      ...JsonLoader.mustBeBoolean<ConfigurationForNameA>(this, 'property1')
+    );
+    return errors;
+  }
+}
+class ConfigurationForNameB extends JsonLoader {
+  property3: unknown = null;
+  public override errors(): string[] {
+    const errors = super.errors();
+    errors.push(
+      ...JsonLoader.mustBeBoolean<ConfigurationForNameB>(this, 'property3')
+    );
+    return errors;
+  }
 }
 
 describe('Class JsonLoader', () => {
@@ -4359,7 +4382,7 @@ describe('Class JsonLoader', () => {
       // Act, When
 
       instance.setName(newName);
-      const receivedErros =
+      const receivedErrors =
         JsonLoader.mustBeBoolean<ConfigurationForValidationTest>(
           instance,
           propertyName
@@ -4367,7 +4390,49 @@ describe('Class JsonLoader', () => {
 
       // Assert, Then
 
-      expect(receivedErros).toContain(newName);
+      expect(receivedErrors).toContain(newName);
+    });
+    test('O nome deve ser mantido sem carregar JSON', () => {
+      // Arrange, Given
+
+      const nameForConfigurationForNameA = Math.random().toString();
+      const instance = new ConfigurationForNameA().setName(
+        nameForConfigurationForNameA
+      );
+
+      // Act, When
+
+      const receivedErrors = instance.errors().toString();
+
+      // Assert, Then
+
+      expect(receivedErrors).toContain(nameForConfigurationForNameA);
+      expect(receivedErrors).toContain(nameForConfigurationForNameB);
+    });
+    test('O nome deve ser mantido após carregar JSON', () => {
+      // Arrange, Given
+
+      const nameForConfigurationForNameA = Math.random().toString();
+      const json = {
+        property1: null,
+        property2: {
+          property3: null
+        }
+      };
+      const instance = new ConfigurationForNameA(json)
+        .setName(nameForConfigurationForNameA)
+        .initialize();
+
+      // Act, When
+
+      const receivedErrors = instance.errors().toString();
+
+      // Assert, Then
+
+      expect(receivedErrors).toContain(nameForConfigurationForNameA);
+      expect(receivedErrors).toContain(nameForConfigurationForNameB);
+      expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
+      expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
     });
   });
 });
