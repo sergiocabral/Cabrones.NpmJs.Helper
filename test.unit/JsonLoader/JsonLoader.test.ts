@@ -4275,6 +4275,8 @@ describe('Class JsonLoader', () => {
           }
         });
         test('Esperado falha: Permitido valor vazio: SIM e NÃO. Valor válido: NÃO. Exibir descrição da Regex', () => {
+          // Arrange, Given
+
           const regex = /^$/;
           const description = Math.random().toString();
           const value = Math.random();
@@ -4312,6 +4314,60 @@ describe('Class JsonLoader', () => {
           }
         });
       });
+    });
+  });
+  describe('Nome da configuração', function () {
+    test('Por padrão usa o nome da classe da instância.', () => {
+      // Arrange, Given
+
+      const sut = new ConfigurationForValidationTest();
+      const defaultName = ConfigurationForValidationTest.name;
+
+      // Act, When
+
+      const receivedName = sut.getName();
+
+      // Assert, Then
+
+      expect(receivedName).toBe(defaultName);
+    });
+    test('Deve poder trocar o nome', () => {
+      // Arrange, Given
+
+      const sut = new ConfigurationForValidationTest();
+      const defaultName = ConfigurationForValidationTest.name;
+      const newName = Math.random().toString();
+
+      // Act, When
+
+      sut.setName(newName);
+      const receivedName = sut.getName();
+
+      // Assert, Then
+
+      expect(receivedName).not.toBe(defaultName);
+      expect(receivedName).toBe(newName);
+    });
+    test('O nome deve ser usado na mensagem de erro.', () => {
+      // Arrange, Given
+
+      const newName = Math.random().toString();
+
+      const instance = new ConfigurationForValidationTest();
+      const propertyName = 'property';
+
+      // Act, When
+
+      instance.setName(newName);
+      const receivedErros =
+        JsonLoader.mustBeBoolean<ConfigurationForValidationTest>(
+          instance,
+          propertyName
+        ).toString();
+
+      // Assert, Then
+
+      expect(receivedErros).toContain(newName);
     });
   });
 });

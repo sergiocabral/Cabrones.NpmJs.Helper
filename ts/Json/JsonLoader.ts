@@ -15,6 +15,16 @@ export abstract class JsonLoader {
   public initialize: () => this;
 
   /**
+   * Nome da configuração
+   */
+  public setName: (name: string) => this;
+
+  /**
+   * Nome da configuração.
+   */
+  public getName: () => string;
+
+  /**
    * Construtor.
    * @param json Dados de configuração como JSON
    */
@@ -30,6 +40,13 @@ export abstract class JsonLoader {
         }
       });
     }
+
+    let name = this.constructor.name;
+    this.setName = (newName: string) => {
+      name = newName;
+      return this;
+    };
+    this.getName = (): string => name;
 
     this.initialize = () => {
       if (initialized) {
@@ -120,9 +137,7 @@ export abstract class JsonLoader {
         validTypes.push(String(null), String(undefined));
       }
       errors.push(
-        `${instance.constructor.name}.${String(
-          fieldName
-        )} must be a ${validTypes.join(
+        `${instance.getName()}.${String(fieldName)} must be a ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -193,7 +208,7 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.constructor.name}.${String(
+        `${instance.getName()}.${String(
           fieldName
         )} must be a array of items of type ${typesNames.join(
           ' or '
@@ -249,7 +264,7 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.constructor.name}.${String(
+        `${instance.getName()}.${String(
           fieldName
         )} must be a array with items being ${validTypes.join(
           ' or '
@@ -302,9 +317,7 @@ export abstract class JsonLoader {
       }
 
       errors.push(
-        `${instance.constructor.name}.${String(
-          fieldName
-        )} must be ${validTypes.join(
+        `${instance.getName()}.${String(fieldName)} must be ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -374,9 +387,7 @@ export abstract class JsonLoader {
       (!canBeNotInformed || (value !== null && value !== undefined))
     ) {
       errors.push(
-        `${instance.constructor.name}.${String(
-          fieldName
-        )} must be a ${validTypes.join(
+        `${instance.getName()}.${String(fieldName)} must be a ${validTypes.join(
           ' or '
         )}, but found: ${JsonLoader.describeType(value)}`
       );
@@ -419,9 +430,7 @@ export abstract class JsonLoader {
         }
 
         errors.push(
-          `${instance.constructor.name}.${String(
-            fieldName
-          )} must be ${violation.join(
+          `${instance.getName()}.${String(fieldName)} must be ${violation.join(
             ' and '
           )}, but found: ${JsonLoader.describeType(value)}`
         );
@@ -463,7 +472,7 @@ export abstract class JsonLoader {
         validTypes.push(String(null), String(undefined));
       }
       errors.push(
-        `${instance.constructor.name}.${String(
+        `${instance.getName()}.${String(
           fieldName
         )} must be a valid ${validTypes.join(
           ' or '
