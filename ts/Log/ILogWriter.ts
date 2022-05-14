@@ -11,12 +11,14 @@ export interface ILogWriter {
    * @param values Valores associados.
    * @param level Nível.
    * @param section Seção, ou contexto, relacionado.
+   * @param timestamp Data e hora da mensagem
    */
   post(
     messageTemplate: string | (() => string),
     values?: unknown | (() => unknown),
     level?: LogLevel,
-    section?: string
+    section?: string,
+    timestamp?: Date
   ): void;
 
   /**

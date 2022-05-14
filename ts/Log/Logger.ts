@@ -24,15 +24,23 @@ export class Logger implements ILogWriter {
    * @param values Valores associados.
    * @param level Nível.
    * @param section Seção, ou contexto, relacionado.
+   * @param timestamp Data e hora da mensagem.
    */
   public static post(
     messageTemplate: string | (() => string),
     values?: unknown | (() => unknown),
     level?: LogLevel,
-    section?: string
+    section?: string,
+    timestamp?: Date
   ): void {
     if (this.defaultLogger !== null) {
-      this.defaultLogger.post(messageTemplate, values, level, section);
+      this.defaultLogger.post(
+        messageTemplate,
+        values,
+        level,
+        section,
+        timestamp
+      );
     }
   }
 

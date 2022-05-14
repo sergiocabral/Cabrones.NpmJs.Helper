@@ -94,12 +94,14 @@ export abstract class LogWriter implements ILogWriter {
    * @param values Valores associados.
    * @param level Nível.
    * @param section Seção, ou contexto, relacionado.
+   * @param timestamp Data e hora da mensagem
    */
   public post(
     messageTemplate: string | (() => string),
     values?: unknown | (() => unknown),
     level?: LogLevel,
-    section?: string
+    section?: string,
+    timestamp?: Date
   ): void {
     if (!this.enabled) return;
     level = level ?? this.defaultLogLevel;
@@ -108,7 +110,7 @@ export abstract class LogWriter implements ILogWriter {
       typeof messageTemplate === 'string' ? messageTemplate : messageTemplate();
     values = LogWriter.mergeValues(values, this.defaultValues);
     const message = HelperText.querystring(messageTemplate, values);
-    const timestamp = new Date();
+    timestamp = timestamp ?? new Date();
     const logMessage: ILogMessage = { message, timestamp, level, section };
     this.write(logMessage, messageTemplate, values);
   }

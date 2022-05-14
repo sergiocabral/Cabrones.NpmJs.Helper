@@ -353,304 +353,324 @@ describe('Class LogWriter', () => {
         const oneSecond = 1000;
         expect(intervalSinceLastCall).toBeLessThan(oneSecond);
       });
-      test('Após postar deve enviar para escrita do log um ILogMessage', () => {
+      test('Deve ser possível especificar a data e hora do log', () => {
         // Arrange, Given
 
-        const expectedDateAsText = new Date().toDateString();
-        const expectedMessage = Math.random().toString();
-        const expectedLevel = LogLevel.Fatal;
-        const expectedSection = Math.random().toString();
-
+        const timestamp = new Date(Math.floor(Math.random() * 10000));
         const sut = new LogWriterToTest();
 
         // Act, When
 
-        sut.post(expectedMessage, undefined, expectedLevel, expectedSection);
-
-        // Assert, Then
-
-        const logMessage = sut.mockWrite.mock.calls[0][0] as ILogMessage;
-        expect(logMessage.timestamp.toDateString()).toBe(expectedDateAsText);
-        expect(logMessage.message).toBe(expectedMessage);
-        expect(logMessage.level).toBe(expectedLevel);
-        expect(logMessage.section).toBe(expectedSection);
-      });
-      test('Ao postar deve enviar também messageTemplate e values', () => {
-        // Arrange, Given
-
-        const inputMessageTemplate = new Date().toDateString() + ' {value}';
-        const inputValues = { value: Math.random().toString() };
-        const expectedMessage = HelperText.querystring(
-          inputMessageTemplate,
-          inputValues
+        sut.post(
+          Math.random().toString(),
+          undefined,
+          undefined,
+          undefined,
+          timestamp
         );
 
-        const sut = new LogWriterToTest();
-
-        // Act, When
-
-        sut.post(inputMessageTemplate, inputValues);
-
         // Assert, Then
 
-        expect(sut.mockWrite.mock.calls[0][0].message).toBe(expectedMessage);
-        expect(sut.mockWrite.mock.calls[0][1]).toBe(inputMessageTemplate);
-        expect(sut.mockWrite.mock.calls[0][2]).toBe(inputValues);
+        expect(sut.mockWrite.mock.calls[0][0].timestamp).toBe(timestamp);
       });
     });
-  });
-  describe('defaultValues', () => {
-    test('defaultValues ser inicializado vazio', () => {
-      // Arrange, Given
-      // Act, When
-
-      const sut = new LogWriterToTest();
-
-      // Assert, Then
-
-      expect(sut.defaultValues).toBeDefined();
-      expect(Object.keys(sut.defaultValues).length).toBe(0);
-    });
-    test('post deve usar LogWriter.mergeValues', () => {
+    test('Após postar deve enviar para escrita do log um ILogMessage', () => {
       // Arrange, Given
 
-      const mockMergeValues = jest.fn();
-      LogWriter.mergeValues = mockMergeValues;
-
-      const values = Math.random();
-      const defaultValues: Record<string, unknown | (() => unknown)> = {};
+      const expectedDateAsText = new Date().toDateString();
+      const expectedMessage = Math.random().toString();
+      const expectedLevel = LogLevel.Fatal;
+      const expectedSection = Math.random().toString();
 
       const sut = new LogWriterToTest();
 
       // Act, When
 
-      sut.defaultValues = defaultValues;
-      sut.post(Math.random().toString(), values);
+      sut.post(expectedMessage, undefined, expectedLevel, expectedSection);
 
       // Assert, Then
 
-      expect(mockMergeValues).toBeCalledTimes(1);
-      expect(mockMergeValues.mock.calls[0][0]).toBe(values);
-      expect(mockMergeValues.mock.calls[0][1]).toBe(defaultValues);
+      const logMessage = sut.mockWrite.mock.calls[0][0] as ILogMessage;
+      expect(logMessage.timestamp.toDateString()).toBe(expectedDateAsText);
+      expect(logMessage.message).toBe(expectedMessage);
+      expect(logMessage.level).toBe(expectedLevel);
+      expect(logMessage.section).toBe(expectedSection);
+    });
+    test('Ao postar deve enviar também messageTemplate e values', () => {
+      // Arrange, Given
+
+      const inputMessageTemplate = new Date().toDateString() + ' {value}';
+      const inputValues = { value: Math.random().toString() };
+      const expectedMessage = HelperText.querystring(
+        inputMessageTemplate,
+        inputValues
+      );
+
+      const sut = new LogWriterToTest();
+
+      // Act, When
+
+      sut.post(inputMessageTemplate, inputValues);
+
+      // Assert, Then
+
+      expect(sut.mockWrite.mock.calls[0][0].message).toBe(expectedMessage);
+      expect(sut.mockWrite.mock.calls[0][1]).toBe(inputMessageTemplate);
+      expect(sut.mockWrite.mock.calls[0][2]).toBe(inputValues);
     });
   });
-  describe('mergeValues', () => {
-    test('undefined com undefined resulta em undefined', () => {
-      // Arrange, Given
-
-      const values = undefined;
-      const defaultValues = undefined;
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(result).toBeUndefined();
-    });
-    test('somente values tem valor retorna esse', () => {
-      // Arrange, Given
-
-      const values = Math.random();
-      const defaultValues = undefined;
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(result).toBeDefined();
-      expect(result).toBe(values);
-    });
-    test('defaultValues sem properiedades é considerado undefined', () => {
-      // Arrange, Given
-
-      const values = Math.random();
-      const defaultValues = {};
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(result).toBeDefined();
-      expect(result).toBe(values);
-    });
-    test('somente defaultValues tem valor retorna esse', () => {
-      // Arrange, Given
-
-      const values = undefined;
-      const defaultValues = {
-        property1: Math.random()
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(result).toBeDefined();
-      expect(result).toBe(defaultValues);
-    });
-    test('somente values como função retorna o valor desse', () => {
-      // Arrange, Given
-
-      const markValue = Math.random();
-
-      const values = () => markValue;
-      const defaultValues = undefined;
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(result).toBe(markValue);
-    });
-    test('somente defaultValues como função retorna o valor desse', () => {
-      // Arrange, Given
-
-      const markValue = Math.random();
-
-      const values = undefined;
-      const defaultValues: Record<string, unknown | (() => unknown)> = {
-        property: () => markValue
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues) as Record<
-        string,
-        unknown
-      >;
-
-      // Assert, Then
-
-      expect(result['property']).toBe(markValue);
-    });
-    test('merge onde value é valor', () => {
-      // Arrange, Given
-
-      const values = new Date();
-      const defaultValues = {
-        property: Math.random()
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(Array.isArray(result)).toBe(true);
-      expect((result as unknown[]).length).toBe(2);
-      expect((result as unknown[])[0]).toBe(values);
-      expect((result as unknown[])[1]).toBe(defaultValues.property);
-    });
-    test('merge onde value é array', () => {
-      // Arrange, Given
-
-      const values = [Math.random(), Math.random()];
-      const defaultValues = {
-        property1: Math.random(),
-        property2: Math.random()
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-
-      // Assert, Then
-
-      expect(Array.isArray(result)).toBe(true);
-      expect((result as unknown[]).length).toBe(4);
-      expect((result as unknown[])[0]).toBe(values[0]);
-      expect((result as unknown[])[1]).toBe(values[1]);
-      expect((result as unknown[])[2]).toBe(defaultValues.property1);
-      expect((result as unknown[])[3]).toBe(defaultValues.property2);
-    });
-    test('merge onde value é object', () => {
-      // Arrange, Given
-
-      const values = {
-        property1: Math.random(),
-        property2: Math.random()
-      };
-      const defaultValues = {
-        property3: Math.random(),
-        property4: Math.random()
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-      const resultKeys = Object.keys(result as {});
-      const resultValues = Object.values(result as {});
-
-      // Assert, Then
-
-      expect(resultKeys.length).toBe(4);
-      expect(resultValues.length).toBe(resultKeys.length);
-      expect(resultKeys[0]).toBe('property3');
-      expect(resultKeys[1]).toBe('property4');
-      expect(resultKeys[2]).toBe('property1');
-      expect(resultKeys[3]).toBe('property2');
-      expect(resultValues[0]).toBe(defaultValues.property3);
-      expect(resultValues[1]).toBe(defaultValues.property4);
-      expect(resultValues[2]).toBe(values.property1);
-      expect(resultValues[3]).toBe(values.property2);
-    });
-    test('merge de object faz values escrever sobre defaultValues ', () => {
-      // Arrange, Given
-
-      const values = {
-        property1: Math.random(),
-        propertyA: Math.random()
-      };
-      const defaultValues = {
-        property1: Math.random(),
-        propertyB: Math.random()
-      };
-
-      // Act, When
-
-      const result = LogWriter.mergeValues(values, defaultValues);
-      const resultValues = Object.values(result as {});
-
-      // Assert, Then
-
-      expect(resultValues.length).toBe(3);
-      expect(resultValues[0]).toBe(values.property1);
-      expect(resultValues[1]).toBe(defaultValues.propertyB);
-      expect(resultValues[2]).toBe(values.propertyA);
-    });
-  });
-  test('Apenas escreve se enabled==true', () => {
+});
+describe('defaultValues', () => {
+  test('defaultValues ser inicializado vazio', () => {
     // Arrange, Given
+    // Act, When
 
     const sut = new LogWriterToTest();
-    const enabledValues = [true, false];
 
-    for (const enabled of enabledValues) {
-      sut.mockWrite.mockClear();
+    // Assert, Then
 
-      // Act, When
-
-      sut.enabled = enabled;
-      sut.post(Math.random().toString());
-
-      // Assert, Then
-
-      if (enabled) {
-        expect(sut.mockWrite.mock.calls.length).toBe(1);
-      } else {
-        expect(sut.mockWrite.mock.calls.length).toBe(0);
-      }
-    }
+    expect(sut.defaultValues).toBeDefined();
+    expect(Object.keys(sut.defaultValues).length).toBe(0);
   });
+  test('post deve usar LogWriter.mergeValues', () => {
+    // Arrange, Given
+
+    const mockMergeValues = jest.fn();
+    LogWriter.mergeValues = mockMergeValues;
+
+    const values = Math.random();
+    const defaultValues: Record<string, unknown | (() => unknown)> = {};
+
+    const sut = new LogWriterToTest();
+
+    // Act, When
+
+    sut.defaultValues = defaultValues;
+    sut.post(Math.random().toString(), values);
+
+    // Assert, Then
+
+    expect(mockMergeValues).toBeCalledTimes(1);
+    expect(mockMergeValues.mock.calls[0][0]).toBe(values);
+    expect(mockMergeValues.mock.calls[0][1]).toBe(defaultValues);
+  });
+});
+describe('mergeValues', () => {
+  test('undefined com undefined resulta em undefined', () => {
+    // Arrange, Given
+
+    const values = undefined;
+    const defaultValues = undefined;
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(result).toBeUndefined();
+  });
+  test('somente values tem valor retorna esse', () => {
+    // Arrange, Given
+
+    const values = Math.random();
+    const defaultValues = undefined;
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(result).toBeDefined();
+    expect(result).toBe(values);
+  });
+  test('defaultValues sem properiedades é considerado undefined', () => {
+    // Arrange, Given
+
+    const values = Math.random();
+    const defaultValues = {};
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(result).toBeDefined();
+    expect(result).toBe(values);
+  });
+  test('somente defaultValues tem valor retorna esse', () => {
+    // Arrange, Given
+
+    const values = undefined;
+    const defaultValues = {
+      property1: Math.random()
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(result).toBeDefined();
+    expect(result).toBe(defaultValues);
+  });
+  test('somente values como função retorna o valor desse', () => {
+    // Arrange, Given
+
+    const markValue = Math.random();
+
+    const values = () => markValue;
+    const defaultValues = undefined;
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(result).toBe(markValue);
+  });
+  test('somente defaultValues como função retorna o valor desse', () => {
+    // Arrange, Given
+
+    const markValue = Math.random();
+
+    const values = undefined;
+    const defaultValues: Record<string, unknown | (() => unknown)> = {
+      property: () => markValue
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues) as Record<
+      string,
+      unknown
+    >;
+
+    // Assert, Then
+
+    expect(result['property']).toBe(markValue);
+  });
+  test('merge onde value é valor', () => {
+    // Arrange, Given
+
+    const values = new Date();
+    const defaultValues = {
+      property: Math.random()
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(Array.isArray(result)).toBe(true);
+    expect((result as unknown[]).length).toBe(2);
+    expect((result as unknown[])[0]).toBe(values);
+    expect((result as unknown[])[1]).toBe(defaultValues.property);
+  });
+  test('merge onde value é array', () => {
+    // Arrange, Given
+
+    const values = [Math.random(), Math.random()];
+    const defaultValues = {
+      property1: Math.random(),
+      property2: Math.random()
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+
+    // Assert, Then
+
+    expect(Array.isArray(result)).toBe(true);
+    expect((result as unknown[]).length).toBe(4);
+    expect((result as unknown[])[0]).toBe(values[0]);
+    expect((result as unknown[])[1]).toBe(values[1]);
+    expect((result as unknown[])[2]).toBe(defaultValues.property1);
+    expect((result as unknown[])[3]).toBe(defaultValues.property2);
+  });
+  test('merge onde value é object', () => {
+    // Arrange, Given
+
+    const values = {
+      property1: Math.random(),
+      property2: Math.random()
+    };
+    const defaultValues = {
+      property3: Math.random(),
+      property4: Math.random()
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+    const resultKeys = Object.keys(result as {});
+    const resultValues = Object.values(result as {});
+
+    // Assert, Then
+
+    expect(resultKeys.length).toBe(4);
+    expect(resultValues.length).toBe(resultKeys.length);
+    expect(resultKeys[0]).toBe('property3');
+    expect(resultKeys[1]).toBe('property4');
+    expect(resultKeys[2]).toBe('property1');
+    expect(resultKeys[3]).toBe('property2');
+    expect(resultValues[0]).toBe(defaultValues.property3);
+    expect(resultValues[1]).toBe(defaultValues.property4);
+    expect(resultValues[2]).toBe(values.property1);
+    expect(resultValues[3]).toBe(values.property2);
+  });
+  test('merge de object faz values escrever sobre defaultValues ', () => {
+    // Arrange, Given
+
+    const values = {
+      property1: Math.random(),
+      propertyA: Math.random()
+    };
+    const defaultValues = {
+      property1: Math.random(),
+      propertyB: Math.random()
+    };
+
+    // Act, When
+
+    const result = LogWriter.mergeValues(values, defaultValues);
+    const resultValues = Object.values(result as {});
+
+    // Assert, Then
+
+    expect(resultValues.length).toBe(3);
+    expect(resultValues[0]).toBe(values.property1);
+    expect(resultValues[1]).toBe(defaultValues.propertyB);
+    expect(resultValues[2]).toBe(values.propertyA);
+  });
+});
+test('Apenas escreve se enabled==true', () => {
+  // Arrange, Given
+
+  const sut = new LogWriterToTest();
+  const enabledValues = [true, false];
+
+  for (const enabled of enabledValues) {
+    sut.mockWrite.mockClear();
+
+    // Act, When
+
+    sut.enabled = enabled;
+    sut.post(Math.random().toString());
+
+    // Assert, Then
+
+    if (enabled) {
+      expect(sut.mockWrite.mock.calls.length).toBe(1);
+    } else {
+      expect(sut.mockWrite.mock.calls.length).toBe(0);
+    }
+  }
 });
