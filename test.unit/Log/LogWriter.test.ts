@@ -652,5 +652,5 @@ describe('Class LogWriter', () => {
         expect(sut.mockWrite.mock.calls.length).toBe(0);
       }
     }
-  })
+  });
 });

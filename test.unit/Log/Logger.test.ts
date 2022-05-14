@@ -1,4 +1,4 @@
-import {ILogWriter, Logger, LogLevel, LogWriter} from '../../ts';
+import { ILogWriter, Logger, LogLevel, LogWriter } from '../../ts';
 
 describe('Class Logger', () => {
   describe('Funções e propriedades estáticas', () => {
@@ -110,12 +110,12 @@ describe('Class Logger', () => {
       const values = Math.random();
       const defaultValues: Record<string, unknown | (() => unknown)> = {};
       const logWriter: ILogWriter = {
-          post: jest.fn(),
-          enabled: true,
-          minimumLevel: LogLevel.Verbose,
-          defaultLogLevel: LogLevel.Debug,
-          defaultValues: {}
-      }
+        post: jest.fn(),
+        enabled: true,
+        minimumLevel: LogLevel.Verbose,
+        defaultLogLevel: LogLevel.Debug,
+        defaultValues: {}
+      };
 
       const sut = new Logger([logWriter]);
 
