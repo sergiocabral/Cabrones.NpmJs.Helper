@@ -169,4 +169,203 @@ describe('Class Logger', () => {
     expect(mockPost1).toBeCalledTimes(1);
     expect(mockPost2).toBeCalledTimes(1);
   });
+  test('enabled deve afetar todos os logWriters', () => {
+    // Arrange, Given
+
+    const enabledValues = [false, true];
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const sut = new Logger([logger1, logger2]);
+
+    for (const enabled of enabledValues) {
+      logger1.enabled = !enabled;
+      logger2.enabled = !enabled;
+
+      // Act, When
+
+      sut.enabled = enabled;
+
+      // Assert, Then
+
+      expect(logger1.enabled).toBe(enabled);
+      expect(logger2.enabled).toBe(enabled);
+    }
+  });
+  test('enabled deve ser false se todos logWriter são false', () => {
+    // Arrange, Given
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const sut = new Logger([logger1, logger2]);
+    logger1.enabled = false;
+    logger2.enabled = false;
+
+    // Act, When
+
+    const receivedEnabled = sut.enabled;
+
+    // Assert, Then
+
+    expect(receivedEnabled).toBe(false);
+  });
+  test('enabled deve ser true se pelo menos um logWriter é true', () => {
+    // Arrange, Given
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const sut = new Logger([logger1, logger2]);
+    logger1.enabled = false;
+    logger2.enabled = true;
+
+    // Act, When
+
+    const receivedEnabled = sut.enabled;
+
+    // Assert, Then
+
+    expect(receivedEnabled).toBe(true);
+  });
+  test('minimumLevel deve ser igual ao valor mais alto dos logWriter', () => {
+    // Arrange, Given
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const sut = new Logger([logger1, logger2]);
+    logger1.minimumLevel = LogLevel.Information;
+    logger2.minimumLevel = LogLevel.Warning;
+
+    // Act, When
+
+    const receivedMinimumLevel = sut.minimumLevel;
+
+    // Assert, Then
+
+    expect(receivedMinimumLevel).not.toBe(logger1.minimumLevel);
+    expect(receivedMinimumLevel).toBe(logger2.minimumLevel);
+  });
+  test('minimumLevel deve ser menor valor se não houver logWriters', () => {
+    // Arrange, Given
+
+    const sut = new Logger([]);
+
+    // Act, When
+
+    const receivedMinimumLevel = sut.minimumLevel;
+
+    // Assert, Then
+
+    expect(receivedMinimumLevel).toBe(LogLevel.Verbose);
+  });
+  test('defaultLogLevel deve ser igual ao valor mais alto dos logWriter', () => {
+    // Arrange, Given
+
+    const mockPost1 = jest.fn();
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const mockPost2 = jest.fn();
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
+
+    const sut = new Logger([logger1, logger2]);
+    logger1.defaultLogLevel = LogLevel.Information;
+    logger2.defaultLogLevel = LogLevel.Warning;
+
+    // Act, When
+
+    const receivedMinimumLevel = sut.defaultLogLevel;
+
+    // Assert, Then
+
+    expect(receivedMinimumLevel).not.toBe(logger1.defaultLogLevel);
+    expect(receivedMinimumLevel).toBe(logger2.defaultLogLevel);
+  });
+  test('defaultLogLevel deve ser menor valor se não houver logWriters', () => {
+    // Arrange, Given
+
+    const sut = new Logger([]);
+
+    // Act, When
+
+    const receivedMinimumLevel = sut.defaultLogLevel;
+
+    // Assert, Then
+
+    expect(receivedMinimumLevel).toBe(LogLevel.Verbose);
+  });
 });
