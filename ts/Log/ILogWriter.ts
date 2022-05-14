@@ -1,4 +1,5 @@
 import { LogLevel } from './LogLevel';
+import { ILogMessage } from './ILogMessage';
 
 /**
  * Escritor de mensagem de log.
@@ -37,4 +38,9 @@ export interface ILogWriter {
    * Valores padrão associados a cada log.
    */
   defaultValues: Record<string, unknown | (() => unknown)>;
+
+  /**
+   * Função para personalizar a exibição de uma mensagem de log.
+   */
+  customFactoryMessage?: (message: ILogMessage) => string;
 }
