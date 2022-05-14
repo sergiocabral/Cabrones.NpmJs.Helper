@@ -82,14 +82,18 @@ export class Logger implements ILogWriter {
    * Nível mínimo de log para aceitar escrita do log recebido.
    */
   public get minimumLevel(): LogLevel {
-    return this.getGreaterValueFromWriters('minimumLevel');
+    return Logger.maxLogLevel(
+      ...this.writers.map(writer => writer.minimumLevel)
+    );
   }
 
   /**
    * Nível padrão de log quando não informado.
    */
   public get defaultLogLevel(): LogLevel {
-    return this.getGreaterValueFromWriters('defaultLogLevel');
+    return Logger.maxLogLevel(
+      ...this.writers.map(writer => writer.defaultLogLevel)
+    );
   }
 
   /**
@@ -98,16 +102,26 @@ export class Logger implements ILogWriter {
   public defaultValues: Record<string, unknown | (() => unknown)> = {};
 
   /**
-   * Busca o valor mais alto para um propriedade LogLevel.
-   * @param propertyName Nome da propriedade LogLevel
+   * Retorna o menor nível de log na lista.
    */
-  private getGreaterValueFromWriters(propertyName: keyof ILogWriter): LogLevel {
-    let result = 0 as LogLevel;
-    for (const writer of this.writers) {
-      if (writer[propertyName] > result) {
-        result = writer[propertyName] as LogLevel;
-      }
-    }
+  public static minLogLevel(...logLevels: LogLevel[]): LogLevel {
+    let result = Number.MAX_SAFE_INTEGER as LogLevel;
+    logLevels.push(LogLevel.Fatal);
+    logLevels.forEach(
+      logLevel => (result = result <= logLevel ? result : logLevel)
+    );
+    return result;
+  }
+
+  /**
+   * Retorna o maior nível de log na lista.
+   */
+  public static maxLogLevel(...logLevels: LogLevel[]): LogLevel {
+    let result = Number.MIN_SAFE_INTEGER as LogLevel;
+    logLevels.push(LogLevel.Verbose);
+    logLevels.forEach(
+      logLevel => (result = result >= logLevel ? result : logLevel)
+    );
     return result;
   }
 }

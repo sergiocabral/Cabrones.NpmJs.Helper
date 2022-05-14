@@ -6,11 +6,15 @@ describe('Class Logger', () => {
 
     beforeEach(() => {
       originals['Logger.defaultLogger'] = Logger.defaultLogger;
+      originals['Logger.minLogLevel'] = Logger.minLogLevel;
+      originals['Logger.maxLogLevel'] = Logger.maxLogLevel;
       originals['LogWriter.mergeValues'] = LogWriter.mergeValues;
     });
 
     afterEach(() => {
       Logger.defaultLogger = originals['Logger.defaultLogger'];
+      Logger.minLogLevel = originals['Logger.minLogLevel'];
+      Logger.maxLogLevel = originals['Logger.maxLogLevel'];
       LogWriter.mergeValues = originals['LogWriter.mergeValues'];
     });
 
@@ -367,5 +371,97 @@ describe('Class Logger', () => {
     // Assert, Then
 
     expect(receivedMinimumLevel).toBe(LogLevel.Verbose);
+  });
+  describe('minLogLevel e maxLogLevel', () => {
+    describe('minLogLevel', function () {
+      test('Retorna o menor valor da lista', () => {
+        // Arrange, Given
+
+        const level = [LogLevel.Verbose, LogLevel.Information, LogLevel.Fatal];
+
+        // Act, When
+
+        const result = Logger.minLogLevel(...level);
+
+        // Assert, Then
+
+        expect(result).toBe(level[0]);
+      });
+      test('Retorna o maior valor padrão quando não há itens na lista', () => {
+        // Arrange, Given
+
+        const maxDefaultLogLevel = LogLevel.Fatal;
+
+        // Act, When
+
+        const result = Logger.minLogLevel();
+
+        // Assert, Then
+
+        expect(result).toBe(maxDefaultLogLevel);
+      });
+      test('Retorna o menor mesmo que não faça parte do conjunto LogLEvel', () => {
+        // Arrange, Given
+
+        const maxDefaultLogLevel = LogLevel.Fatal;
+        const minArtificialLogLevel = -Math.floor(
+          Math.random() * 1000 + 1000
+        ) as LogLevel;
+
+        // Act, When
+
+        const result = Logger.minLogLevel(minArtificialLogLevel);
+
+        // Assert, Then
+
+        expect(result).toBe(minArtificialLogLevel);
+        expect(result).not.toBe(maxDefaultLogLevel);
+      });
+    });
+    describe('maxLogLevel', function () {
+      test('Retorna o maior valor da lista', () => {
+        // Arrange, Given
+
+        const level = [LogLevel.Verbose, LogLevel.Information, LogLevel.Fatal];
+
+        // Act, When
+
+        const result = Logger.maxLogLevel(...level);
+
+        // Assert, Then
+
+        expect(result).toBe(level[level.length - 1]);
+      });
+      test('Retorna o menor valor padrão quando não há itens na lista', () => {
+        // Arrange, Given
+
+        const minDefaultLogLevel = LogLevel.Verbose;
+
+        // Act, When
+
+        const result = Logger.maxLogLevel();
+
+        // Assert, Then
+
+        expect(result).toBe(minDefaultLogLevel);
+      });
+      test('Retorna o maior mesmo que não faça parte do conjunto LogLEvel', () => {
+        // Arrange, Given
+
+        const minDefaultLogLevel = LogLevel.Verbose;
+        const maxArtificialLogLevel = Math.floor(
+          Math.random() * 1000 + 1000
+        ) as LogLevel;
+
+        // Act, When
+
+        const result = Logger.maxLogLevel(maxArtificialLogLevel);
+
+        // Assert, Then
+
+        expect(result).toBe(maxArtificialLogLevel);
+        expect(result).not.toBe(minDefaultLogLevel);
+      });
+    });
   });
 });
