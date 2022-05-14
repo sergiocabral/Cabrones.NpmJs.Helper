@@ -49,14 +49,65 @@ export class Logger implements ILogWriter {
     level?: LogLevel,
     section?: string
   ): void {
-    const mergedValues = LogWriter.mergeValues(values, this.defaultValues);
-    for (const writer of this.writers) {
-      writer.post(messageTemplate, mergedValues, level, section);
+    if (this.enabled) {
+      const mergedValues = LogWriter.mergeValues(values, this.defaultValues);
+      for (const writer of this.writers) {
+        writer.post(messageTemplate, mergedValues, level, section);
+      }
     }
+  }
+
+  /**
+   * Sinaliza se o log está ativo ou não para postar.
+   */
+  public get enabled(): boolean {
+    for (const writer of this.writers) {
+      if (writer.enabled) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Sinaliza se o log está ativo ou não para postar.
+   */
+  public set enabled(value: boolean) {
+    for (const writer of this.writers) {
+      writer.enabled = value;
+    }
+  }
+
+  /**
+   * Nível mínimo de log para aceitar escrita do log recebido.
+   */
+  public get minimumLevel(): LogLevel {
+    return this.getGreaterValueFromWriters('minimumLevel');
+  }
+
+  /**
+   * Nível padrão de log quando não informado.
+   */
+  public get defaultLogLevel(): LogLevel {
+    return this.getGreaterValueFromWriters('defaultLogLevel');
   }
 
   /**
    * Valores padrão associados a cada log.
    */
   public defaultValues: Record<string, unknown | (() => unknown)> = {};
+
+  /**
+   * Busca o valor mais alto para um propriedade LogLevel.
+   * @param propertyName Nome da propriedade LogLevel
+   */
+  private getGreaterValueFromWriters(propertyName: keyof ILogWriter): LogLevel {
+    let result = 0 as LogLevel;
+    for (const writer of this.writers) {
+      if (writer[propertyName] > result) {
+        result = writer[propertyName] as LogLevel;
+      }
+    }
+    return result;
+  }
 }

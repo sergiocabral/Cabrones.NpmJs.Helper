@@ -1,4 +1,4 @@
-import { ILogWriter, Logger, LogWriter } from '../../ts';
+import {ILogWriter, Logger, LogLevel, LogWriter} from '../../ts';
 
 describe('Class Logger', () => {
   describe('Funções e propriedades estáticas', () => {
@@ -43,7 +43,13 @@ describe('Class Logger', () => {
       // Arrange, Given
 
       const mockLogWriterPost = jest.fn();
-      Logger.defaultLogger = { post: mockLogWriterPost };
+      Logger.defaultLogger = {
+        post: mockLogWriterPost,
+        enabled: true,
+        minimumLevel: LogLevel.Verbose,
+        defaultLogLevel: LogLevel.Debug,
+        defaultValues: {}
+      };
 
       // Act, When
 
@@ -63,7 +69,13 @@ describe('Class Logger', () => {
       const count = Math.floor(Math.random() * 100) + 5;
       const logWriters: ILogWriter[] = [];
       for (let i = 0; i < count; i++) {
-        logWriters.push({ post: mockLogWriterPost });
+        logWriters.push({
+          post: mockLogWriterPost,
+          enabled: true,
+          minimumLevel: LogLevel.Verbose,
+          defaultLogLevel: LogLevel.Debug,
+          defaultValues: {}
+        });
       }
 
       const logger = new Logger(logWriters);
@@ -97,8 +109,15 @@ describe('Class Logger', () => {
 
       const values = Math.random();
       const defaultValues: Record<string, unknown | (() => unknown)> = {};
+      const logWriter: ILogWriter = {
+          post: jest.fn(),
+          enabled: true,
+          minimumLevel: LogLevel.Verbose,
+          defaultLogLevel: LogLevel.Debug,
+          defaultValues: {}
+      }
 
-      const sut = new Logger([]);
+      const sut = new Logger([logWriter]);
 
       // Act, When
 
@@ -116,10 +135,22 @@ describe('Class Logger', () => {
     // Arrange, Given
 
     const mockPost1 = jest.fn();
-    const logger1: ILogWriter = { post: mockPost1 };
+    const logger1: ILogWriter = {
+      post: mockPost1,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
 
     const mockPost2 = jest.fn();
-    const logger2: ILogWriter = { post: mockPost2 };
+    const logger2: ILogWriter = {
+      post: mockPost2,
+      enabled: true,
+      minimumLevel: LogLevel.Verbose,
+      defaultLogLevel: LogLevel.Debug,
+      defaultValues: {}
+    };
 
     const sut = new Logger([]);
 

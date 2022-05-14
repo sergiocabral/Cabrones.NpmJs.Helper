@@ -1,4 +1,3 @@
-import { ILogMessage } from './ILogMessage';
 import { LogLevel } from './LogLevel';
 
 /**
@@ -20,22 +19,22 @@ export interface ILogWriter {
   ): void;
 
   /**
+   * Sinaliza se o log está ativo ou não para postar.
+   */
+  enabled: boolean;
+
+  /**
    * Nível mínimo de log para aceitar escrita do log recebido.
    */
-  minimumLevel?: LogLevel;
+  minimumLevel: LogLevel;
 
   /**
    * Nível padrão de log quando não informado.
    */
-  defaultLogLevel?: LogLevel;
+  defaultLogLevel: LogLevel;
 
   /**
    * Valores padrão associados a cada log.
    */
-  defaultValues?: Record<string, unknown | (() => unknown)>;
-
-  /**
-   * Função para personalizar a exibição de uma mensagem de log.
-   */
-  customFactoryMessage?: (message: ILogMessage) => string;
+  defaultValues: Record<string, unknown | (() => unknown)>;
 }

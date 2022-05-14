@@ -101,6 +101,7 @@ export abstract class LogWriter implements ILogWriter {
     level?: LogLevel,
     section?: string
   ): void {
+    if (!this.enabled) return;
     level = level ?? this.defaultLogLevel;
     if (level < this.minimumLevel) return;
     messageTemplate =
@@ -111,6 +112,11 @@ export abstract class LogWriter implements ILogWriter {
     const logMessage: ILogMessage = { message, timestamp, level, section };
     this.write(logMessage, messageTemplate, values);
   }
+
+  /**
+   * Sinaliza se o log está ativo ou não para postar.
+   */
+  public enabled = true;
 
   /**
    * Valores padrão associados a cada log.
