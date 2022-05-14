@@ -630,4 +630,27 @@ describe('Class LogWriter', () => {
       expect(resultValues[2]).toBe(values.propertyA);
     });
   });
+  test('Apenas escreve se enabled==true', () => {
+    // Arrange, Given
+
+    const sut = new LogWriterToTest();
+    const enabledValues = [true, false];
+
+    for (const enabled of enabledValues) {
+      sut.mockWrite.mockClear();
+
+      // Act, When
+
+      sut.enabled = enabled;
+      sut.post(Math.random().toString());
+
+      // Assert, Then
+
+      if (enabled) {
+        expect(sut.mockWrite.mock.calls.length).toBe(1);
+      } else {
+        expect(sut.mockWrite.mock.calls.length).toBe(0);
+      }
+    }
+  })
 });
