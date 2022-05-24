@@ -1,5 +1,6 @@
 import { IFileSystemFields } from './IFileSystemFields';
 import fs from 'fs';
+import { HelperObject } from '../../Data/HelperObject';
 
 /**
  * Campos usados no monitoramento de objetos de disco.
@@ -12,6 +13,13 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
   public constructor(public readonly path?: string) {
     if (path !== undefined) {
       this.exists = fs.existsSync(path);
+      if (this.exists) {
+        const stats = fs.statSync(path);
+        this.size = stats.size;
+        this.creation = stats.birthtime;
+        this.modification = stats.mtime;
+        this.accessed = stats.atime;
+      }
     }
   }
 
@@ -19,6 +27,26 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
    * Sinaliza existência.
    */
   public readonly exists: boolean | undefined = undefined;
+
+  /**
+   * Tamanho do arquivo.
+   */
+  public readonly size: number | undefined = undefined;
+
+  /**
+   * Data de criação.
+   */
+  public readonly creation: Date | undefined = undefined;
+
+  /**
+   * Data da última modificação.
+   */
+  public readonly modification: Date | undefined = undefined;
+
+  /**
+   * Data do último acesso.
+   */
+  public readonly accessed: Date | undefined = undefined;
 
   /**
    * Retorna a lista de campos que estão diferentes.
