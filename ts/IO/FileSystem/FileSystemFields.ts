@@ -52,7 +52,7 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
 
     const fields = Array<string>();
     for (const fieldName of Object.keys(defaultInstance)) {
-      if (left[fieldName] !== right[fieldName]) {
+      if (!HelperObject.areEquals(left[fieldName], right[fieldName])) {
         fields.push(fieldName);
       }
     }
