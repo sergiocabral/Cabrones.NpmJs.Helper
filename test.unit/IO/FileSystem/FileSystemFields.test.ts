@@ -248,6 +248,177 @@ describe('Classe FileSystemFields', () => {
           expect(sut.exists).toBe(false);
         });
       });
+      describe('size', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const fileExists = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(fileExists);
+
+          // Assert, Then
+
+          expect(sut.size).toBeUndefined();
+        });
+        test('arquivo existe', () => {
+          // Arrange, Given
+
+          const file = `test-${Math.random()}`;
+          const fileContent = ''.padStart(
+            Math.random() * 10,
+            Math.random().toString()
+          );
+          fs.writeFileSync(file, fileContent);
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          expect(fileContent.length).not.toBe(0);
+          expect(sut.size).toBeDefined();
+          expect(sut.size).toBe(fileContent.length);
+        });
+      });
+      describe('creation', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const fileExists = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(fileExists);
+
+          // Assert, Then
+
+          expect(sut.creation).toBeUndefined();
+        });
+        test('arquivo existe', () => {
+          // Arrange, Given
+
+          const millisecondTolerance = 1;
+          const file = `test-${Math.random()}`;
+          const fileContent = ''.padStart(
+            Math.random() * 10,
+            Math.random().toString()
+          );
+          const dateBeforeCreation = new Date();
+          fs.writeFileSync(file, fileContent);
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          const diff =
+            (sut.creation as Date).getTime() - dateBeforeCreation.getTime();
+          expect(sut.creation).toBeDefined();
+          expect(diff).toBeLessThanOrEqual(millisecondTolerance);
+        });
+      });
+      describe('accessed', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const fileExists = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(fileExists);
+
+          // Assert, Then
+
+          expect(sut.accessed).toBeUndefined();
+        });
+        test('arquivo existe', async () => {
+          return new Promise<void>(resolve => {
+            // Arrange, Given
+
+            const file = `test-${Math.random()}`;
+            const fileContent = ''.padStart(
+              Math.random() * 10,
+              Math.random().toString()
+            );
+            fs.writeFileSync(file, fileContent);
+
+            // Act, When
+
+            const sutFirst = new FileSystemFields(file);
+            setTimeout(() => {
+              fs.readFileSync(file);
+              const sutSecond = new FileSystemFields(file);
+
+              // Assert, Then
+
+              expect(sutFirst.accessed).toBeDefined();
+              expect(sutSecond.accessed).toBeDefined();
+              expect((sutFirst.accessed as Date).getTime()).toBeLessThan(
+                (sutSecond.accessed as Date).getTime()
+              );
+
+              resolve();
+            }, 1);
+          });
+        });
+      });
+      describe('modification', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const fileExists = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(fileExists);
+
+          // Assert, Then
+
+          expect(sut.modification).toBeUndefined();
+        });
+        test('arquivo existe', async () => {
+          return new Promise<void>(resolve => {
+            // Arrange, Given
+
+            const file = `test-${Math.random()}`;
+            const fileContent = ''.padStart(
+              Math.random() * 10,
+              Math.random().toString()
+            );
+            fs.writeFileSync(file, fileContent);
+
+            // Act, When
+
+            const sutFirst = new FileSystemFields(file);
+            setTimeout(() => {
+              fs.readFileSync(file);
+              const sutSecond = new FileSystemFields(file);
+              fs.writeFileSync(file, fileContent);
+              setTimeout(() => {
+                const sutThird = new FileSystemFields(file);
+
+                // Assert, Then
+
+                expect(sutFirst.modification).toBeDefined();
+                expect(sutSecond.modification).toBeDefined();
+                expect(sutThird.modification).toBeDefined();
+                expect((sutFirst.modification as Date).getTime()).toBe(
+                  (sutSecond.modification as Date).getTime()
+                );
+                expect((sutFirst.modification as Date).getTime()).toBeLessThan(
+                  (sutThird.modification as Date).getTime()
+                );
+
+                resolve();
+              }, 1);
+            }, 1);
+          });
+        });
+      });
     });
   });
 });

@@ -940,10 +940,7 @@ Methods:
     test('verificação de valores null ou undefined', async () => {
       // Arrange, Given
 
-      const emptyValues = [
-          null,
-          undefined
-      ];
+      const emptyValues = [null, undefined];
 
       for (const emptyValue of emptyValues) {
         // Act, When
@@ -961,7 +958,7 @@ Methods:
       const primitiveValues = [
         Math.random(), // Number
         Math.random().toString(), // String
-        Math.floor(Math.random() * 1000) % 2 === 0, // Boolean
+        Math.floor(Math.random() * 1000) % 2 === 0 // Boolean
       ];
 
       for (const primitiveValue of primitiveValues) {
@@ -980,7 +977,7 @@ Methods:
       const primitiveValues1 = [
         Math.random(), // Number
         Math.random().toString(), // String
-        Math.floor(Math.random() * 1000) % 2 === 0, // Boolean
+        Math.floor(Math.random() * 1000) % 2 === 0 // Boolean
       ];
 
       const primitiveValues2 = [
@@ -989,7 +986,11 @@ Methods:
         !primitiveValues1[primitiveValues1.length - 1]
       ];
 
-      for (let i = 0; i < primitiveValues1.length && i < primitiveValues2.length; i++) {
+      for (
+        let i = 0;
+        i < primitiveValues1.length && i < primitiveValues2.length;
+        i++
+      ) {
         const value1 = primitiveValues1[i];
         const value2 = primitiveValues2[i];
 
@@ -1025,12 +1026,12 @@ Methods:
 
       const value1a = {
         prop1: Math.random(),
-        prop2: Math.random().toString(),
+        prop2: Math.random().toString()
       };
       const value1b = JSON.parse(JSON.stringify(value1a));
       const value2 = {
         prop2: value1a.prop2,
-        prop1: value1a.prop1,
+        prop1: value1a.prop1
       };
 
       // Act, When
@@ -1044,5 +1045,5 @@ Methods:
       expect(expectedTrue).toBe(true);
       expect(expectedFalse).toBe(false);
     });
-  })
+  });
 });
