@@ -124,6 +124,7 @@ export class FileSystemMonitoring {
   public clearListeners(): void {
     this.onCreated.clear();
     this.onDeleted.clear();
+    this.onModified.clear();
   }
 
   /**
@@ -137,6 +138,13 @@ export class FileSystemMonitoring {
    * Quando apagado.
    */
   public onDeleted: Set<ResultEvent<IFileSystemMonitoringEventData>> = new Set<
+    ResultEvent<IFileSystemMonitoringEventData>
+  >();
+
+  /**
+   * Quando modificado.
+   */
+  public onModified: Set<ResultEvent<IFileSystemMonitoringEventData>> = new Set<
     ResultEvent<IFileSystemMonitoringEventData>
   >();
 
@@ -163,6 +171,13 @@ export class FileSystemMonitoring {
               currentFields
             );
           }
+        }
+        if (diff.includes('size') || diff.includes('modification')) {
+          void this.trigger(
+            this.onModified,
+            this.lastFieldsValue,
+            currentFields
+          );
         }
       }
       this.lastFieldsValue = currentFields;
