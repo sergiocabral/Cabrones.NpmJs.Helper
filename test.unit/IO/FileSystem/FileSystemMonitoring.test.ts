@@ -479,16 +479,19 @@ describe('Classe FileSystemMonitoring', () => {
 
       sut.onCreated.add(jest.fn());
       sut.onDeleted.add(jest.fn());
+      sut.onModified.add(jest.fn());
 
       // Act, When
 
-      const beforeClear = sut.onCreated.size + sut.onDeleted.size;
+      const beforeClear =
+        sut.onCreated.size + sut.onDeleted.size + sut.onModified.size;
       sut.clearListeners();
-      const afterClear = sut.onCreated.size + sut.onDeleted.size;
+      const afterClear =
+        sut.onCreated.size + sut.onDeleted.size + sut.onModified.size;
 
       // Assert, Then
 
-      expect(beforeClear).toBe(2);
+      expect(beforeClear).toBe(3);
       expect(afterClear).toBe(0);
 
       // Tear Down
@@ -607,6 +610,59 @@ describe('Classe FileSystemMonitoring', () => {
             expect(eventData).toBeDefined();
             expect(eventData?.before.exists).toBe(true);
             expect(eventData?.after.exists).toBe(false);
+          }
+
+          // Tear Down
+
+          sut.stop();
+
+          resolve();
+        }, intervalToWaitFor * 2);
+      });
+    });
+    test('onModified', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const intervalToWaitFor = 5;
+        const file = `test-file-${Math.random()}.txt`;
+        fs.writeFileSync(file, Math.random().toString());
+
+        const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+        let eventReceived:
+          | undefined
+          | [boolean, IFileSystemMonitoringEventData | undefined];
+
+        // Act, When
+
+        sut.onModified.add((result, data) => {
+          eventReceived = [result, data];
+        });
+
+        fs.appendFileSync(file, Math.random().toString());
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(eventReceived).toBeDefined();
+
+          if (eventReceived) {
+            const result = eventReceived[0];
+            const eventData = eventReceived[1];
+
+            expect(result).toBe(true);
+            expect(eventData).toBeDefined();
+            expect(eventData?.before.modification).toBeDefined();
+            expect(eventData?.after.modification).toBeDefined();
+            expect(eventData?.before.size).toBeDefined();
+            expect(eventData?.after.size).toBeDefined();
+            expect(
+              (eventData?.before.modification as Date).getTime()
+            ).toBeLessThan((eventData?.after.modification as Date).getTime());
+            expect(eventData?.before.size as number).toBeLessThan(
+              eventData?.after.size as number
+            );
           }
 
           // Tear Down
