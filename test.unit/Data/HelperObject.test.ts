@@ -936,4 +936,113 @@ Methods:
       expect(results[1]).toBeDefined();
     });
   });
+  describe('HelperObject.areEquals', () => {
+    test('verificação de valores null ou undefined', async () => {
+      // Arrange, Given
+
+      const emptyValues = [
+          null,
+          undefined
+      ];
+
+      for (const emptyValue of emptyValues) {
+        // Act, When
+
+        const result = HelperObject.areEquals(emptyValue, emptyValue);
+
+        // Assert, Then
+
+        expect(result).toBe(true);
+      }
+    });
+    test('verificação de valores primitivos iguais', async () => {
+      // Arrange, Given
+
+      const primitiveValues = [
+        Math.random(), // Number
+        Math.random().toString(), // String
+        Math.floor(Math.random() * 1000) % 2 === 0, // Boolean
+      ];
+
+      for (const primitiveValue of primitiveValues) {
+        // Act, When
+
+        const result = HelperObject.areEquals(primitiveValue, primitiveValue);
+
+        // Assert, Then
+
+        expect(result).toBe(true);
+      }
+    });
+    test('verificação de valores primitivos', async () => {
+      // Arrange, Given
+
+      const primitiveValues1 = [
+        Math.random(), // Number
+        Math.random().toString(), // String
+        Math.floor(Math.random() * 1000) % 2 === 0, // Boolean
+      ];
+
+      const primitiveValues2 = [
+        Math.random(), // Number
+        Math.random().toString(), // String
+        !primitiveValues1[primitiveValues1.length - 1]
+      ];
+
+      for (let i = 0; i < primitiveValues1.length && i < primitiveValues2.length; i++) {
+        const value1 = primitiveValues1[i];
+        const value2 = primitiveValues2[i];
+
+        // Act, When
+
+        const result = HelperObject.areEquals(value1, value2);
+
+        // Assert, Then
+
+        expect(result).toBe(false);
+      }
+    });
+    test('verificação de valores de data', async () => {
+      // Arrange, Given
+
+      const date1a = new Date(Math.random() * 1000000000000);
+      const date1b = new Date(date1a.getTime());
+      const date2 = new Date(Math.random() * 1000000000000);
+
+      // Act, When
+
+      const expectedTrue = HelperObject.areEquals(date1a, date1b);
+      const expectedFalse = HelperObject.areEquals(date1a, date2);
+
+      // Assert, Then
+
+      expect(date1a).not.toBe(date1b);
+      expect(expectedTrue).toBe(true);
+      expect(expectedFalse).toBe(false);
+    });
+    test('verificação de valores de outros tipos', async () => {
+      // Arrange, Given
+
+      const value1a = {
+        prop1: Math.random(),
+        prop2: Math.random().toString(),
+      };
+      const value1b = JSON.parse(JSON.stringify(value1a));
+      const value2 = {
+        prop2: value1a.prop2,
+        prop1: value1a.prop1,
+      };
+
+      // Act, When
+
+      const expectedTrue = HelperObject.areEquals(value1a, value1b);
+      const expectedFalse = HelperObject.areEquals(value1a, value2);
+
+      // Assert, Then
+
+      expect(value1a).not.toBe(value1b);
+      expect(expectedTrue).toBe(true);
+      expect(expectedFalse).toBe(false);
+    });
+  })
 });
