@@ -293,4 +293,19 @@ export class HelperObject {
     }
     return errors;
   }
+
+  /**
+   * Verifica a igualdade de dois valores.
+   */
+  public static areEquals(value1: unknown, value2: unknown): boolean {
+    if (value1 === value2) {
+      return true;
+    } else {
+      if (value1 instanceof Date && value2 instanceof Date) {
+        return value1.getTime() === value2.getTime();
+      } else {
+        return JSON.stringify(value1) === JSON.stringify(value2);
+      }
+    }
+  }
 }
