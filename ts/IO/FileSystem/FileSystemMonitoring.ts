@@ -71,10 +71,10 @@ export class FileSystemMonitoring {
   /**
    * Últimos dados de verificação.
    */
-  public get lastFields(): IFileSystemFields {
+  public get lastFields(): Partial<IFileSystemFields> {
     return JSON.parse(
       JSON.stringify(this.lastFieldsValue)
-    ) as IFileSystemFields;
+    ) as Partial<IFileSystemFields>;
   }
 
   /**
