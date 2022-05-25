@@ -12,8 +12,7 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
    */
   public constructor(public readonly path?: string) {
     if (path !== undefined) {
-      this.exists = fs.existsSync(path);
-      if (this.exists) {
+      if ((this.exists = fs.existsSync(path))) {
         this.realpath = fs.realpathSync(path);
         const stats = fs.statSync(path);
         this.size = stats.size;
