@@ -33,7 +33,7 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
                 undefined;
           }
         } catch (error) {
-          // TODO: Sem cobertura, mas foi necessário por dar erro em projetos externos. Tentativa de covertura pelo teste "durante a criação é tolerante a falhas de ENOENT", mas não deu certo.
+          // TODO: Sem cobertura, mas foi necessário por dar erro em projetos externos. Tentativa de cobertura pelo teste "durante a criação é tolerante a falhas de ENOENT", mas não deu certo.
           ioError = error;
         }
       } while (ioError !== undefined);
