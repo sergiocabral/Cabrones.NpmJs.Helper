@@ -171,8 +171,7 @@ export class FileSystemMonitoring {
               currentFields
             );
           }
-        }
-        if (diff.includes('size') || diff.includes('modification')) {
+        } else if (diff.includes('size') || diff.includes('modification')) {
           void this.trigger(
             this.onModified,
             this.lastFieldsValue,

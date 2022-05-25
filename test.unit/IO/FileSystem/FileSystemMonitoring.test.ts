@@ -620,57 +620,122 @@ describe('Classe FileSystemMonitoring', () => {
         }, intervalToWaitFor * 2);
       });
     });
-    test('onModified', async () => {
-      return new Promise<void>(resolve => {
-        // Arrange, Given
+    describe('onModified', () => {
+      test('ao modificar arquivo deve disparar o evento', async () => {
+        return new Promise<void>(resolve => {
+          // Arrange, Given
 
-        const intervalToWaitFor = 5;
-        const file = `test-file-${Math.random()}.txt`;
-        fs.writeFileSync(file, Math.random().toString());
+          const intervalToWaitFor = 5;
+          const file = `test-file-${Math.random()}.txt`;
+          fs.writeFileSync(file, Math.random().toString());
 
-        const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+          const sut = new FileSystemMonitoring(file, intervalToWaitFor);
 
-        let eventReceived:
-          | undefined
-          | [boolean, IFileSystemMonitoringEventData | undefined];
+          let eventReceived:
+            | undefined
+            | [boolean, IFileSystemMonitoringEventData | undefined];
 
-        // Act, When
+          // Act, When
 
-        sut.onModified.add((result, data) => {
-          eventReceived = [result, data];
+          sut.onModified.add((result, data) => {
+            eventReceived = [result, data];
+          });
+
+          fs.appendFileSync(file, Math.random().toString());
+
+          setTimeout(() => {
+            // Assert, Then
+
+            expect(eventReceived).toBeDefined();
+
+            if (eventReceived) {
+              const result = eventReceived[0];
+              const eventData = eventReceived[1];
+
+              expect(result).toBe(true);
+              expect(eventData).toBeDefined();
+              expect(eventData?.before.modification).toBeDefined();
+              expect(eventData?.after.modification).toBeDefined();
+              expect(eventData?.before.size).toBeDefined();
+              expect(eventData?.after.size).toBeDefined();
+              expect(
+                (eventData?.before.modification as Date).getTime()
+              ).toBeLessThan((eventData?.after.modification as Date).getTime());
+              expect(eventData?.before.size as number).toBeLessThan(
+                eventData?.after.size as number
+              );
+            }
+
+            // Tear Down
+
+            sut.stop();
+
+            resolve();
+          }, intervalToWaitFor * 2);
         });
+      });
+      test('não deve disparar se o arquivo for criado', async () => {
+        return new Promise<void>(resolve => {
+          // Arrange, Given
 
-        fs.appendFileSync(file, Math.random().toString());
+          const intervalToWaitFor = 5;
+          const file = `test-file-${Math.random()}.txt`;
 
-        setTimeout(() => {
-          // Assert, Then
+          const sut = new FileSystemMonitoring(file, intervalToWaitFor);
 
-          expect(eventReceived).toBeDefined();
+          let eventReceived = false;
 
-          if (eventReceived) {
-            const result = eventReceived[0];
-            const eventData = eventReceived[1];
+          // Act, When
 
-            expect(result).toBe(true);
-            expect(eventData).toBeDefined();
-            expect(eventData?.before.modification).toBeDefined();
-            expect(eventData?.after.modification).toBeDefined();
-            expect(eventData?.before.size).toBeDefined();
-            expect(eventData?.after.size).toBeDefined();
-            expect(
-              (eventData?.before.modification as Date).getTime()
-            ).toBeLessThan((eventData?.after.modification as Date).getTime());
-            expect(eventData?.before.size as number).toBeLessThan(
-              eventData?.after.size as number
-            );
-          }
+          sut.onModified.add(() => {
+            eventReceived = true;
+          });
+          fs.writeFileSync(file, Math.random().toString());
 
-          // Tear Down
+          setTimeout(() => {
+            // Assert, Then
 
-          sut.stop();
+            expect(eventReceived).toBe(false);
 
-          resolve();
-        }, intervalToWaitFor * 2);
+            // Tear Down
+
+            sut.stop();
+
+            resolve();
+          }, intervalToWaitFor * 2);
+        });
+      });
+      test('não deve disparar se o arquivo for excluído', async () => {
+        return new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const intervalToWaitFor = 5;
+          const file = `test-file-${Math.random()}.txt`;
+          fs.writeFileSync(file, Math.random().toString());
+
+          const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+          let eventReceived = false;
+
+          // Act, When
+
+          sut.onModified.add(() => {
+            eventReceived = true;
+          });
+          fs.unlinkSync(file);
+
+          setTimeout(() => {
+            // Assert, Then
+
+            expect(eventReceived).toBe(false);
+
+            // Tear Down
+
+            sut.stop();
+
+            resolve();
+          }, intervalToWaitFor * 2);
+        });
       });
     });
   });

@@ -50,7 +50,6 @@ describe('Classe FileSystemFields', () => {
         const path = `test-${Math.random()}`;
 
         for (let i = 0; i < loopCount; i++) {
-
           setTimeout(() => fs.writeFileSync(path, Math.random().toString()), 1);
 
           // Act, When
