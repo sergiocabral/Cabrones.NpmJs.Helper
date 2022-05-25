@@ -237,11 +237,11 @@ describe('Classe FileSystemFields', () => {
         test('não deve existir', () => {
           // Arrange, Given
 
-          const fileExists = 'not-exists';
+          const file = 'not-exists';
 
           // Act, When
 
-          const sut = new FileSystemFields(fileExists);
+          const sut = new FileSystemFields(file);
 
           // Assert, Then
 
@@ -252,11 +252,11 @@ describe('Classe FileSystemFields', () => {
         test('arquivo não existe', () => {
           // Arrange, Given
 
-          const fileExists = 'not-exists';
+          const file = 'not-exists';
 
           // Act, When
 
-          const sut = new FileSystemFields(fileExists);
+          const sut = new FileSystemFields(file);
 
           // Assert, Then
 
@@ -267,7 +267,7 @@ describe('Classe FileSystemFields', () => {
 
           const file = `test-${Math.random()}`;
           const fileContent = ''.padStart(
-            Math.random() * 10,
+            Math.random() * 100,
             Math.random().toString()
           );
           fs.writeFileSync(file, fileContent);
@@ -287,11 +287,11 @@ describe('Classe FileSystemFields', () => {
         test('arquivo não existe', () => {
           // Arrange, Given
 
-          const fileExists = 'not-exists';
+          const file = 'not-exists';
 
           // Act, When
 
-          const sut = new FileSystemFields(fileExists);
+          const sut = new FileSystemFields(file);
 
           // Assert, Then
 
@@ -325,11 +325,11 @@ describe('Classe FileSystemFields', () => {
         test('arquivo não existe', () => {
           // Arrange, Given
 
-          const fileExists = 'not-exists';
+          const file = 'not-exists';
 
           // Act, When
 
-          const sut = new FileSystemFields(fileExists);
+          const sut = new FileSystemFields(file);
 
           // Assert, Then
 
@@ -370,11 +370,11 @@ describe('Classe FileSystemFields', () => {
         test('arquivo não existe', () => {
           // Arrange, Given
 
-          const fileExists = 'not-exists';
+          const file = 'not-exists';
 
           // Act, When
 
-          const sut = new FileSystemFields(fileExists);
+          const sut = new FileSystemFields(file);
 
           // Assert, Then
 
@@ -417,6 +417,68 @@ describe('Classe FileSystemFields', () => {
               }, 1);
             }, 1);
           });
+        });
+      });
+      describe('realpath', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const file = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          expect(sut.realpath).toBeUndefined();
+        });
+        test('arquivo existe', () => {
+          // Arrange, Given
+
+          const file = `test-${Math.random()}`;
+          fs.writeFileSync(file, Math.random().toString());
+          const expectedRealpath = fs.realpathSync(file);
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          expect(sut.realpath).toBeDefined();
+          expect(sut.realpath).toBe(expectedRealpath);
+        });
+      });
+      describe('path', () => {
+        test('arquivo não existe', () => {
+          // Arrange, Given
+
+          const file = 'not-exists';
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          expect(sut.path).toBeDefined();
+          expect(sut.path).toBe(file);
+        });
+        test('arquivo existe', () => {
+          // Arrange, Given
+
+          const file = `test-${Math.random()}`;
+          fs.writeFileSync(file, Math.random().toString());
+
+          // Act, When
+
+          const sut = new FileSystemFields(file);
+
+          // Assert, Then
+
+          expect(sut.path).toBeDefined();
+          expect(sut.path).toBe(file);
         });
       });
     });

@@ -14,6 +14,7 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
     if (path !== undefined) {
       this.exists = fs.existsSync(path);
       if (this.exists) {
+        this.realpath = fs.realpathSync(path);
         const stats = fs.statSync(path);
         this.size = stats.size;
         this.creation = stats.birthtime;
@@ -27,6 +28,11 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
    * Sinaliza existência.
    */
   public readonly exists: boolean | undefined = undefined;
+
+  /**
+   * Caminho real do arquivo.
+   */
+  public readonly realpath: string | undefined = undefined;
 
   /**
    * Tamanho do arquivo.

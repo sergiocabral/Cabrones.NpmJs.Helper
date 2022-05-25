@@ -3,9 +3,19 @@
  */
 export interface IFileSystemFields {
   /**
+   * Caminho informado.
+   */
+  path: string;
+
+  /**
    * Sinaliza existência.
    */
   exists: boolean;
+
+  /**
+   * Caminho real do arquivo.
+   */
+  realpath: string;
 
   /**
    * Tamanho do arquivo.
