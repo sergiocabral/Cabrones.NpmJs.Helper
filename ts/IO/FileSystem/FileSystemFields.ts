@@ -12,9 +12,9 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
    */
   public constructor(public readonly path?: string) {
     if (path !== undefined) {
-      let hasError = false;
+      let ioError: unknown;
       do {
-        hasError = false;
+        ioError = undefined;
         try {
           this.exists = fs.existsSync(path);
           if (this.exists) {
@@ -32,10 +32,11 @@ export class FileSystemFields implements Partial<IFileSystemFields> {
               this.accessed =
                 undefined;
           }
-        } catch (e) {
-          hasError = true;
+        } catch (error) {
+          // TODO: Sem cobertura, mas foi necessário por dar erro em projetos externos. Tentativa de covertura pelo teste "durante a criação é tolerante a falhas de ENOENT", mas não deu certo.
+          ioError = error;
         }
-      } while (hasError);
+      } while (ioError !== undefined);
     }
   }
 

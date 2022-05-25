@@ -42,6 +42,30 @@ describe('Classe FileSystemFields', () => {
 
       expect(sut.path).toBe(path);
     });
+    test('durante a criação é tolerante a falhas de ENOENT', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const loopCount = 100;
+        const path = `test-${Math.random()}`;
+
+        for (let i = 0; i < loopCount; i++) {
+
+          setTimeout(() => fs.writeFileSync(path, Math.random().toString()), 1);
+
+          // Act, When
+
+          setTimeout(() => fs.unlinkSync(path), 1);
+          const create = () => new FileSystemFields(path);
+
+          // Assert, Then
+
+          expect(create).not.toThrowError();
+        }
+
+        setTimeout(() => resolve(), loopCount * 2);
+      });
+    });
   });
   describe('isEquals', () => {
     test('isEquals deve chamar diff', () => {
@@ -362,7 +386,7 @@ describe('Classe FileSystemFields', () => {
               );
 
               resolve();
-            }, 1);
+            }, 5);
           });
         });
       });
