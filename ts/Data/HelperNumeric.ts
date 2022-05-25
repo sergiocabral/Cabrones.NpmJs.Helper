@@ -109,7 +109,7 @@ export class HelperNumeric {
       numbers2: number[],
       side: 'left' | 'right'
     ): void => {
-      const digits = HelperNumeric.max([numbers1.length, numbers2.length]);
+      const digits = HelperNumeric.max(numbers1.length, numbers2.length);
       paddingZero(numbers1, digits, side);
       paddingZero(numbers2, digits, side);
     };
@@ -225,7 +225,7 @@ export class HelperNumeric {
    * Retorna o maior número de uma lista.
    * @param numbers
    */
-  public static max(numbers: number[]): number {
+  public static max(...numbers: number[]): number {
     return HelperNumeric.minOrMax(numbers, 'max');
   }
 
@@ -233,7 +233,7 @@ export class HelperNumeric {
    * Retorna o maior número de uma lista.
    * @param numbers
    */
-  public static min(numbers: number[]): number {
+  public static min(...numbers: number[]): number {
     return HelperNumeric.minOrMax(numbers, 'min');
   }
 

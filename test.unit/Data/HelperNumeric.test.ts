@@ -265,7 +265,7 @@ describe('Classe HelperNumeric', () => {
 
       // Act, When
 
-      const greater = HelperNumeric.max(list);
+      const greater = HelperNumeric.max(...list);
 
       // Assert, Then
 
@@ -275,7 +275,7 @@ describe('Classe HelperNumeric', () => {
       // Arrange, Given
       // Act, When
 
-      const execute = () => HelperNumeric.max([]);
+      const execute = () => HelperNumeric.max();
 
       // Assert, Then
 
@@ -297,7 +297,7 @@ describe('Classe HelperNumeric', () => {
 
       // Act, When
 
-      const less = HelperNumeric.min(list);
+      const less = HelperNumeric.min(...list);
 
       // Assert, Then
 
@@ -307,7 +307,7 @@ describe('Classe HelperNumeric', () => {
       // Arrange, Given
       // Act, When
 
-      const execute = () => HelperNumeric.min([]);
+      const execute = () => HelperNumeric.min();
 
       // Assert, Then
 
