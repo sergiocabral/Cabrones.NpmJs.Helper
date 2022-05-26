@@ -1,5 +1,4 @@
-import { HelperFileSystem, LogWriter } from '../../ts';
-import { LogWriterToFile } from '../../ts/Log/LogWriterToFile';
+import { HelperFileSystem, LogWriter, LogWriterToFile } from '../../ts';
 import fs from 'fs';
 
 describe('Class LogWriterToFile', () => {
@@ -106,28 +105,36 @@ describe('Class LogWriterToFile', () => {
       consoleErrorMessage.startsWith('Error writing log message to file: ')
     ).toBe(true);
   });
-  test('deve ser possível trocar o nome do arquivo depois de instanciado', () => {
-    // Arrange, Given
+  test('deve ser possível trocar o nome do arquivo depois de instanciado', async () => {
+    return new Promise<void>(resolve => {
+      // Arrange, Given
 
-    const message1 = Math.random().toString();
-    const filename1 = `test-${message1}.log`;
+      const message1 = Math.random().toString();
+      const filename1 = `test-${message1}.log`;
 
-    const message2 = Math.random().toString();
-    const filename2 = `test-${message2}.log`;
+      const message2 = Math.random().toString();
+      const filename2 = `test-${message2}.log`;
 
-    // Act, When
+      // Act, When
 
-    const sut = new LogWriterToFile(filename1);
-    sut.post(message1);
-    sut.file = filename2;
-    sut.post(message2);
+      const sut = new LogWriterToFile(filename1);
+      sut.post(message1);
+      sut.file = filename2;
+      setImmediate(() => {
+        sut.post(message2);
 
-    // Assert, Then
+        // Assert, Then
 
-    expect(fs.existsSync(filename1)).toBe(true);
-    expect(fs.existsSync(filename2)).toBe(true);
-    expect(fs.readFileSync(filename1).toString()).toContain(message1);
-    expect(fs.readFileSync(filename2).toString()).toContain(message2);
+        expect(fs.existsSync(filename1)).toBe(true);
+        expect(fs.existsSync(filename2)).toBe(true);
+        expect(fs.readFileSync(filename1).toString()).toContain(message1);
+        expect(fs.readFileSync(filename2).toString()).toContain(message2);
+
+        // Tear Down
+
+        resolve();
+      });
+    });
   });
   test('informar o arquivo não é obrigatório pois é determinado com base na data', () => {
     // Arrange, Given

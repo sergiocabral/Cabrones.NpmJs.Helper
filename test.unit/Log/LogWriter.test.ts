@@ -1,15 +1,17 @@
-import { HelperText, ILogMessage, LogLevel, LogWriter } from '../../ts';
+import {
+  HelperText,
+  ILogMessage,
+  ILogMessageAndData,
+  LogLevel,
+  LogWriter
+} from '../../ts';
 
 class LogWriterToTest extends LogWriter {
   public customFactoryMessage?: (message: ILogMessage) => string;
   public mockWrite = jest.fn();
-  protected write(
-    message: ILogMessage,
-    messageTemplate: string,
-    values?: unknown
-  ): void {
-    super.factoryMessage(message);
-    this.mockWrite(message, messageTemplate, values);
+  protected write(messageAndData: ILogMessageAndData): void {
+    super.factoryMessage(messageAndData.logMessage);
+    this.mockWrite(messageAndData);
   }
 }
 
@@ -245,7 +247,10 @@ describe('Class LogWriter', () => {
         // Assert, Then
 
         expect(sut.mockWrite.mock.calls.length).toBe(1);
-        expect(sut.mockWrite.mock.calls[0][0]).not.toBe(defaultLogLevel);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .level
+        ).toBe(defaultLogLevel);
       });
       test('Só escreve se o level for maior igual que minimumLevel', () => {
         // Arrange, Given
@@ -264,10 +269,22 @@ describe('Class LogWriter', () => {
         // Assert, Then
 
         expect(sut.mockWrite.mock.calls.length).toBe(2);
-        expect(sut.mockWrite.mock.calls[0][0]).not.toBe(belowMinimumLevel);
-        expect(sut.mockWrite.mock.calls[1][0]).not.toBe(belowMinimumLevel);
-        expect(sut.mockWrite.mock.calls[0][0].level).toBe(minimumLevel);
-        expect(sut.mockWrite.mock.calls[1][0].level).toBe(aboveMinimumLevel);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .level
+        ).not.toBe(belowMinimumLevel);
+        expect(
+          (sut.mockWrite.mock.calls[1][0] as ILogMessageAndData).logMessage
+            .level
+        ).not.toBe(belowMinimumLevel);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .level
+        ).toBe(minimumLevel);
+        expect(
+          (sut.mockWrite.mock.calls[1][0] as ILogMessageAndData).logMessage
+            .level
+        ).toBe(aboveMinimumLevel);
       });
       test('messageTemplate deve aceitar string ou função que retorna string', () => {
         // Arrange, Given
@@ -283,8 +300,14 @@ describe('Class LogWriter', () => {
         // Assert, Then
 
         expect(sut.mockWrite.mock.calls.length).toBe(2);
-        expect(sut.mockWrite.mock.calls[0][0].message).toBe(expectedText);
-        expect(sut.mockWrite.mock.calls[1][0].message).toBe(expectedText);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .message
+        ).toBe(expectedText);
+        expect(
+          (sut.mockWrite.mock.calls[1][0] as ILogMessageAndData).logMessage
+            .message
+        ).toBe(expectedText);
       });
       test('values deve aceitar valores ou função que retorna valores', () => {
         // Arrange, Given
@@ -332,7 +355,10 @@ describe('Class LogWriter', () => {
         expect(mockQuerystring.mock.calls[0][1]).toBe(values);
 
         expect(sut.mockWrite.mock.calls.length).toBe(1);
-        expect(sut.mockWrite.mock.calls[0][0].message).toBe(expectedMessage);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .message
+        ).toBe(expectedMessage);
       });
       test('Deve atribuir a data atual para a mensagem de log', () => {
         // Arrange, Given
@@ -347,7 +373,8 @@ describe('Class LogWriter', () => {
 
         expect(sut.mockWrite.mock.calls.length).toBe(1);
 
-        const timestamp = sut.mockWrite.mock.calls[0][0].timestamp as Date;
+        const timestamp = (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData)
+          .logMessage.timestamp as Date;
         const intervalSinceLastCall =
           new Date().getTime() - timestamp.getTime();
         const oneSecond = 1000;
@@ -371,7 +398,10 @@ describe('Class LogWriter', () => {
 
         // Assert, Then
 
-        expect(sut.mockWrite.mock.calls[0][0].timestamp).toBe(timestamp);
+        expect(
+          (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+            .timestamp
+        ).toBe(timestamp);
       });
     });
     test('Após postar deve enviar para escrita do log um ILogMessage', () => {
@@ -390,7 +420,8 @@ describe('Class LogWriter', () => {
 
       // Assert, Then
 
-      const logMessage = sut.mockWrite.mock.calls[0][0] as ILogMessage;
+      const logMessage = (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData)
+        .logMessage;
       expect(logMessage.timestamp.toDateString()).toBe(expectedDateAsText);
       expect(logMessage.message).toBe(expectedMessage);
       expect(logMessage.level).toBe(expectedLevel);
@@ -414,9 +445,16 @@ describe('Class LogWriter', () => {
 
       // Assert, Then
 
-      expect(sut.mockWrite.mock.calls[0][0].message).toBe(expectedMessage);
-      expect(sut.mockWrite.mock.calls[0][1]).toBe(inputMessageTemplate);
-      expect(sut.mockWrite.mock.calls[0][2]).toBe(inputValues);
+      expect(
+        (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).logMessage
+          .message
+      ).toBe(expectedMessage);
+      expect(
+        (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).messageTemplate
+      ).toBe(inputMessageTemplate);
+      expect(
+        (sut.mockWrite.mock.calls[0][0] as ILogMessageAndData).values
+      ).toBe(inputValues);
     });
   });
 

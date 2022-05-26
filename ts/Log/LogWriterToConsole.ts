@@ -1,6 +1,6 @@
-import { ILogMessage } from './ILogMessage';
 import { LogLevel } from './LogLevel';
 import { LogWriter } from './LogWriter';
+import { ILogMessageAndData } from './ILogMessageAndData';
 
 /**
  * Escritor de log para o console.
@@ -30,14 +30,12 @@ export class LogWriterToConsole extends LogWriter {
 
   /**
    * Escreve o log de fato.
-   * @param message
-   * @protected
    */
-  protected override write(message: ILogMessage): void {
-    const text = this.factoryMessage(message);
+  protected override write(messageAndData: ILogMessageAndData): void {
+    const text = this.factoryMessage(messageAndData.logMessage);
 
     let log;
-    switch (message.level) {
+    switch (messageAndData.logMessage.level) {
       case LogLevel.Debug:
         log = LogWriterToConsole.getConsoleFunction('log');
         break;

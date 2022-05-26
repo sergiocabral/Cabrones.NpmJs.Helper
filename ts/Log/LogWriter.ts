@@ -3,6 +3,7 @@ import { HelperText } from '../Data/HelperText';
 import { ILogMessage } from './ILogMessage';
 import { ILogWriter } from './ILogWriter';
 import { LogLevel } from './LogLevel';
+import { ILogMessageAndData } from './ILogMessageAndData';
 
 /**
  * Implementação básica para escritores de log.
@@ -112,7 +113,7 @@ export abstract class LogWriter implements ILogWriter {
     const message = HelperText.querystring(messageTemplate, values);
     timestamp = timestamp ?? new Date();
     const logMessage: ILogMessage = { message, timestamp, level, section };
-    this.write(logMessage, messageTemplate, values);
+    this.write({ logMessage, messageTemplate, values });
   }
 
   /**
@@ -152,14 +153,6 @@ export abstract class LogWriter implements ILogWriter {
 
   /**
    * Escreve o log de fato.
-   * @param message
-   * @param messageTemplate
-   * @param values
-   * @protected
    */
-  protected abstract write(
-    message: ILogMessage,
-    messageTemplate: string,
-    values?: unknown
-  ): void;
+  protected abstract write(messageAndData: ILogMessageAndData): void;
 }

@@ -72,7 +72,7 @@ describe('Classe WordGenerator', () => {
 
     const sut = new WordGenerator();
 
-    const syllablesCount = Math.floor(Math.random() * 100);
+    const syllablesCount = Math.floor(Math.random() * 1000);
 
     const acceptablePercentDeviation = 0.5;
 

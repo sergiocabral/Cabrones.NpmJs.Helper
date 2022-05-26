@@ -29,13 +29,19 @@ import { INumericFormat } from './Data/INumericFormat';
 import { NumericFormat } from './Data/NumericFormat';
 import { WordGenerator } from './Data/WordGenerator';
 import { ILogMessage } from './Log/ILogMessage';
+import { ILogMessageAndData } from './Log/ILogMessageAndData';
 import { ILogWriter } from './Log/ILogWriter';
 import { Logger } from './Log/Logger';
 import { LogLevel } from './Log/LogLevel';
 import { LogWriter } from './Log/LogWriter';
 import { LogWriterToConsole } from './Log/LogWriterToConsole';
+import { LogWriterToFile } from './Log/LogWriterToFile';
+import { LogWriterToPersistent } from './Log/LogWriterToPersistent';
 import { KeyValue } from './Type/Data/KeyValue';
 import { ResultEvent } from './Type/Event/ResultEvent';
+import { ConnectionState } from './Type/Connection/ConnectionState';
+import { IConnection } from './Type/Connection/IConnection';
+import { IConnectionState } from './Type/Connection/IConnectionState';
 import { FilterType } from './Type/Data/FilterType';
 import { FiltersType } from './Type/Data/FiltersType';
 import { PrimitiveEmptyType } from './Type/Native/PrimitiveEmptyType';
@@ -93,14 +99,20 @@ export {
   NumericFormat,
   WordGenerator,
   ILogMessage,
+  ILogMessageAndData,
   ILogWriter,
   Logger,
   LogLevel,
   LogWriter,
   LogWriterToConsole,
+  LogWriterToFile,
+  LogWriterToPersistent,
   KeyValue,
   ResultEvent,
   FilterType,
+  ConnectionState,
+  IConnection,
+  IConnectionState,
   FiltersType,
   PrimitiveValueType,
   PrimitiveValueTypeName,
