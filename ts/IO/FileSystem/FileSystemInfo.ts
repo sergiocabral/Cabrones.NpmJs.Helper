@@ -4,7 +4,7 @@ import { HelperFileSystem } from './HelperFileSystem';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
 import { Stats } from 'fs';
-import { FiltersType } from '../../Type/FiltersType';
+import { FiltersType } from '../../Type/Data/FiltersType';
 import { HelperText } from '../../Data/HelperText';
 
 /**

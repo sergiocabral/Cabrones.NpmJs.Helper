@@ -1,5 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { FiltersType } from '../Type/FiltersType';
+import { FiltersType } from '../Type/Data/FiltersType';
 
 /**
  * Utilitários para texto (string).

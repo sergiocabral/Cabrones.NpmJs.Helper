@@ -1,5 +1,5 @@
 import { InvalidArgumentError } from '../../Error/InvalidArgumentError';
-import { ResultEvent } from '../../Type/ResultEvent';
+import { ResultEvent } from '../../Type/Event/ResultEvent';
 import { IFileSystemFields } from './IFileSystemFields';
 import { FileSystemFields } from './FileSystemFields';
 import { IFileSystemMonitoringEventData } from './IFileSystemMonitoringEventData';

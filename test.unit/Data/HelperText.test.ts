@@ -1,5 +1,4 @@
-import { HelperText, InvalidExecutionError } from '../../ts';
-import { FiltersType } from '../../ts/Type/FiltersType';
+import { HelperText, InvalidExecutionError, FiltersType } from '../../ts';
 
 describe('Classe HelperText', () => {
   test('Não deve permitir instanciar', () => {

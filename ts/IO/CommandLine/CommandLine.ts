@@ -1,7 +1,7 @@
 import { CommandLineArgument } from './CommandLineArgument';
 import { CommandLineConfiguration } from './CommandLineConfiguration';
 import { ICommandLineConfiguration } from './ICommandLineConfiguration';
-import { FilterType } from '../../Type/FilterType';
+import { FilterType } from '../../Type/Data/FilterType';
 import { HelperText } from '../../Data/HelperText';
 import { HelperList } from '../../Data/HelperList';
 

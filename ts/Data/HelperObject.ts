@@ -1,5 +1,5 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
-import { ResultEvent } from '../Type/ResultEvent';
+import { ResultEvent } from '../Type/Event/ResultEvent';
 
 /**
  * Utilitários para objetos, classes, etc.

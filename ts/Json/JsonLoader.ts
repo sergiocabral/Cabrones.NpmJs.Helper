@@ -1,6 +1,6 @@
 import { NotImplementedError } from '../Error/NotImplementedError';
 import { HelperObject } from '../Data/HelperObject';
-import { PrimitiveValueTypeName } from '../Type/PrimitiveValueTypeName';
+import { PrimitiveValueTypeName } from '../Type/Native/PrimitiveValueTypeName';
 import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';

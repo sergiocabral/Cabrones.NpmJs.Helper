@@ -1,7 +1,7 @@
 import { InvalidExecutionError } from '../../Error/InvalidExecutionError';
 import fs from 'fs';
 import { IPackageJson } from './IPackageJson';
-import { KeyValue } from '../../Type/KeyValue';
+import { KeyValue } from '../../Type/Data/KeyValue';
 import { HelperFileSystem } from '../FileSystem/HelperFileSystem';
 import path from 'path';
 

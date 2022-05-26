@@ -3,7 +3,7 @@ import { InvalidArgumentError } from '../../Error/InvalidArgumentError';
 import { HelperText } from '../../Data/HelperText';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { FiltersType } from '../../Type/FiltersType';
+import { FiltersType } from '../../Type/Data/FiltersType';
 import { Stats } from 'fs';
 
 /**
