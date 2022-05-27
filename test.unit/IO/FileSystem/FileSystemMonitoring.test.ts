@@ -621,7 +621,7 @@ describe('Classe FileSystemMonitoring', () => {
       });
     });
     describe('onModified', () => {
-      test('ao modificar arquivo deve disparar o evento', async () => {
+      test('se tamanho mudar deve disparar o evento', async () => {
         return new Promise<void>(resolve => {
           // Arrange, Given
 
@@ -666,6 +666,58 @@ describe('Classe FileSystemMonitoring', () => {
                 expect(eventData?.before.size as number).toBeLessThan(
                   eventData?.after.size as number
                 );
+              }
+
+              // Tear Down
+
+              sut.stop();
+
+              resolve();
+            }, intervalToWaitFor * 5);
+          }, intervalToWaitFor * 5);
+        });
+      });
+      test('se mudar a data de modificação deve disparar o evento', async () => {
+        return new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const intervalToWaitFor = 5;
+          const fileContent = Math.random().toString();
+          const file = `test-file-${Math.random()}.txt`;
+          fs.writeFileSync(file, fileContent);
+
+          const sut = new FileSystemMonitoring(file, intervalToWaitFor);
+
+          let eventReceived:
+            | undefined
+            | [boolean, IFileSystemMonitoringEventData | undefined];
+
+          // Act, When
+
+          sut.onModified.add((result, data) => {
+            eventReceived = [result, data];
+          });
+
+          setTimeout(() => {
+
+            fs.writeFileSync(file, fileContent);
+
+            setTimeout(() => {
+              // Assert, Then
+
+              expect(eventReceived).toBeDefined();
+
+              if (eventReceived) {
+                const result = eventReceived[0];
+                const eventData = eventReceived[1];
+
+                expect(result).toBe(true);
+                expect(eventData).toBeDefined();
+                expect(eventData?.before.modification).toBeDefined();
+                expect(eventData?.after.modification).toBeDefined();
+                expect(
+                  (eventData?.before.modification as Date).getTime()
+                ).toBeLessThan((eventData?.after.modification as Date).getTime());
               }
 
               // Tear Down
