@@ -437,8 +437,8 @@ describe('Classe FileSystemFields', () => {
                 );
 
                 resolve();
-              }, 1);
-            }, 1);
+              }, 100);
+            }, 100);
           });
         });
       });
