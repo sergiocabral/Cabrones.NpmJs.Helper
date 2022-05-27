@@ -642,7 +642,6 @@ describe('Classe FileSystemMonitoring', () => {
           });
 
           setTimeout(() => {
-
             fs.appendFileSync(file, Math.random().toString());
 
             setTimeout(() => {
@@ -662,7 +661,9 @@ describe('Classe FileSystemMonitoring', () => {
                 expect(eventData?.after.size).toBeDefined();
                 expect(
                   (eventData?.before.modification as Date).getTime()
-                ).toBeLessThan((eventData?.after.modification as Date).getTime());
+                ).toBeLessThan(
+                  (eventData?.after.modification as Date).getTime()
+                );
                 expect(eventData?.before.size as number).toBeLessThan(
                   eventData?.after.size as number
                 );
@@ -699,7 +700,6 @@ describe('Classe FileSystemMonitoring', () => {
           });
 
           setTimeout(() => {
-
             fs.writeFileSync(file, fileContent);
 
             setTimeout(() => {
@@ -717,7 +717,9 @@ describe('Classe FileSystemMonitoring', () => {
                 expect(eventData?.after.modification).toBeDefined();
                 expect(
                   (eventData?.before.modification as Date).getTime()
-                ).toBeLessThan((eventData?.after.modification as Date).getTime());
+                ).toBeLessThan(
+                  (eventData?.after.modification as Date).getTime()
+                );
               }
 
               // Tear Down
