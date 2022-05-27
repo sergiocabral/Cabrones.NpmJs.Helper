@@ -12,8 +12,6 @@ import { ConnectionState } from '../Type/Connection/ConnectionState';
  * Escritor de log para o arquivo.
  */
 export class LogWriterToFile extends LogWriterToPersistent {
-  // TODO: Verificar cobertura desta classe porque foi rebaseada de `LogWriter` para `LogWriterToPersistent`
-
   /**
    * Espera padrão em milissegundos em caso de erro
    */
@@ -32,11 +30,13 @@ export class LogWriterToFile extends LogWriterToPersistent {
    * @param file Nome do arquivo ou construtor do nome de forma dinâmica.
    * @param minimumLevel Nível mínimo de log para aceitar escrita do log recebido.
    * @param defaultLogLevel Nível padrão de log quando não informado
+   * @param waitInMillisecondsOnError Espera em milissegundos em caso de erro.
    */
   public constructor(
     file?: string | (() => string),
     minimumLevel: LogLevel = LogWriter.minimumLevel,
-    defaultLogLevel: LogLevel = LogWriter.defaultLogLevel
+    defaultLogLevel: LogLevel = LogWriter.defaultLogLevel,
+    waitInMillisecondsOnError = LogWriterToFile.waitInMillisecondsOnError
   ) {
     super(
       { state: ConnectionState.Ready },
@@ -44,7 +44,7 @@ export class LogWriterToFile extends LogWriterToPersistent {
         this.saveToPersistence(messageAndData),
       minimumLevel,
       defaultLogLevel,
-      LogWriterToFile.waitInMillisecondsOnError
+      waitInMillisecondsOnError
     );
 
     this.file =

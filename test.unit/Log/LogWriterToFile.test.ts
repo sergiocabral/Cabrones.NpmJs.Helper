@@ -1,4 +1,9 @@
-import { HelperFileSystem, LogWriter, LogWriterToFile } from '../../ts';
+import {
+  HelperFileSystem,
+  LogWriter,
+  LogWriterToFile,
+  LogWriterToPersistent
+} from '../../ts';
 import fs from 'fs';
 
 describe('Class LogWriterToFile', () => {
@@ -6,6 +11,10 @@ describe('Class LogWriterToFile', () => {
 
   beforeEach(() => {
     originals['LogWriter.factoryMessage'] = LogWriter.factoryMessage;
+    originals['LogWriterToFile.waitInMillisecondsOnError'] =
+      LogWriterToFile.waitInMillisecondsOnError;
+    originals['LogWriterToPersistent.waitInMillisecondsOnError'] =
+      LogWriterToPersistent.waitInMillisecondsOnError;
     originals['LogWriterToFile.defaultFileNameByDate'] =
       LogWriterToFile.defaultFileNameByDate;
     originals['console.debug'] = console.debug;
@@ -17,6 +26,10 @@ describe('Class LogWriterToFile', () => {
 
   afterEach(() => {
     LogWriter.factoryMessage = originals['LogWriter.factoryMessage'];
+    LogWriterToFile.waitInMillisecondsOnError =
+      originals['LogWriterToFile.waitInMillisecondsOnError'];
+    LogWriterToPersistent.waitInMillisecondsOnError =
+      originals['LogWriterToPersistent.waitInMillisecondsOnError'];
     LogWriterToFile.defaultFileNameByDate =
       originals['LogWriterToFile.defaultFileNameByDate'];
     console.debug = originals['console.debug'];
@@ -195,5 +208,54 @@ describe('Class LogWriterToFile', () => {
     // Assert, Then
 
     expect(receivedFilename).toBe(expectedFilename);
+  });
+  describe('waitInMillisecondsOnError', () => {
+    test('o valor estático padrão deve vir de LogWriterToPersistent', () => {
+      // Arrange, Given
+
+      const expectedValue = LogWriterToPersistent.waitInMillisecondsOnError;
+
+      // Act, When
+
+      const receivedValue = LogWriterToFile.waitInMillisecondsOnError;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('o valor estático é usado como padrão se não informado', () => {
+      // Arrange, Given
+
+      const randomValue = Math.floor(Math.random() * 1000);
+      LogWriterToFile.waitInMillisecondsOnError = randomValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile();
+
+      // Assert, Then
+
+      expect(sut.waitInMillisecondsOnError).toBe(randomValue);
+    });
+    test('deve poder especificar seu valor', () => {
+      // Arrange, Given
+
+      const staticValue = Math.floor(Math.random() * 1000);
+      const instanceValue = Math.floor(Math.random() * 1000);
+      LogWriterToFile.waitInMillisecondsOnError = staticValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile(
+        undefined,
+        LogWriter.minimumLevel,
+        LogWriter.defaultLogLevel,
+        instanceValue
+      );
+
+      // Assert, Then
+
+      expect(sut.waitInMillisecondsOnError).toBe(instanceValue);
+    });
   });
 });
