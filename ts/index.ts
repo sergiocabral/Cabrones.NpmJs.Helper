@@ -1,3 +1,5 @@
+// TODO: Os testes precisam passar no inx tbém, ou será quenão!?
+
 import sha256 from './3rdParty/sha256';
 
 import { DispatchedMessage } from './Bus/DispatchedMessage';

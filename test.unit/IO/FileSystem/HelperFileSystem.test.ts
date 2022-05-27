@@ -73,6 +73,112 @@ describe('Classe HelperFileSystem', () => {
       expect(stats).toBeUndefined();
     });
   });
+  describe('joinPath()', () => {
+    test('juntar partes de path', () => {
+      // Arrange, Given
+
+      const parts = [ "part1", "part2", "part3" ];
+      const expectedPath = `${parts[0]}${pathNode.sep}${parts[1]}${pathNode.sep}${parts[2]}`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(...parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('normaliza path com barras e barra invertida', () => {
+      // Arrange, Given
+
+      const parts = [ "part1/partA", "part2\\partB", "part3" ];
+      const s = pathNode.sep;
+      const expectedPath = `part1${s}partA${s}part2${s}partB${s}part3`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(...parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('normaliza path com barras multiplas', () => {
+      // Arrange, Given
+
+      const parts = [ "part1/////partA", "part2\\\\\\\\partB", "part3" ];
+      const s = pathNode.sep;
+      const expectedPath = `part1${s}partA${s}part2${s}partB${s}part3`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(...parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('começa apenas com uma barra se houver', () => {
+      // Arrange, Given
+
+      const parts = '////root////folder';
+      const s = pathNode.sep;
+      const expectedPath = `${s}root${s}folder`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('começa apenas com uma barra se houver ignorando espaçamento', () => {
+      // Arrange, Given
+
+      const parts = '   ////root////folder';
+      const s = pathNode.sep;
+      const expectedPath = `${s}root${s}folder`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('ignora espaçamentos vazios', () => {
+      // Arrange, Given
+
+      const parts = '   ////  ////white   space////other   space';
+      const s = pathNode.sep;
+      const expectedPath = `${s}white   space${s}other   space`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+    test('nunca termina com barra', () => {
+      // Arrange, Given
+
+      const parts = '\\\\root\\\\folder\\\\ \\\\   \\\\      \\\\';
+      const s = pathNode.sep;
+      const expectedPath = `${s}root${s}folder`;
+
+      // Act, When
+
+      const receivedPath = HelperFileSystem.joinPath(parts);
+
+      // Assert, Then
+
+      expect(receivedPath).toBe(expectedPath);
+    });
+  });
   describe('splitPath()', () => {
     test('Deve lançar erro se separadores não forem informados', () => {
       // Arrange, Given

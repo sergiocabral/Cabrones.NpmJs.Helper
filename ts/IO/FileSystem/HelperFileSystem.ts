@@ -18,6 +18,25 @@ export class HelperFileSystem {
   }
 
   /**
+   * Unifica partes de um path em um caminho completo com o separador do sistema operacional.
+   * @param parts Partes do caminho.
+   */
+  public static joinPath(...parts: string[]): string {
+    const path = parts
+      .map(part =>
+        HelperFileSystem.splitPath(part)
+          .filter(part => Boolean(part.trim()))
+          .join(pathNode.sep)
+      )
+      .filter(part => Boolean(part.trim()))
+      .join(pathNode.sep);
+    const isRoot =
+      parts.join(pathNode.sep).replace(/[\\/]/g, pathNode.sep).trim()[0] ===
+      pathNode.sep;
+    return isRoot ? pathNode.sep + path : path;
+  }
+
+  /**
    * Separa um caminho em suas partes.
    * @param path Caminho.
    * @param separators Separadores válidos. Por padrão barras: \ ou /
