@@ -671,7 +671,7 @@ describe('Classe FileSystemMonitoring', () => {
             sut.stop();
 
             resolve();
-          }, intervalToWaitFor * 2);
+          }, intervalToWaitFor * 5);
         });
       });
       test('não deve disparar se o arquivo for criado', async () => {
