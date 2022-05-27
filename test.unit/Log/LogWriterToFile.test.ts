@@ -92,7 +92,7 @@ describe('Class LogWriterToFile', () => {
       );
       console.error = mockConsoleError;
 
-      const invalidFileName = `test-${Math.random()}***.log`;
+      const invalidFileName = `test-${Math.random()}***${String.fromCharCode(0)}.log`;
       const sut = new LogWriterToFile(invalidFileName);
 
       // Act, When
