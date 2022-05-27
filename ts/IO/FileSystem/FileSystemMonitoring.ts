@@ -113,10 +113,7 @@ export class FileSystemMonitoring {
    */
   public stop(): void {
     this.isActiveValue = false;
-    if (this.lastTimeout !== undefined) {
-      clearTimeout(this.lastTimeout);
-      this.lastTimeout = undefined;
-    }
+    clearTimeout(this.lastTimeout);
   }
 
   /**
