@@ -99,6 +99,7 @@ export class FileSystemMonitoring {
 
     this.isActiveValue = true;
     const monitoring = (triggerEvent = true) => {
+      clearTimeout(this.lastTimeout);
       if (this.isActiveValue) {
         this.verify(triggerEvent);
         this.lastTimeout = setTimeout(monitoring, this.interval);
