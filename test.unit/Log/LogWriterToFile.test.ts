@@ -82,28 +82,36 @@ describe('Class LogWriterToFile', () => {
     expect(fileContent).toContain(message);
     expect(fileNameByFunction).toBeCalledTimes(1);
   });
-  test('Se ocorrer erro ao gravar deve postar como log de erro via console padrão', () => {
-    // Arrange, Given
+  test('Se ocorrer erro ao gravar deve postar como log de erro via console padrão', async () => {
+    return new Promise<void>(resolve => {
+      // Arrange, Given
 
-    let consoleErrorMessage = '';
-    const mockConsoleError = jest.fn(
-      message => (consoleErrorMessage = message)
-    );
-    console.error = mockConsoleError;
+      let consoleErrorMessage = '';
+      const mockConsoleError = jest.fn(
+        message => (consoleErrorMessage = message)
+      );
+      console.error = mockConsoleError;
 
-    const invalidFileName = `test-${Math.random()}***.log`;
-    const sut = new LogWriterToFile(invalidFileName);
+      const invalidFileName = `test-${Math.random()}***.log`;
+      const sut = new LogWriterToFile(invalidFileName);
 
-    // Act, When
+      // Act, When
 
-    sut.post(Math.random().toString());
+      sut.post(Math.random().toString());
 
-    // Assert, Then
+      setTimeout(() => {
+        // Assert, Then
 
-    expect(mockConsoleError).toBeCalledTimes(1);
-    expect(
-      consoleErrorMessage.startsWith('Error writing log message to file: ')
-    ).toBe(true);
+        expect(mockConsoleError).toBeCalledTimes(1);
+        expect(
+          consoleErrorMessage.startsWith('Error writing log message to file: ')
+        ).toBe(true);
+
+        // Tear Down
+
+        resolve();
+      }, 5);
+    });
   });
   test('deve ser possível trocar o nome do arquivo depois de instanciado', async () => {
     return new Promise<void>(resolve => {
