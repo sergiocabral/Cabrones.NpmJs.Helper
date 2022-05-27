@@ -641,36 +641,39 @@ describe('Classe FileSystemMonitoring', () => {
             eventReceived = [result, data];
           });
 
-          fs.appendFileSync(file, Math.random().toString());
-
           setTimeout(() => {
-            // Assert, Then
 
-            expect(eventReceived).toBeDefined();
+            fs.appendFileSync(file, Math.random().toString());
 
-            if (eventReceived) {
-              const result = eventReceived[0];
-              const eventData = eventReceived[1];
+            setTimeout(() => {
+              // Assert, Then
 
-              expect(result).toBe(true);
-              expect(eventData).toBeDefined();
-              expect(eventData?.before.modification).toBeDefined();
-              expect(eventData?.after.modification).toBeDefined();
-              expect(eventData?.before.size).toBeDefined();
-              expect(eventData?.after.size).toBeDefined();
-              expect(
-                (eventData?.before.modification as Date).getTime()
-              ).toBeLessThan((eventData?.after.modification as Date).getTime());
-              expect(eventData?.before.size as number).toBeLessThan(
-                eventData?.after.size as number
-              );
-            }
+              expect(eventReceived).toBeDefined();
 
-            // Tear Down
+              if (eventReceived) {
+                const result = eventReceived[0];
+                const eventData = eventReceived[1];
 
-            sut.stop();
+                expect(result).toBe(true);
+                expect(eventData).toBeDefined();
+                expect(eventData?.before.modification).toBeDefined();
+                expect(eventData?.after.modification).toBeDefined();
+                expect(eventData?.before.size).toBeDefined();
+                expect(eventData?.after.size).toBeDefined();
+                expect(
+                  (eventData?.before.modification as Date).getTime()
+                ).toBeLessThan((eventData?.after.modification as Date).getTime());
+                expect(eventData?.before.size as number).toBeLessThan(
+                  eventData?.after.size as number
+                );
+              }
 
-            resolve();
+              // Tear Down
+
+              sut.stop();
+
+              resolve();
+            }, intervalToWaitFor * 5);
           }, intervalToWaitFor * 5);
         });
       });
