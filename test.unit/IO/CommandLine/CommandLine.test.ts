@@ -1,5 +1,8 @@
-import { CommandLine, HelperText } from '../../../ts';
-import { ICommandLineConfiguration } from '../../../ts/IO/CommandLine/ICommandLineConfiguration';
+import {
+  CommandLine,
+  HelperText,
+  ICommandLineConfiguration
+} from '../../../ts';
 
 describe('CommandLine', () => {
   describe('Validações básicas', function () {

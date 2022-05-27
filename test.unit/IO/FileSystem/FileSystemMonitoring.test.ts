@@ -1,10 +1,10 @@
 import {
   FileSystemMonitoring,
   HelperFileSystem,
-  InvalidArgumentError
+  InvalidArgumentError,
+  IFileSystemMonitoringEventData
 } from '../../../ts';
 import fs from 'fs';
-import { IFileSystemMonitoringEventData } from '../../../ts/IO/FileSystem/IFileSystemMonitoringEventData';
 
 describe('Classe FileSystemMonitoring', () => {
   afterAll(async () => {

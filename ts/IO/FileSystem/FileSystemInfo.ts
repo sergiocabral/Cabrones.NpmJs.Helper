@@ -66,7 +66,7 @@ export class FileSystemInfo implements IFileSystemInfo {
       if (this.exists) {
         this.absolutePath = fs.realpathSync(path);
       } else {
-        const parts = pathNode.join(path).split(pathNode.sep);
+        const parts = HelperFileSystem.joinPath(path).split(pathNode.sep);
 
         this.absolutePath = parts
           .filter(item => Boolean(item))
@@ -79,7 +79,7 @@ export class FileSystemInfo implements IFileSystemInfo {
         if (rootUnix) {
           this.absolutePath = pathNode.sep + this.absolutePath;
         } else if (!rootWindows) {
-          this.absolutePath = pathNode.join(
+          this.absolutePath = HelperFileSystem.joinPath(
             fs.realpathSync('.'),
             this.absolutePath
           );
@@ -89,7 +89,7 @@ export class FileSystemInfo implements IFileSystemInfo {
 
     this.parent = undefined;
     if (configuration?.fillParent) {
-      const parentDirectory = pathNode.dirname(pathNode.join(path));
+      const parentDirectory = pathNode.dirname(HelperFileSystem.joinPath(path));
       if (
         parentDirectory !== '.' &&
         !regexWindowsRootDirectory.test(parentDirectory)
@@ -102,7 +102,7 @@ export class FileSystemInfo implements IFileSystemInfo {
     if (configuration?.fillChildren && lstat !== undefined) {
       const children = this.isDirectory ? fs.readdirSync(path) : [];
       for (const child of children) {
-        const childPath = pathNode.join(path, child);
+        const childPath = HelperFileSystem.joinPath(path, child);
 
         let stats: Stats | undefined;
         if (

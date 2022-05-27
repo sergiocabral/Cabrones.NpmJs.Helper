@@ -1,7 +1,11 @@
-import { FileSystemInfo, HelperFileSystem, HelperText } from '../../../ts';
+import {
+  FileSystemInfo,
+  HelperFileSystem,
+  HelperText,
+  IFindFileSystemInfoConfiguration
+} from '../../../ts';
 import * as fs from 'fs';
 import { default as pathNode } from 'path';
-import { IFindFileSystemInfoConfiguration } from '../../../ts/IO/FileSystem/IFindFileSystemInfoConfiguration';
 
 describe('Classe FileSystemInfo', () => {
   const originals: Record<string, any> = {};
@@ -292,7 +296,10 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `dir1/dir2/file`;
-      const expectedPath = pathNode.join(fs.realpathSync('.'), path);
+      const expectedPath = HelperFileSystem.joinPath(
+        fs.realpathSync('.'),
+        path
+      );
 
       // Act, When
 
@@ -311,7 +318,10 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `dir1//\\dir2/\\file`;
-      const expectedPath = pathNode.join(fs.realpathSync('.'), path);
+      const expectedPath = HelperFileSystem.joinPath(
+        fs.realpathSync('.'),
+        path
+      );
 
       // Act, When
 
@@ -349,7 +359,9 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `/dir1//\\dir2/\\file`;
-      const expectedPath = pathNode.join(path.replace(/[\\/]/g, pathNode.sep));
+      const expectedPath = HelperFileSystem.joinPath(
+        path.replace(/[\\/]/g, pathNode.sep)
+      );
 
       // Act, When
 
@@ -368,7 +380,9 @@ describe('Classe FileSystemInfo', () => {
       };
 
       const path = `w:/dir1//\\dir2/\\file`;
-      const expectedPath = pathNode.join(path.replace(/[\\/]/g, pathNode.sep));
+      const expectedPath = HelperFileSystem.joinPath(
+        path.replace(/[\\/]/g, pathNode.sep)
+      );
 
       // Act, When
 
@@ -429,7 +443,10 @@ describe('Classe FileSystemInfo', () => {
 
       const directory = `test-dir-delete-me-${Math.random()}`;
       const file = `test-file-delete-me-${Math.random()}`;
-      const path = pathNode.join(fs.realpathSync('.'), `${directory}/${file}`);
+      const path = HelperFileSystem.joinPath(
+        fs.realpathSync('.'),
+        `${directory}/${file}`
+      );
 
       HelperFileSystem.createRecursive(
         path,

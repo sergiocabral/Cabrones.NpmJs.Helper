@@ -77,7 +77,7 @@ describe('Classe HelperFileSystem', () => {
     test('juntar partes de path', () => {
       // Arrange, Given
 
-      const parts = [ "part1", "part2", "part3" ];
+      const parts = ['part1', 'part2', 'part3'];
       const expectedPath = `${parts[0]}${pathNode.sep}${parts[1]}${pathNode.sep}${parts[2]}`;
 
       // Act, When
@@ -91,7 +91,7 @@ describe('Classe HelperFileSystem', () => {
     test('normaliza path com barras e barra invertida', () => {
       // Arrange, Given
 
-      const parts = [ "part1/partA", "part2\\partB", "part3" ];
+      const parts = ['part1/partA', 'part2\\partB', 'part3'];
       const s = pathNode.sep;
       const expectedPath = `part1${s}partA${s}part2${s}partB${s}part3`;
 
@@ -106,7 +106,7 @@ describe('Classe HelperFileSystem', () => {
     test('normaliza path com barras multiplas', () => {
       // Arrange, Given
 
-      const parts = [ "part1/////partA", "part2\\\\\\\\partB", "part3" ];
+      const parts = ['part1/////partA', 'part2\\\\\\\\partB', 'part3'];
       const s = pathNode.sep;
       const expectedPath = `part1${s}partA${s}part2${s}partB${s}part3`;
 
@@ -727,14 +727,18 @@ describe('Classe HelperFileSystem', () => {
       expect(allPaths.length).toBe(3);
       expect(
         allPaths[0].endsWith(
-          pathNode.join(`${directoryBase}/dir1/dir2/file2.txt`)
+          HelperFileSystem.joinPath(`${directoryBase}/dir1/dir2/file2.txt`)
         )
       ).toBe(true);
       expect(
-        allPaths[1].endsWith(pathNode.join(`${directoryBase}/dir1/file1.txt`))
+        allPaths[1].endsWith(
+          HelperFileSystem.joinPath(`${directoryBase}/dir1/file1.txt`)
+        )
       ).toBe(true);
       expect(
-        allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+        allPaths[2].endsWith(
+          HelperFileSystem.joinPath(`${directoryBase}/file3.txt`)
+        )
       ).toBe(true);
     });
     describe('Teste de limitador', () => {
@@ -770,10 +774,14 @@ describe('Classe HelperFileSystem', () => {
 
         expect(allPaths.length).toBe(2);
         expect(
-          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file1.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+          allPaths[1].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file2.txt`)
+          )
         ).toBe(true);
       });
       test('não deve limitar quantidade de arquivos retornados se for inferior ao limite', () => {
@@ -808,13 +816,19 @@ describe('Classe HelperFileSystem', () => {
 
         expect(allPaths.length).toBe(3);
         expect(
-          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file1.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+          allPaths[1].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file2.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+          allPaths[2].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file3.txt`)
+          )
         ).toBe(true);
       });
     });
@@ -847,7 +861,9 @@ describe('Classe HelperFileSystem', () => {
 
         expect(allPaths.length).toBe(1);
         expect(
-          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file3.txt`)
+          )
         ).toBe(true);
       });
       test('filtro com base em RegExp', () => {
@@ -878,10 +894,14 @@ describe('Classe HelperFileSystem', () => {
 
         expect(allPaths.length).toBe(2);
         expect(
-          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file1.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+          allPaths[1].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file3.txt`)
+          )
         ).toBe(true);
       });
       test('filtro com base em lista mista de String e RegExp', () => {
@@ -912,13 +932,19 @@ describe('Classe HelperFileSystem', () => {
 
         expect(allPaths.length).toBe(3);
         expect(
-          allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file1.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[1].endsWith(pathNode.join(`${directoryBase}/file2.txt`))
+          allPaths[1].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file2.txt`)
+          )
         ).toBe(true);
         expect(
-          allPaths[2].endsWith(pathNode.join(`${directoryBase}/file3.txt`))
+          allPaths[2].endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/file3.txt`)
+          )
         ).toBe(true);
       });
     });
@@ -952,17 +978,21 @@ describe('Classe HelperFileSystem', () => {
       expect(allPaths.length).toBeGreaterThanOrEqual(3);
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          path.endsWith(HelperFileSystem.joinPath(`${directoryBase}/file1.txt`))
         )
       ).toBeDefined();
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+          path.endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/dir1/file2.txt`)
+          )
         )
       ).toBeDefined();
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`))
+          path.endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/dir1/dir2/file3.txt`)
+          )
         )
       ).toBeDefined();
     });
@@ -1000,11 +1030,13 @@ describe('Classe HelperFileSystem', () => {
       expect(allPaths.length).toBe(2);
       expect(
         allPaths[0].endsWith(
-          pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`)
+          HelperFileSystem.joinPath(`${directoryBase}/dir1/dir2/file3.txt`)
         )
       ).toBe(true);
       expect(
-        allPaths[1].endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+        allPaths[1].endsWith(
+          HelperFileSystem.joinPath(`${directoryBase}/dir1/file2.txt`)
+        )
       ).toBe(true);
     });
     test('localizar arquivos com limitação logo no primeiro nível', () => {
@@ -1035,7 +1067,9 @@ describe('Classe HelperFileSystem', () => {
 
       expect(allPaths.length).toBe(1);
       expect(
-        allPaths[0].endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+        allPaths[0].endsWith(
+          HelperFileSystem.joinPath(`${directoryBase}/file1.txt`)
+        )
       ).toBe(true);
     });
     test('se a limitação for zero não retorna nada', () => {
@@ -1106,17 +1140,21 @@ describe('Classe HelperFileSystem', () => {
       expect(allPaths.length).toBeGreaterThanOrEqual(3);
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/file1.txt`))
+          path.endsWith(HelperFileSystem.joinPath(`${directoryBase}/file1.txt`))
         )
       ).toBeDefined();
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/dir1/file2.txt`))
+          path.endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/dir1/file2.txt`)
+          )
         )
       ).toBeDefined();
       expect(
         allPaths.find(path =>
-          path.endsWith(pathNode.join(`${directoryBase}/dir1/dir2/file3.txt`))
+          path.endsWith(
+            HelperFileSystem.joinPath(`${directoryBase}/dir1/dir2/file3.txt`)
+          )
         )
       ).toBeDefined();
     });
@@ -1153,17 +1191,21 @@ describe('Classe HelperFileSystem', () => {
       expect(allPaths.length).toBe(3);
       expect(
         allPaths[0].endsWith(
-          pathNode.join(`${directoryBase}/dir1/dir2/file3-${uniqueMark}.txt`)
+          HelperFileSystem.joinPath(
+            `${directoryBase}/dir1/dir2/file3-${uniqueMark}.txt`
+          )
         )
       ).toBe(true);
       expect(
         allPaths[1].endsWith(
-          pathNode.join(`${directoryBase}/dir1/file2-${uniqueMark}.txt`)
+          HelperFileSystem.joinPath(
+            `${directoryBase}/dir1/file2-${uniqueMark}.txt`
+          )
         )
       ).toBe(true);
       expect(
         allPaths[2].endsWith(
-          pathNode.join(`${directoryBase}/file1-${uniqueMark}.txt`)
+          HelperFileSystem.joinPath(`${directoryBase}/file1-${uniqueMark}.txt`)
         )
       ).toBe(true);
     });
