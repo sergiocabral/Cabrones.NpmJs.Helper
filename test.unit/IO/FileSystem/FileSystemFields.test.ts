@@ -7,11 +7,15 @@ describe('Classe FileSystemFields', () => {
   beforeEach(() => {
     originals['FileSystemFields.isEquals'] = FileSystemFields.isEquals;
     originals['FileSystemFields.diff'] = FileSystemFields.diff;
+    originals['fs.existsSync'] = fs.existsSync;
+    originals['fs.realpathSync'] = fs.realpathSync;
   });
 
   afterEach(() => {
     FileSystemFields.isEquals = originals['FileSystemFields.isEquals'];
     FileSystemFields.diff = originals['FileSystemFields.diff'];
+    fs.existsSync = originals['fs.existsSync'];
+    fs.realpathSync = originals['fs.realpathSync'];
 
     const items = fs.readdirSync('.').filter(item => item.startsWith('test-'));
     for (const item of items) {
@@ -42,28 +46,23 @@ describe('Classe FileSystemFields', () => {
 
       expect(sut.path).toBe(path);
     });
-    test('durante a criação é tolerante a falhas de ENOENT', async () => {
-      return new Promise<void>(resolve => {
-        // Arrange, Given
+    test('durante a criação é tolerante a falhas de ENOENT', () => {
+      // Arrange, Given
 
-        const loopCount = 100;
-        const path = `test-${Math.random()}`;
-
-        for (let i = 0; i < loopCount; i++) {
-          setTimeout(() => fs.writeFileSync(path, Math.random().toString()), 1);
-
-          // Act, When
-
-          setTimeout(() => fs.unlinkSync(path), 1);
-          const create = () => new FileSystemFields(path);
-
-          // Assert, Then
-
-          expect(create).not.toThrowError();
-        }
-
-        setTimeout(() => resolve(), loopCount * 2);
+      let swap = false;
+      fs.existsSync = jest.fn(() => {
+        swap = !swap;
+        return swap;
       });
+      const path = `test-${Math.random()}`;
+
+      // Act, When
+
+      const create = () => new FileSystemFields(path);
+
+      // Assert, Then
+
+      expect(create).not.toThrowError();
     });
   });
   describe('isEquals', () => {
