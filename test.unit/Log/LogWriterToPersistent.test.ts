@@ -17,6 +17,8 @@ describe('Class LogWriterToPersistent', () => {
     originals['LogWriter.minimumLevel'] = LogWriter.minimumLevel;
     originals['LogWriter.defaultLogLevel'] = LogWriter.defaultLogLevel;
     originals['console.error'] = console.error;
+
+    LogWriterToPersistent.waitInMillisecondsOnError = 0;
   });
 
   afterEach(() => {
@@ -613,6 +615,7 @@ describe('Class LogWriterToPersistent', () => {
       const message = Math.random().toString();
       const waitInMillisecondsOnError = 5;
       const connectionOpen = { state: ConnectionState.Ready };
+      console.error = jest.fn();
       let swap = false;
       const postedMessages: string[] = [];
       const mockSave = (messageAndData: ILogMessageAndData) => {
