@@ -319,7 +319,7 @@ describe('Classe FileSystemFields', () => {
         test('arquivo existe', () => {
           // Arrange, Given
 
-          const millisecondTolerance = 1;
+          const millisecondTolerance = 5;
           const file = `test-${Math.random()}`;
           const fileContent = ''.padStart(
             Math.random() * 10,
