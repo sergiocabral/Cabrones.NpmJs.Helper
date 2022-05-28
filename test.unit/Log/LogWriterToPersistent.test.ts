@@ -701,7 +701,7 @@ describe('Class LogWriterToPersistent', () => {
     return new Promise<void>(resolve => {
       // Arrange, Given
 
-      const waitInMillisecondsOnError = 2;
+      const waitInMillisecondsOnError = 10;
       const connectionOpen = { state: ConnectionState.Ready };
       console.error = jest.fn();
       let saveCount = 0;
