@@ -50,10 +50,7 @@ describe('Classe FileSystemFields', () => {
       // Arrange, Given
 
       let swap = false;
-      fs.existsSync = jest.fn(() => {
-        swap = !swap;
-        return swap;
-      });
+      fs.existsSync = () => (swap = !swap);
       const path = `test-${Math.random()}`;
 
       // Act, When

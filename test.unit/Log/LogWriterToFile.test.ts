@@ -17,6 +17,8 @@ describe('Class LogWriterToFile', () => {
       LogWriterToPersistent.waitInMillisecondsOnError;
     originals['LogWriterToFile.defaultFileNameByDate'] =
       LogWriterToFile.defaultFileNameByDate;
+    originals['LogWriter.minimumLevel'] = LogWriter.minimumLevel;
+    originals['LogWriter.defaultLogLevel'] = LogWriter.defaultLogLevel;
     originals['console.debug'] = console.debug;
     originals['console.log'] = console.log;
     originals['console.info'] = console.info;
@@ -32,6 +34,8 @@ describe('Class LogWriterToFile', () => {
       originals['LogWriterToPersistent.waitInMillisecondsOnError'];
     LogWriterToFile.defaultFileNameByDate =
       originals['LogWriterToFile.defaultFileNameByDate'];
+    LogWriter.minimumLevel = originals['LogWriter.minimumLevel'];
+    LogWriter.defaultLogLevel = originals['LogWriter.defaultLogLevel'];
     console.debug = originals['console.debug'];
     console.log = originals['console.log'];
     console.info = originals['console.info'];
@@ -255,7 +259,74 @@ describe('Class LogWriterToFile', () => {
 
       // Assert, Then
 
+      expect(sut.waitInMillisecondsOnError).not.toBe(staticValue);
       expect(sut.waitInMillisecondsOnError).toBe(instanceValue);
+    });
+  });
+  describe('minimumLevel', () => {
+    test('se não informado vem de LogWriter.minimumLevel', () => {
+      // Arrange, Given
+
+      const randomValue = Math.floor(Math.random() * 1000);
+      LogWriter.minimumLevel = randomValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile();
+
+      // Assert, Then
+
+      expect(sut.minimumLevel).toBe(randomValue);
+    });
+    test('deve poder especificar seu valor', () => {
+      // Arrange, Given
+
+      const staticValue = Math.floor(Math.random() * 1000);
+      const instanceValue = Math.floor(Math.random() * 1000);
+      LogWriter.minimumLevel = staticValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile(undefined, instanceValue);
+
+      // Assert, Then
+
+      expect(sut.minimumLevel).toBe(instanceValue);
+    });
+  });
+  describe('defaultLogLevel', () => {
+    test('se não informado vem de LogWriter.defaultLogLevel', () => {
+      // Arrange, Given
+
+      const randomValue = Math.floor(Math.random() * 1000);
+      LogWriter.defaultLogLevel = randomValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile();
+
+      // Assert, Then
+
+      expect(sut.defaultLogLevel).toBe(randomValue);
+    });
+    test('deve poder especificar seu valor', () => {
+      // Arrange, Given
+
+      const staticValue = Math.floor(Math.random() * 1000);
+      const instanceValue = Math.floor(Math.random() * 1000);
+      LogWriter.defaultLogLevel = staticValue;
+
+      // Act, When
+
+      const sut = new LogWriterToFile(
+        undefined,
+        LogWriter.minimumLevel,
+        instanceValue
+      );
+
+      // Assert, Then
+
+      expect(sut.defaultLogLevel).toBe(instanceValue);
     });
   });
 });

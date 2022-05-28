@@ -11,8 +11,6 @@ import { IConnectionState } from '../Type/Connection/IConnectionState';
  * Escritor de log para um banco de dados genérico.
  */
 export class LogWriterToPersistent extends LogWriter {
-  // TODO: Escrever testes de cobertura.
-
   /**
    * Espera padrão em milissegundos em caso de erro
    */
@@ -72,7 +70,7 @@ export class LogWriterToPersistent extends LogWriter {
   /**
    * Escreve o log de fato.
    */
-  protected write(messageAndData: ILogMessageAndData): void {
+  protected override write(messageAndData: ILogMessageAndData): void {
     this.buffer.push(messageAndData);
     void this.flush();
   }
