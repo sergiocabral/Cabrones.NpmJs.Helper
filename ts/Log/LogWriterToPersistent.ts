@@ -72,7 +72,7 @@ export class LogWriterToPersistent extends LogWriter {
    */
   protected override write(messageAndData: ILogMessageAndData): void {
     this.buffer.push(messageAndData);
-    void this.flush();
+    void this.flush(false);
   }
 
   /**
@@ -88,12 +88,11 @@ export class LogWriterToPersistent extends LogWriter {
   /**
    * Processa as mensagens no buffer se houver
    */
-  public async flush(): Promise<void> {
-    clearTimeout(this.flushTimeout);
-
-    if (this.isFlushing) {
+  public async flush(force = true): Promise<void> {
+    if (this.isFlushing && !force) {
       return;
     }
+    clearTimeout(this.flushTimeout);
     this.isFlushing = true;
 
     let messageAndData: ILogMessageAndData | undefined;
@@ -120,8 +119,17 @@ export class LogWriterToPersistent extends LogWriter {
         () => void this.flush(),
         this.waitInMillisecondsOnError
       );
+    } else {
+      this.isFlushing = false;
     }
+  }
 
+  /**
+   * Descarta qualquer mensagem pendente de gravação.
+   */
+  public discard(): void {
+    clearTimeout(this.flushTimeout);
+    this.buffer.length = 0;
     this.isFlushing = false;
   }
 }

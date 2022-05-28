@@ -17,8 +17,6 @@ describe('Class LogWriterToPersistent', () => {
     originals['LogWriter.minimumLevel'] = LogWriter.minimumLevel;
     originals['LogWriter.defaultLogLevel'] = LogWriter.defaultLogLevel;
     originals['console.error'] = console.error;
-
-    LogWriterToPersistent.waitInMillisecondsOnError = 100;
   });
 
   afterEach(() => {
@@ -343,7 +341,7 @@ describe('Class LogWriterToPersistent', () => {
       expect(sut.defaultLogLevel).toBe(instanceValue);
     });
   });
-  test('save() é utilizado quando que chamar post() e connection é Ready', async () => {
+  test('save() é utilizado quando chamar post() e connection é Ready', async () => {
     return new Promise<void>(resolve => {
       // Arrange, Given
 
@@ -423,6 +421,8 @@ describe('Class LogWriterToPersistent', () => {
 
         // Tear Down
 
+        sut.discard();
+
         resolve();
       }, 100);
     });
@@ -431,13 +431,20 @@ describe('Class LogWriterToPersistent', () => {
     return new Promise<void>(resolve => {
       // Arrange, Given
 
+      const waitInMillisecondsOnError = 0;
       const connection = { state: ConnectionState.Closed };
       const mockSave = jest.fn();
       const messages = Array<string>(10)
         .fill('')
         .map(() => Math.random().toString());
 
-      const sut = new LogWriterToPersistent(connection, mockSave);
+      const sut = new LogWriterToPersistent(
+        connection,
+        mockSave,
+        LogLevel.Verbose,
+        LogLevel.Debug,
+        waitInMillisecondsOnError
+      );
 
       // Act, When
 
@@ -548,6 +555,8 @@ describe('Class LogWriterToPersistent', () => {
 
               // Tear Down
 
+              sut.discard();
+
               resolve();
             }, 1);
           }, 1);
@@ -652,7 +661,7 @@ describe('Class LogWriterToPersistent', () => {
       }, 1);
     });
   });
-  test('Em caso de erro deve posta mensagem no console', async () => {
+  test('Em caso de erro deve postar mensagem no console', async () => {
     return new Promise<void>(resolve => {
       // Arrange, Given
 
@@ -682,8 +691,52 @@ describe('Class LogWriterToPersistent', () => {
 
         // Tear Down
 
+        sut.discard();
+
         resolve();
       }, 1);
+    });
+  });
+  test('Em caso de erro deve ser possível descartar mensagens', async () => {
+    return new Promise<void>(resolve => {
+      // Arrange, Given
+
+      const waitInMillisecondsOnError = 2;
+      const connectionOpen = { state: ConnectionState.Ready };
+      console.error = jest.fn();
+      let saveCount = 0;
+      const errorOnSave = () => {
+        saveCount++;
+        throw 'falha';
+      };
+
+      const sut = new LogWriterToPersistent(
+        connectionOpen,
+        errorOnSave,
+        LogLevel.Verbose,
+        LogLevel.Debug,
+        waitInMillisecondsOnError
+      );
+
+      for (let i = 0; i < 10; i++) {
+        sut.post(Math.random().toString());
+      }
+
+      setTimeout(() => {
+        // Act, When
+
+        sut.discard();
+
+        // Assert, Then
+
+        setTimeout(() => {
+          expect(saveCount).toBe(1);
+
+          // Tear Down
+
+          resolve();
+        }, waitInMillisecondsOnError * 2);
+      }, waitInMillisecondsOnError / 2);
     });
   });
 });
