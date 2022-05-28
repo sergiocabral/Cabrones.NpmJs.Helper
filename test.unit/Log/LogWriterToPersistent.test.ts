@@ -18,7 +18,7 @@ describe('Class LogWriterToPersistent', () => {
     originals['LogWriter.defaultLogLevel'] = LogWriter.defaultLogLevel;
     originals['console.error'] = console.error;
 
-    LogWriterToPersistent.waitInMillisecondsOnError = 0;
+    LogWriterToPersistent.waitInMillisecondsOnError = 100;
   });
 
   afterEach(() => {
