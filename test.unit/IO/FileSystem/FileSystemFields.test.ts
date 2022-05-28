@@ -381,7 +381,7 @@ describe('Classe FileSystemFields', () => {
               );
 
               resolve();
-            }, 5);
+            }, 100);
           });
         });
       });
