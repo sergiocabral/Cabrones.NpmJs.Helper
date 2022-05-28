@@ -26,6 +26,7 @@ describe('Class LogWriterToConsole', () => {
 
     const mockFactoryMessage = jest.fn();
     LogWriter.factoryMessage = mockFactoryMessage;
+    console.log = jest.fn();
 
     const sut = new LogWriterToConsole(LogLevel.Verbose);
 
