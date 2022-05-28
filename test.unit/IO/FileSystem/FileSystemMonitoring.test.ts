@@ -196,7 +196,7 @@ describe('Classe FileSystemMonitoring', () => {
     test('aceita valores maiores que zero', () => {
       // Arrange, Given
 
-      const greaterThanZero = Math.random() * 1000;
+      const greaterThanZero = Math.random() * 1000 + 1;
       const sut = new FileSystemMonitoring(
         Math.random().toString(),
         Math.random() * 1000
@@ -218,7 +218,7 @@ describe('Classe FileSystemMonitoring', () => {
     test('os valores são armazenados como inteiro', () => {
       // Arrange, Given
 
-      const interval = Math.random() * 1000;
+      const interval = Math.random() * 1000 + 1;
       const intervalAsInteger = Math.floor(interval);
 
       const sut = new FileSystemMonitoring(
@@ -268,7 +268,7 @@ describe('Classe FileSystemMonitoring', () => {
       // Act, When
 
       const readFirst = sut.lastFields;
-      sut.interval = Math.random() * 1000;
+      sut.interval = Math.random() * 1000 + 1;
       const readAfter = sut.lastFields;
 
       // Assert, Then

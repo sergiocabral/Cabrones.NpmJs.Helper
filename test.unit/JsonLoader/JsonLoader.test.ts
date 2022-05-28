@@ -3323,7 +3323,7 @@ describe('Class JsonLoader', () => {
           // Arrange, Given
 
           const minValue = undefined;
-          const maxValue = Math.random() * 1000;
+          const maxValue = Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [true, maxValue - 0.1],
             [true, maxValue - 1],
@@ -3373,7 +3373,7 @@ describe('Class JsonLoader', () => {
           // Arrange, Given
 
           const minValue = undefined;
-          const maxValue = Math.random() * 1000;
+          const maxValue = Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [true, maxValue - 0.1],
             [true, maxValue - 1],
@@ -3422,7 +3422,7 @@ describe('Class JsonLoader', () => {
         test('decimal, maior que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
           const maxValue = undefined;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
@@ -3472,7 +3472,7 @@ describe('Class JsonLoader', () => {
         test('decimal, maior igual que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
           const maxValue = undefined;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
@@ -3718,8 +3718,8 @@ describe('Class JsonLoader', () => {
         test('decimal, maior que e menor que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [false, minValue],
@@ -3769,8 +3769,8 @@ describe('Class JsonLoader', () => {
         test('decimal, maior igual que e menor que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [true, minValue],
@@ -3820,8 +3820,8 @@ describe('Class JsonLoader', () => {
         test('decimal, maior que e menor igual que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [false, minValue],
@@ -3871,8 +3871,8 @@ describe('Class JsonLoader', () => {
         test('decimal, maior igual que e menor igual que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [true, minValue],
@@ -3973,8 +3973,8 @@ describe('Class JsonLoader', () => {
         test('integer, maior igual que e menor que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [true, minValue],
@@ -4025,8 +4025,8 @@ describe('Class JsonLoader', () => {
         test('integer, maior que e menor igual que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [false, minValue],
@@ -4077,8 +4077,8 @@ describe('Class JsonLoader', () => {
         test('integer, maior igual que e menor igual que', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
-          const maxValue = minValue + Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
+          const maxValue = minValue + Math.random() * 1000 + 1;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
             [true, minValue],
@@ -4129,7 +4129,7 @@ describe('Class JsonLoader', () => {
         test('decimal, igual', () => {
           // Arrange, Given
 
-          const minValue = Math.random() * 1000;
+          const minValue = Math.random() * 1000 + 1;
           const maxValue = minValue;
           const tests: [boolean, number][] = [
             [false, minValue - 0.1],
