@@ -1,10 +1,10 @@
-import sha256 from './3rdParty/sha256';
-
 import { DispatchedMessage } from './Bus/DispatchedMessage';
 import { IMessage } from './Bus/IMessage';
 import { Message } from './Bus/Message';
 import { MessageListener } from './Bus/MessageListener';
 import { MessageSubscription } from './Bus/MessageSubscription';
+
+import { HelperCryptography } from './Cryptography/HelperCryptography';
 
 import { DateTimeFormat } from './Data/DateTimeFormat';
 import { DateTimeFormatMask } from './Data/DateTimeFormatMask';
@@ -88,12 +88,12 @@ import { PrimitiveValueType } from './Type/Native/PrimitiveValueType';
 import { PrimitiveValueTypeName } from './Type/Native/PrimitiveValueTypeName';
 
 export {
-  sha256,
   DispatchedMessage,
   IMessage,
   Message,
   MessageListener,
   MessageSubscription,
+  HelperCryptography,
   DateTimeFormat,
   DateTimeFormatMask,
   HelperDate,

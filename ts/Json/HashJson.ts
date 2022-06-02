@@ -1,5 +1,5 @@
-import sha256 from '../3rdParty/sha256';
 import { HelperObject } from '../Data/HelperObject';
+import { HelperCryptography } from '../Cryptography/HelperCryptography';
 
 /**
  * Representa um conjunto de informações para JsonObject.
@@ -29,7 +29,7 @@ export class HashJson<TValue> {
    * Resulta em um hash da informação.
    */
   private static hash(value: unknown): string {
-    return sha256(HelperObject.toText(value, 0));
+    return HelperCryptography.hashSha256(HelperObject.toText(value, 0));
   }
 
   /**
