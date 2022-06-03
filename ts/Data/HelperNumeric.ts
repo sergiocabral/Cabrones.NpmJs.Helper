@@ -283,4 +283,84 @@ export class HelperNumeric {
     if (formatFullFill.showPositive && value >= 0) result = '+' + result;
     return `${formatFullFill.prefix}${result}${formatFullFill.suffix}`;
   }
+
+  /**
+   * Converte um número em notação exponencial para número plano como texto
+   * @param dot Exibição do sinal de separação entre inteiro e decimal.
+   ******************************************************************
+   * Adaptação do algoritmo obtido em https://stackoverflow.com/a/66072001/1396511
+   * @function eToNumber(number)
+   * @version  1.00
+   * @param   {e nottation Number} number Number in exponent format.
+   *          pass number as a string for very large 'e' numbers or with large fractions
+   *          (none 'e' number returned as is).
+   * @return  {string}  a decimal number string.
+   * @author  Mohsen Alyafei
+   * @date    17 Jan 2020
+   * Note: No check is made for NaN or undefined input numbers.
+   *
+   *****************************************************************/
+  public static fromENotation(
+    number: number | string,
+    dot: '.' | ',' = '.'
+  ): string {
+    if (
+      (typeof number === 'string' &&
+        (number.length === 0 ||
+          !Number.isFinite(Number(number.replace(dot, '.'))))) ||
+      (typeof number === 'number' && !Number.isFinite(number))
+    ) {
+      throw new InvalidArgumentError('Expected a valid number.');
+    }
+
+    let numberAsString = String(number);
+
+    const sign = numberAsString[0] === '-' ? '-' : '';
+    if (sign !== '') {
+      numberAsString = numberAsString.substring(1);
+    }
+
+    const partsNumberAndExponential = numberAsString.split(/e/gi);
+    if (partsNumberAndExponential.length < 2) {
+      return sign + numberAsString;
+    }
+
+    const partExponential = Number(partsNumberAndExponential[1]);
+    const partNumber = partsNumberAndExponential[0].replace(/^0+/, '');
+    const onlyDigits = partNumber.replace(dot, '');
+    const dotPosition = partNumber.split(dot)[1]
+      ? partNumber.indexOf(dot) + partExponential
+      : onlyDigits.length + partExponential;
+    const padding = dotPosition - onlyDigits.length;
+    const onlyDigitsFormatted = BigInt(onlyDigits).toString();
+
+    let result = onlyDigits;
+    result =
+      partExponential >= 0
+        ? padding >= 0
+          ? onlyDigitsFormatted + '0'.repeat(padding)
+          : replace()
+        : dotPosition <= 0
+        ? '0' + dot + '0'.repeat(Math.abs(dotPosition)) + onlyDigitsFormatted
+        : replace();
+
+    const partIntegerAndDecimal = result.split(dot);
+    const partInteger = Number(partIntegerAndDecimal[0]);
+    const partDecimal = Number(partIntegerAndDecimal[1]);
+    if (
+      (partInteger === 0 && partDecimal === 0) ||
+      (Number(result) == 0 && Number(onlyDigitsFormatted) == 0)
+    ) {
+      result = '0'; //** added 9/10/2021
+    }
+
+    return sign + result;
+
+    function replace() {
+      return result.replace(
+        new RegExp(`^(.{${dotPosition}})(.)`),
+        `$1${dot}$2`
+      );
+    }
+  }
 }
