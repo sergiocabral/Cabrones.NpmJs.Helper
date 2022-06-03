@@ -308,4 +308,26 @@ export class HelperObject {
       }
     }
   }
+
+  /**
+   * Determina se o valor é do tipo primitivo e não vazio: string, number ou boolean
+   */
+  public static isPrimitiveValue(value: unknown): boolean {
+    switch (typeof value) {
+      case 'string':
+      case 'boolean':
+        return true;
+      case 'number':
+        return Number.isFinite(value);
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Determina se o valor é vazio: undefined ou null
+   */
+  public static isEmptyValue(value: unknown): boolean {
+    return value === undefined || value === null;
+  }
 }

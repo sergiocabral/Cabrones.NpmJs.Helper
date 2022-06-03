@@ -1046,4 +1046,96 @@ Methods:
       expect(expectedFalse).toBe(false);
     });
   });
+  describe('isPrimitiveType', () => {
+    test('valores válidos', () => {
+      // Arrange, Given
+
+      const validValues = [
+        Math.random(),
+        Math.random().toString(),
+        Math.floor(Math.random() * 100 + 100) % 2 === 0
+      ];
+
+      for (const validValue of validValues) {
+        // Act, When
+
+        const isValid = HelperObject.isPrimitiveValue(validValue);
+
+        // Assert, Then
+
+        expect(isValid).toBe(true);
+      }
+    });
+    test('números não finitos não é válido', () => {
+      // Arrange, Given
+
+      const invalidNumbers = [NaN, Infinity];
+
+      for (const invalidNumber of invalidNumbers) {
+        // Act, When
+
+        const isValid = HelperObject.isPrimitiveValue(invalidNumber);
+
+        // Assert, Then
+
+        expect(isValid).toBe(false);
+      }
+    });
+    test('valores inválidos', () => {
+      // Arrange, Given
+
+      const invalidValues = [new Date(), {}, NaN, Infinity, null, undefined];
+
+      for (const invalidValue of invalidValues) {
+        // Act, When
+
+        const isInvalid = HelperObject.isPrimitiveValue(invalidValue) === false;
+
+        // Assert, Then
+
+        expect(isInvalid).toBe(true);
+      }
+    });
+  });
+  describe('isEmptyValue', () => {
+    test('valores vazios', () => {
+      // Arrange, Given
+
+      const emptyValues = [null, undefined];
+
+      for (const emptyValue of emptyValues) {
+        // Act, When
+
+        const isEmpty = HelperObject.isEmptyValue(emptyValue);
+
+        // Assert, Then
+
+        expect(isEmpty).toBe(true);
+      }
+    });
+    test('valores não vazios', () => {
+      // Arrange, Given
+
+      const nonEmptyValues = [
+        new Date(),
+        {},
+        NaN,
+        Infinity,
+        Math.random(),
+        Math.random().toString(),
+        Math.floor(Math.random() * 100 + 100) % 2 === 0
+      ];
+
+      for (const nonEmptyValue of nonEmptyValues) {
+        // Act, When
+
+        const isNonEmptyValue =
+          HelperObject.isEmptyValue(nonEmptyValue) === false;
+
+        // Assert, Then
+
+        expect(isNonEmptyValue).toBe(true);
+      }
+    });
+  });
 });
