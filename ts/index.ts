@@ -73,6 +73,7 @@ import './Prototype/Number';
 import './Prototype/String';
 
 import { ConnectionState } from './Type/Connection/ConnectionState';
+import { HttpStatusCode } from './Type/Connection/HttpStatusCode';
 import { IConnection } from './Type/Connection/IConnection';
 import { IConnectionState } from './Type/Connection/IConnectionState';
 
@@ -147,6 +148,7 @@ export {
   LogWriterToFile,
   LogWriterToPersistent,
   ConnectionState,
+  HttpStatusCode,
   IConnection,
   IConnectionState,
   FiltersType,
