@@ -26,12 +26,16 @@ describe('Classe HelperObject', () => {
   const originals: Record<string, any> = {};
 
   beforeEach(() => {
+    originals['HelperObject.toValue'] = HelperObject.toValue;
+    originals['HelperObject.isValue'] = HelperObject.isValue;
     originals['HelperObject.getMembers'] = HelperObject.getMembers;
     originals['HelperObject.getFunctionSignature'] =
       HelperObject.getFunctionSignature;
   });
 
   afterEach(() => {
+    HelperObject.toValue = originals['HelperObject.toValue'];
+    HelperObject.isValue = originals['HelperObject.isValue'];
     HelperObject.getMembers = originals['HelperObject.getMembers'];
     HelperObject.getFunctionSignature =
       originals['HelperObject.getFunctionSignature'];
@@ -1046,7 +1050,47 @@ Methods:
       expect(expectedFalse).toBe(false);
     });
   });
-  describe('isPrimitiveType', () => {
+  describe('isValue', () => {
+    test('valores', () => {
+      // Arrange, Given
+
+      const values = [
+        Math.random(),
+        NaN,
+        Infinity,
+        Math.random().toString(),
+        Math.floor(Math.random() * 100 + 100) % 2 === 0,
+        new Date(),
+        new Date(Number.MIN_SAFE_INTEGER)
+      ];
+
+      for (const value of values) {
+        // Act, When
+
+        const isValue = HelperObject.isValue(value);
+
+        // Assert, Then
+
+        expect(isValue).toBe(true);
+      }
+    });
+    test('não valores', () => {
+      // Arrange, Given
+
+      const nonValues = [{}, null, undefined];
+
+      for (const nonValue of nonValues) {
+        // Act, When
+
+        const isNonValue = HelperObject.isValue(nonValue) === false;
+
+        // Assert, Then
+
+        expect(isNonValue).toBe(true);
+      }
+    });
+  });
+  describe('isValidValue', () => {
     test('valores válidos', () => {
       // Arrange, Given
 
@@ -1059,12 +1103,38 @@ Methods:
       for (const validValue of validValues) {
         // Act, When
 
-        const isValid = HelperObject.isPrimitiveValue(validValue);
+        const isValid = HelperObject.isValidValue(validValue);
 
         // Assert, Then
 
         expect(isValid).toBe(true);
       }
+    });
+    test('data válida é valor válido', () => {
+      // Arrange, Given
+
+      const dateValue = new Date();
+
+      // Act, When
+
+      const isValid = HelperObject.isValidValue(dateValue);
+
+      // Assert, Then
+
+      expect(isValid).toBe(true);
+    });
+    test('data inválida não é valor válido', () => {
+      // Arrange, Given
+
+      const dateValue = new Date(Number.MAX_SAFE_INTEGER);
+
+      // Act, When
+
+      const isValid = HelperObject.isValidValue(dateValue);
+
+      // Assert, Then
+
+      expect(isValid).toBe(false);
     });
     test('números não finitos não é válido', () => {
       // Arrange, Given
@@ -1074,7 +1144,7 @@ Methods:
       for (const invalidNumber of invalidNumbers) {
         // Act, When
 
-        const isValid = HelperObject.isPrimitiveValue(invalidNumber);
+        const isValid = HelperObject.isValidValue(invalidNumber);
 
         // Assert, Then
 
@@ -1084,12 +1154,19 @@ Methods:
     test('valores inválidos', () => {
       // Arrange, Given
 
-      const invalidValues = [new Date(), {}, NaN, Infinity, null, undefined];
+      const invalidValues = [
+        new Date(Number.MIN_SAFE_INTEGER),
+        {},
+        NaN,
+        Infinity,
+        null,
+        undefined
+      ];
 
       for (const invalidValue of invalidValues) {
         // Act, When
 
-        const isInvalid = HelperObject.isPrimitiveValue(invalidValue) === false;
+        const isInvalid = HelperObject.isValidValue(invalidValue) === false;
 
         // Assert, Then
 
@@ -1136,6 +1213,363 @@ Methods:
 
         expect(isNonEmptyValue).toBe(true);
       }
+    });
+  });
+  describe('toValue', () => {
+    test('string: entrada é igual a saída', () => {
+      // Arrange, Given
+
+      const inputText = Math.random().toString();
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputText);
+
+      // Assert, Then
+
+      expect(value).toBe(inputText);
+    });
+    test('boolean: entrada é igual a saída', () => {
+      // Arrange, Given
+
+      const inputBoolean = (Math.random() * 1000 + 1000) % 2 === 0;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputBoolean);
+
+      // Assert, Then
+
+      expect(value).toBe(inputBoolean);
+    });
+    test('number finito: entrada é igual a saída', () => {
+      // Arrange, Given
+
+      const inputFiniteNumber = Math.random();
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputFiniteNumber);
+
+      // Assert, Then
+
+      expect(value).toBe(inputFiniteNumber);
+    });
+    test('number infinito: retorno é undefined', () => {
+      // Arrange, Given
+
+      const inputInfiniteNumber = Infinity;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputInfiniteNumber);
+
+      // Assert, Then
+
+      expect(value).toBeUndefined();
+    });
+    test('number não número: retorno é undefined', () => {
+      // Arrange, Given
+
+      const inputNotANumber = NaN;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputNotANumber);
+
+      // Assert, Then
+
+      expect(value).toBeUndefined();
+    });
+    test('Date: retorna em formato texto ISO', () => {
+      // Arrange, Given
+
+      const inputDate = new Date();
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputDate);
+
+      // Assert, Then
+
+      expect(value).toBe(inputDate.toISOString());
+    });
+    test('Date inválida: retorna undefined', () => {
+      // Arrange, Given
+
+      const inputInvalidDate = new Date(Number.MIN_SAFE_INTEGER);
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputInvalidDate);
+
+      // Assert, Then
+
+      expect(value).toBeUndefined();
+    });
+    test('undefined: retorna undefined', () => {
+      // Arrange, Given
+
+      const inputUndefined = undefined;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputUndefined);
+
+      // Assert, Then
+
+      expect(value).toBeUndefined();
+    });
+    test('null: retorna undefined', () => {
+      // Arrange, Given
+
+      const inputNull = null;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputNull);
+
+      // Assert, Then
+
+      expect(value).toBeUndefined();
+    });
+    test('objeto que tem toString(): retorna objeto como texto', () => {
+      // Arrange, Given
+
+      const inputObjectWithToString = [
+        Math.random(),
+        Math.random(),
+        Math.random()
+      ];
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputObjectWithToString);
+
+      // Assert, Then
+
+      expect(value).toBe(inputObjectWithToString.toString());
+      expect(value).not.toBe({}.toString());
+    });
+    test('objeto genérico: retorna objeto como JSON', () => {
+      // Arrange, Given
+
+      const inputGenericObject = {
+        property: Math.random()
+      };
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputGenericObject);
+
+      // Assert, Then
+
+      expect(value).toBe(JSON.stringify(inputGenericObject));
+      expect(value).not.toBe({}.toString());
+    });
+    test('objeto genérico com referência circular: retorna objeto como JSON', () => {
+      // Arrange, Given
+
+      const inputcyClicObject: Record<string, unknown> = {
+        property: Math.random()
+      };
+      const otherObject: Record<string, unknown> = {
+        property: Math.random()
+      };
+      inputcyClicObject['otherObject'] = otherObject;
+      otherObject['inputcyClicObject'] = inputcyClicObject;
+
+      // Act, When
+
+      const value = HelperObject.toValue(inputcyClicObject);
+
+      // Assert, Then
+
+      expect(value).toBe(HelperObject.toText(inputcyClicObject, 0));
+      expect(value).not.toBe({}.toString());
+    });
+  });
+  describe('flatten', () => {
+    test('valor simples retorna como objeto similar a array de 1 item', () => {
+      // Arrange, Given
+
+      const simpleValue = Math.random();
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(simpleValue);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+      const flattenedValues = Object.values(flattened);
+
+      expect(flattenedKeys.length).toBe(1);
+      expect(flattenedKeys[0]).toBe('0');
+      expect(flattenedValues[0]).toBe(simpleValue);
+    });
+    test('array simples retorna como objeto similar a array simples', () => {
+      // Arrange, Given
+
+      const simpleArray = [Math.random(), Math.random(), Math.random()];
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(simpleArray);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+      const flattenedValues = Object.values(flattened);
+
+      expect(flattenedKeys.length).toBe(simpleArray.length);
+      for (let i = 0; i < simpleArray.length; i++) {
+        expect(flattenedKeys.includes(String(i))).toBe(true);
+        expect(flattenedValues.includes(simpleArray[i])).toBe(true);
+      }
+    });
+    test('object simples retorna objeto igual', () => {
+      // Arrange, Given
+
+      const simpleObject = {
+        propertyDate: new Date(),
+        propertyNumber: Math.random()
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(simpleObject);
+
+      // Assert, Then
+
+      expect(JSON.stringify(flattened)).toBe(JSON.stringify(simpleObject));
+    });
+    test('deve usar HelperObject.isValue e HelperObject.toValue para montar valores', () => {
+      // Arrange, Given
+
+      const mockIsValue = jest.fn(() => true);
+      HelperObject.isValue = mockIsValue;
+
+      const mockToValue = jest.fn();
+      HelperObject.toValue = mockToValue;
+
+      const value = Math.random();
+
+      // Act, When
+
+      HelperObject.flatten(value);
+
+      // Assert, Then
+
+      expect(mockIsValue).toBeCalled();
+      expect(mockToValue).toBeCalled();
+    });
+    test('objeto estruturado retorna objeto achatado com propriedades separadas por ponto', () => {
+      // Arrange, Given
+
+      const structuredObject = {
+        name: {
+          first: 'sergio',
+          last: 'cabral'
+        },
+        address: {
+          country: 'brazil',
+          city: {
+            name: 'macae',
+            state: 'rj'
+          },
+          street: {
+            name: 'getulio vargas',
+            neighborhood: 'neighborhood',
+            number: 120,
+            postalCode: '27943-382'
+          }
+        },
+        today: new Date()
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(structuredObject);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+
+      expect(flattenedKeys.includes('name.first')).toBe(true);
+      expect(flattenedKeys.includes('name.last')).toBe(true);
+      expect(flattenedKeys.includes('address.country')).toBe(true);
+      expect(flattenedKeys.includes('address.city.name')).toBe(true);
+      expect(flattenedKeys.includes('address.city.state')).toBe(true);
+      expect(flattenedKeys.includes('address.street.name')).toBe(true);
+      expect(flattenedKeys.includes('address.street.neighborhood')).toBe(true);
+      expect(flattenedKeys.includes('address.street.number')).toBe(true);
+      expect(flattenedKeys.includes('address.street.postalCode')).toBe(true);
+      expect(flattenedKeys.includes('today')).toBe(true);
+
+      expect(flattened['name.first']).toBe(structuredObject.name.first);
+      expect(flattened['name.last']).toBe(structuredObject.name.last);
+      expect(flattened['address.country']).toBe(
+        structuredObject.address.country
+      );
+      expect(flattened['address.city.name']).toBe(
+        structuredObject.address.city.name
+      );
+      expect(flattened['address.city.state']).toBe(
+        structuredObject.address.city.state
+      );
+      expect(flattened['address.street.name']).toBe(
+        structuredObject.address.street.name
+      );
+      expect(flattened['address.street.neighborhood']).toBe(
+        structuredObject.address.street.neighborhood
+      );
+      expect(flattened['address.street.number']).toBe(
+        structuredObject.address.street.number
+      );
+      expect(flattened['address.street.postalCode']).toBe(
+        structuredObject.address.street.postalCode
+      );
+      expect(flattened['today']).toBe(structuredObject.today.toISOString());
+    });
+    test('objeto estruturado com array retorna objeto achatado com propriedades separadas por ponto', () => {
+      // Arrange, Given
+
+      const structuredObject = {
+        name: {
+          first: 'sergio',
+          last: 'cabral'
+        },
+        list: {
+          numbers: [Math.random(), Math.random(), Math.random()]
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(structuredObject);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+
+      expect(flattenedKeys.includes('name.first')).toBe(true);
+      expect(flattenedKeys.includes('name.last')).toBe(true);
+      expect(flattenedKeys.includes('list.numbers.0')).toBe(true);
+      expect(flattenedKeys.includes('list.numbers.1')).toBe(true);
+      expect(flattenedKeys.includes('list.numbers.2')).toBe(true);
+
+      expect(flattened['name.first']).toBe(structuredObject.name.first);
+      expect(flattened['name.last']).toBe(structuredObject.name.last);
+      expect(flattened['list.numbers.0']).toBe(
+        structuredObject.list.numbers[0]
+      );
+      expect(flattened['list.numbers.1']).toBe(
+        structuredObject.list.numbers[1]
+      );
+      expect(flattened['list.numbers.2']).toBe(
+        structuredObject.list.numbers[2]
+      );
     });
   });
 });

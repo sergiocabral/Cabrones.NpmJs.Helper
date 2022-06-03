@@ -1,5 +1,6 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { ResultEvent } from '../Type/Event/ResultEvent';
+import { PrimitiveValueType } from '../Type/Native/PrimitiveValueType';
 
 /**
  * Utilitários para objetos, classes, etc.
@@ -310,24 +311,142 @@ export class HelperObject {
   }
 
   /**
-   * Determina se o valor é do tipo primitivo e não vazio: string, number ou boolean
-   */
-  public static isPrimitiveValue(value: unknown): boolean {
-    switch (typeof value) {
-      case 'string':
-      case 'boolean':
-        return true;
-      case 'number':
-        return Number.isFinite(value);
-      default:
-        return false;
-    }
-  }
-
-  /**
    * Determina se o valor é vazio: undefined ou null
    */
   public static isEmptyValue(value: unknown): boolean {
     return value === undefined || value === null;
+  }
+
+  /**
+   * Mensagem padrão quando um objeto é convertido para string.
+   */
+  private static defaultObjectToStringValue = {}.toString();
+
+  /**
+   * Determina se o valor é do tipo primitivo e não vazio: string, number ou boolean
+   */
+  public static isValidValue(value: unknown): boolean {
+    if (value instanceof Date) {
+      return Number.isFinite(value.getTime());
+    }
+
+    if (typeof value === 'number') {
+      return Number.isFinite(value);
+    }
+
+    if (typeof value === 'string' || typeof value === 'boolean') {
+      return true;
+    }
+
+    if (value === undefined || value === null) {
+      return false;
+    }
+
+    return (
+      (value as Record<string, never>).toString() !==
+      HelperObject.defaultObjectToStringValue
+    );
+  }
+
+  /**
+   * Determina se o valor é do tipo primitivo e não vazio: string, number ou boolean
+   */
+  public static isValue(value: unknown): boolean {
+    if (
+      typeof value === 'number' ||
+      typeof value === 'string' ||
+      typeof value === 'boolean' ||
+      value instanceof Date
+    ) {
+      return true;
+    }
+
+    if (value === undefined || value === null) {
+      return false;
+    }
+
+    return (
+      (value as Record<string, never>).toString() !==
+      HelperObject.defaultObjectToStringValue
+    );
+  }
+
+  /**
+   * Converte um valor qualquer em tipo primitivo: string, number, boolean ou undefined
+   */
+  public static toValue(value: unknown): PrimitiveValueType | undefined {
+    if (typeof value === 'string' || typeof value === 'boolean') {
+      return value;
+    } else if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : undefined;
+    } else if (value instanceof Date) {
+      return Number.isFinite(value.getTime()) ? value.toISOString() : undefined;
+    } else if (value === undefined || value === null) {
+      return undefined;
+    } else {
+      const asText = (value as Record<string, never>).toString();
+      return asText !== HelperObject.defaultObjectToStringValue
+        ? asText
+        : HelperObject.toText(value, 0);
+    }
+  }
+
+  /**
+   * Achata um objeto num único nível tendo apenas valores simples.
+   */
+  public static flatten(values: unknown): Record<string, PrimitiveValueType> {
+    const getValue = (
+      value: unknown
+    ): Record<string, PrimitiveValueType> | PrimitiveValueType | undefined => {
+      if (!Array.isArray(value) && HelperObject.isValue(value)) {
+        return HelperObject.toValue(value);
+      }
+
+      const result: Record<string, PrimitiveValueType> = {};
+
+      const dictionary = value as Record<string, unknown>;
+      for (const dictionaryKey in dictionary) {
+        if (!Object.prototype.hasOwnProperty.call(dictionary, dictionaryKey)) {
+          continue;
+        }
+        const dictionaryValue = dictionary[dictionaryKey];
+        if (
+          !Array.isArray(dictionaryValue) &&
+          HelperObject.isValue(dictionaryValue)
+        ) {
+          const asValue = getValue(dictionaryValue);
+          if (asValue !== undefined && typeof asValue !== 'object') {
+            result[String(dictionaryKey)] = asValue;
+          }
+        } else {
+          const inner = getValue(dictionaryValue);
+          if (typeof inner === 'object') {
+            for (const innerKey in inner) {
+              if (!Object.prototype.hasOwnProperty.call(inner, innerKey)) {
+                continue;
+              }
+              result[`${String(dictionaryKey)}.${innerKey}`] = inner[innerKey];
+            }
+          }
+        }
+      }
+
+      return result;
+    };
+
+    const value = getValue(values);
+    let result: Record<string, PrimitiveValueType> = {};
+    if (
+      value !== undefined &&
+      typeof value !== 'object' &&
+      HelperObject.isValue(value)
+    ) {
+      result = {
+        '0': value
+      };
+    } else if (typeof value === 'object' && value !== null) {
+      result = value;
+    }
+    return result;
   }
 }
