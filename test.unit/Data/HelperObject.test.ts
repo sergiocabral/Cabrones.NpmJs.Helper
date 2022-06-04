@@ -1410,7 +1410,28 @@ Methods:
       expect(flattenedKeys[0]).toBe('0');
       expect(flattenedValues[0]).toBe(simpleValue);
     });
-    test('array simples retorna como objeto similar a array simples', () => {
+    test('array simples retorna como objeto similar a array simples se especificado', () => {
+      // Arrange, Given
+
+      const simpleArray = [Math.random(), Math.random(), Math.random()];
+      const allowArray = false;
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(simpleArray, allowArray);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+      const flattenedValues = Object.values(flattened);
+
+      expect(flattenedKeys.length).toBe(simpleArray.length);
+      for (let i = 0; i < simpleArray.length; i++) {
+        expect(flattenedKeys.includes(String(i))).toBe(true);
+        expect(flattenedValues.includes(simpleArray[i])).toBe(true);
+      }
+    });
+    test('array simples retorna como array de fato', () => {
       // Arrange, Given
 
       const simpleArray = [Math.random(), Math.random(), Math.random()];
@@ -1424,11 +1445,9 @@ Methods:
       const flattenedKeys = Object.keys(flattened);
       const flattenedValues = Object.values(flattened);
 
-      expect(flattenedKeys.length).toBe(simpleArray.length);
-      for (let i = 0; i < simpleArray.length; i++) {
-        expect(flattenedKeys.includes(String(i))).toBe(true);
-        expect(flattenedValues.includes(simpleArray[i])).toBe(true);
-      }
+      expect(flattenedKeys.length).toBe(1);
+      expect(flattenedKeys.includes('0')).toBe(true);
+      expect(flattenedValues[0]).toStrictEqual(simpleArray);
     });
     test('object simples retorna objeto igual', () => {
       // Arrange, Given
@@ -1534,7 +1553,7 @@ Methods:
       );
       expect(flattened['today']).toBe(structuredObject.today.toISOString());
     });
-    test('objeto estruturado com array retorna objeto achatado com propriedades separadas por ponto', () => {
+    test('objeto estruturado com array retorna objeto achatado com propriedades separadas por ponto com index se especificado', () => {
       // Arrange, Given
 
       const structuredObject = {
@@ -1546,10 +1565,11 @@ Methods:
           numbers: [Math.random(), Math.random(), Math.random()]
         }
       };
+      const allowArray = false;
 
       // Act, When
 
-      const flattened = HelperObject.flatten(structuredObject);
+      const flattened = HelperObject.flatten(structuredObject, allowArray);
 
       // Assert, Then
 
@@ -1571,6 +1591,57 @@ Methods:
       );
       expect(flattened['list.numbers.2']).toBe(
         structuredObject.list.numbers[2]
+      );
+    });
+    test('objeto estruturado com array retorna objeto achatado com propriedades separadas por ponto', () => {
+      // Arrange, Given
+
+      const structuredObject = {
+        list: {
+          numbers: [Math.random(), Math.random(), Math.random()]
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(structuredObject);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+      const flattenedValues = Object.values(flattened);
+
+      expect(flattenedKeys.length).toBe(1);
+      expect(flattenedKeys.includes('list.numbers.0')).not.toBe(true);
+      expect(flattenedValues[0]).toStrictEqual(structuredObject.list.numbers);
+    });
+    test('objeto estruturado com array tendo objetos estruturados retorna como array de valores simples', () => {
+      // Arrange, Given
+
+      const structuredObject = {
+        list: {
+          objects: [{ firstName: 'sergio' }, new Date(), Math.random()]
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(structuredObject);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+      const flattenedValueArray = Object.values(flattened)[0] as any[];
+
+      expect(flattenedKeys.length).toBe(1);
+      expect(flattenedValueArray[0]).toBe(
+        HelperObject.toValue(structuredObject.list.objects[0])
+      );
+      expect(flattenedValueArray[1]).toBe(
+        HelperObject.toValue(structuredObject.list.objects[1])
+      );
+      expect(flattenedValueArray[2]).toBe(
+        HelperObject.toValue(structuredObject.list.objects[2])
       );
     });
     test('objeto estruturado com propriedades usando pontos vai valer as últimas', () => {

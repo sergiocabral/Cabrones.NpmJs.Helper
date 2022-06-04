@@ -394,16 +394,32 @@ export class HelperObject {
 
   /**
    * Achata um objeto num único nível tendo apenas valores simples.
+   * @param values Valores.
+   * @param allowArray Permite presença de array
    */
-  public static flatten(values: unknown): Record<string, PrimitiveValueType> {
+  public static flatten(
+    values: unknown,
+    allowArray = true
+  ): Record<string, PrimitiveValueType | PrimitiveValueType[]> {
     const getValue = (
       value: unknown
-    ): Record<string, PrimitiveValueType> | PrimitiveValueType | undefined => {
+    ):
+      | Record<string, PrimitiveValueType | PrimitiveValueType[]>
+      | PrimitiveValueType
+      | PrimitiveValueType[]
+      | undefined => {
       if (!Array.isArray(value) && HelperObject.isValue(value)) {
         return HelperObject.toValue(value);
       }
 
-      const result: Record<string, PrimitiveValueType> = {};
+      if (Array.isArray(value) && allowArray) {
+        return value
+          .map(item => HelperObject.toValue(item))
+          .filter(item => item !== undefined) as PrimitiveValueType[];
+      }
+
+      const result: Record<string, PrimitiveValueType | PrimitiveValueType[]> =
+        {};
 
       const dictionary = value as Record<string, unknown>;
       for (const dictionaryKey in dictionary) {
@@ -417,16 +433,20 @@ export class HelperObject {
         ) {
           const asValue = getValue(dictionaryValue);
           if (asValue !== undefined && typeof asValue !== 'object') {
-            result[String(dictionaryKey)] = asValue;
+            result[dictionaryKey] = asValue;
           }
         } else {
           const inner = getValue(dictionaryValue);
           if (typeof inner === 'object') {
-            for (const innerKey in inner) {
-              if (!Object.prototype.hasOwnProperty.call(inner, innerKey)) {
-                continue;
+            if (!Array.isArray(inner)) {
+              for (const innerKey in inner) {
+                if (!Object.prototype.hasOwnProperty.call(inner, innerKey)) {
+                  continue;
+                }
+                result[`${dictionaryKey}.${innerKey}`] = inner[innerKey];
               }
-              result[`${String(dictionaryKey)}.${innerKey}`] = inner[innerKey];
+            } else {
+              result[dictionaryKey] = inner;
             }
           }
         }
@@ -436,16 +456,20 @@ export class HelperObject {
     };
 
     const value = getValue(values);
-    let result: Record<string, PrimitiveValueType> = {};
+    let result: Record<string, PrimitiveValueType | PrimitiveValueType[]> = {};
     if (
       value !== undefined &&
-      typeof value !== 'object' &&
-      HelperObject.isValue(value)
+      HelperObject.isValue(value) &&
+      (typeof value !== 'object' || Array.isArray(value))
     ) {
       result = {
         '0': value
       };
-    } else if (typeof value === 'object' && value !== null) {
+    } else if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
       result = value;
     }
     return result;
@@ -460,12 +484,17 @@ export class HelperObject {
   /**
    * Achata um objeto num único nível tendo apenas valores simples (e Data).
    * Similar a flatten, mas garante que o valo seja armazenado como string e um novo campo criado para o tipo específico.
+   * @param values Valores.
+   * @param allowArray Permite presença de array
    */
   public static flattenWithSafeType(
-    values: unknown
-  ): Record<string, PrimitiveValueType | Date> {
-    const flattened: Record<string, PrimitiveValueType | Date> =
-      HelperObject.flatten(values);
+    values: unknown,
+    allowArray = true
+  ): Record<string, PrimitiveValueType | PrimitiveValueType[] | Date> {
+    const flattened: Record<
+      string,
+      PrimitiveValueType | PrimitiveValueType[] | Date
+    > = HelperObject.flatten(values, allowArray);
     for (const key in flattened) {
       if (Object.prototype.hasOwnProperty.call(flattened, key)) {
         const value = flattened[key];
