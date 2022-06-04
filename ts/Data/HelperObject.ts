@@ -1,6 +1,7 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { ResultEvent } from '../Type/Event/ResultEvent';
 import { PrimitiveValueType } from '../Type/Native/PrimitiveValueType';
+import { HelperNumeric } from './HelperNumeric';
 
 /**
  * Utilitários para objetos, classes, etc.
@@ -448,5 +449,46 @@ export class HelperObject {
       result = value;
     }
     return result;
+  }
+
+  /**
+   * Expressão regular para validar texto em formato data ISO.
+   */
+  private static regexIsIsoDate =
+    /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})(Z|[+-]\d{2}:\d{2})/;
+
+  /**
+   * Achata um objeto num único nível tendo apenas valores simples (e Data).
+   * Similar a flatten, mas garante que o valo seja armazenado como string e um novo campo criado para o tipo específico.
+   */
+  public static flattenWithSafeType(
+    values: unknown
+  ): Record<string, PrimitiveValueType | Date> {
+    const flattened: Record<string, PrimitiveValueType | Date> =
+      HelperObject.flatten(values);
+    for (const key in flattened) {
+      if (Object.prototype.hasOwnProperty.call(flattened, key)) {
+        const value = flattened[key];
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          flattened[`${key}.${typeof value}`] = value;
+          flattened[key] = HelperNumeric.fromENotation(value);
+        } else if (typeof value === 'boolean') {
+          flattened[`${key}.${typeof value}`] = value;
+          flattened[key] = value.toString();
+        } else if (
+          typeof value === 'string' &&
+          HelperObject.regexIsIsoDate.test(value)
+        ) {
+          const date = new Date(value);
+          if (Number.isFinite(date.getTime())) {
+            flattened[`${key}.${date.constructor.name.toLowerCase()}`] = date;
+            flattened[key] = value;
+          }
+        } else {
+          flattened[key] = String(flattened[key]);
+        }
+      }
+    }
+    return flattened;
   }
 }

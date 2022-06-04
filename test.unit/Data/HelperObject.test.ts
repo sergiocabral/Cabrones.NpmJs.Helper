@@ -28,6 +28,7 @@ describe('Classe HelperObject', () => {
   beforeEach(() => {
     originals['HelperObject.toValue'] = HelperObject.toValue;
     originals['HelperObject.isValue'] = HelperObject.isValue;
+    originals['HelperObject.flatten'] = HelperObject.flatten;
     originals['HelperObject.getMembers'] = HelperObject.getMembers;
     originals['HelperObject.getFunctionSignature'] =
       HelperObject.getFunctionSignature;
@@ -36,6 +37,7 @@ describe('Classe HelperObject', () => {
   afterEach(() => {
     HelperObject.toValue = originals['HelperObject.toValue'];
     HelperObject.isValue = originals['HelperObject.isValue'];
+    HelperObject.flatten = originals['HelperObject.flatten'];
     HelperObject.getMembers = originals['HelperObject.getMembers'];
     HelperObject.getFunctionSignature =
       originals['HelperObject.getFunctionSignature'];
@@ -1570,6 +1572,172 @@ Methods:
       expect(flattened['list.numbers.2']).toBe(
         structuredObject.list.numbers[2]
       );
+    });
+    test('objeto estruturado com propriedades usando pontos vai valer as últimas', () => {
+      // Arrange, Given
+
+      const mixedObject = {
+        'name.first': 'first',
+        name: {
+          first: 'sergio',
+          last: 'cabral'
+        },
+        'name.last': 'last'
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(mixedObject);
+
+      // Assert, Then
+
+      expect(Object.keys(flattened).length).toBe(2);
+      expect(flattened['name.first']).not.toBe(mixedObject['name.first']);
+      expect(flattened['name.first']).toBe(mixedObject.name.first);
+      expect(flattened['name.last']).toBe(mixedObject['name.last']);
+      expect(flattened['name.last']).not.toBe(mixedObject.name.last);
+    });
+  });
+  describe('flattenWithTypes', () => {
+    test('deve usar HelperObject.flatten para montar valores', () => {
+      // Arrange, Given
+
+      const mockFlatten = jest.fn(() => ({}));
+      HelperObject.flatten = mockFlatten;
+
+      // Act, When
+
+      HelperObject.flattenWithSafeType(Math.random());
+
+      // Assert, Then
+
+      expect(mockFlatten).toBeCalled();
+    });
+    test('number', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: Number(
+            `${Math.random()
+              .toString()
+              .replace('.', '')
+              .substring(0, 5)}.${Math.random()
+              .toString()
+              .replace('.', '')}${Math.random().toString().replace('.', '')}`
+          )
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect(typeof flattened['my.value']).toBe('string');
+      expect(flattened['my.value']).toBe(String(values.my.value));
+      expect(flattened['my.value.number']).toBe(values.my.value);
+      expect(Object.keys(flattened).length).toBe(2);
+    });
+    test('boolean', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: Math.floor((Math.random() * 1000 + 1000) % 2) === 0
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect(typeof flattened['my.value']).toBe('string');
+      expect(flattened['my.value']).toBe(String(values.my.value));
+      expect(flattened['my.value.boolean']).toBe(values.my.value);
+      expect(Object.keys(flattened).length).toBe(2);
+    });
+    test('date', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: new Date().toISOString()
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect(typeof flattened['my.value']).toBe('string');
+      expect(flattened['my.value']).toBe(String(values.my.value));
+      expect(flattened['my.value.date'] instanceof Date).toBe(true);
+      expect((flattened['my.value.date'] as Date).getTime()).toBe(
+        new Date(values.my.value).getTime()
+      );
+      expect(Object.keys(flattened).length).toBe(2);
+    });
+    test('date com offset positivo', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: '2000-01-02T03:04:05.006+10:00'
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect((flattened['my.value.date'] as Date).getTime()).toBe(
+        new Date(values.my.value).getTime()
+      );
+    });
+    test('date com offset negativo', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: '2000-01-02T03:04:05.006-10:00'
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect((flattened['my.value.date'] as Date).getTime()).toBe(
+        new Date(values.my.value).getTime()
+      );
+    });
+    test('string', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: Math.random().toString()
+        }
+      };
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect(flattened['my.value']).toBe(values.my.value);
+      expect(Object.keys(flattened).length).toBe(1);
     });
   });
 });
