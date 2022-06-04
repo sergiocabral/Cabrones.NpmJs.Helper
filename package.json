@@ -1,6 +1,6 @@
 {
   "name": "@sergiocabral/helper",
-  "version": "10.3.1",
+  "version": "11.0.0",
   "description": "General-purpose functionality in JavaScript.",
   "main": "js/index.js",
   "types": "js/index.d.ts",
