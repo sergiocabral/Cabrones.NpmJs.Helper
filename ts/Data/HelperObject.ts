@@ -395,10 +395,12 @@ export class HelperObject {
   /**
    * Achata um objeto num único nível tendo apenas valores simples.
    * @param values Valores.
-   * @param allowArray Permite presença de array
+   * @param separator Separador de propriedades, padrão é '__'.
+   * @param allowArray Permite presença de array, padrão é true.
    */
   public static flatten(
     values: unknown,
+    separator = '__',
     allowArray = true
   ): Record<string, PrimitiveValueType | PrimitiveValueType[]> {
     const getValue = (
@@ -443,7 +445,8 @@ export class HelperObject {
                 if (!Object.prototype.hasOwnProperty.call(inner, innerKey)) {
                   continue;
                 }
-                result[`${dictionaryKey}.${innerKey}`] = inner[innerKey];
+                result[`${dictionaryKey}${separator}${innerKey}`] =
+                  inner[innerKey];
               }
             } else {
               result[dictionaryKey] = inner;
@@ -485,24 +488,26 @@ export class HelperObject {
    * Achata um objeto num único nível tendo apenas valores simples (e Data).
    * Similar a flatten, mas garante que o valo seja armazenado como string e um novo campo criado para o tipo específico.
    * @param values Valores.
-   * @param allowArray Permite presença de array
+   * @param separator Separador de propriedades, padrão é '-'.
+   * @param allowArray Permite presença de array, padrão é true.
    */
   public static flattenWithSafeType(
     values: unknown,
+    separator = '__',
     allowArray = true
   ): Record<string, PrimitiveValueType | PrimitiveValueType[] | Date> {
     const flattened: Record<
       string,
       PrimitiveValueType | PrimitiveValueType[] | Date
-    > = HelperObject.flatten(values, allowArray);
+    > = HelperObject.flatten(values, separator, allowArray);
     for (const key in flattened) {
       if (Object.prototype.hasOwnProperty.call(flattened, key)) {
         const value = flattened[key];
         if (typeof value === 'number' && Number.isFinite(value)) {
-          flattened[`${key}.${typeof value}`] = value;
+          flattened[`${key}${separator}${typeof value}`] = value;
           flattened[key] = HelperNumeric.fromENotation(value);
         } else if (typeof value === 'boolean') {
-          flattened[`${key}.${typeof value}`] = value;
+          flattened[`${key}${separator}${typeof value}`] = value;
           flattened[key] = value.toString();
         } else if (
           typeof value === 'string' &&
@@ -510,11 +515,11 @@ export class HelperObject {
         ) {
           const date = new Date(value);
           if (Number.isFinite(date.getTime())) {
-            flattened[`${key}.${Date.name.toLowerCase()}`] = date;
+            flattened[`${key}${separator}${Date.name.toLowerCase()}`] = date;
             flattened[key] = value;
           }
         } else if (Array.isArray(value)) {
-          flattened[`${key}.${Array.name.toLowerCase()}`] = value;
+          flattened[`${key}${separator}${Array.name.toLowerCase()}`] = value;
           flattened[key] = value.toString();
         } else {
           flattened[key] = String(flattened[key]);
