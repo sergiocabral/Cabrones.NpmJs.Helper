@@ -510,9 +510,12 @@ export class HelperObject {
         ) {
           const date = new Date(value);
           if (Number.isFinite(date.getTime())) {
-            flattened[`${key}.${date.constructor.name.toLowerCase()}`] = date;
+            flattened[`${key}.${Date.name.toLowerCase()}`] = date;
             flattened[key] = value;
           }
+        } else if (Array.isArray(value)) {
+          flattened[`${key}.${Array.name.toLowerCase()}`] = value;
+          flattened[key] = value.toString();
         } else {
           flattened[key] = String(flattened[key]);
         }

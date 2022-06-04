@@ -1620,7 +1620,12 @@ Methods:
 
       const structuredObject = {
         list: {
-          objects: [{ firstName: 'sergio' }, new Date(), Math.random()]
+          value: [
+            { name: 'sergio cabral' },
+            new Date(),
+            Math.random(),
+            Math.floor(Math.random() * 1000 + 1000) % 2 === 0
+          ]
         }
       };
 
@@ -1635,13 +1640,59 @@ Methods:
 
       expect(flattenedKeys.length).toBe(1);
       expect(flattenedValueArray[0]).toBe(
-        HelperObject.toValue(structuredObject.list.objects[0])
+        HelperObject.toValue(structuredObject.list.value[0])
       );
       expect(flattenedValueArray[1]).toBe(
-        HelperObject.toValue(structuredObject.list.objects[1])
+        HelperObject.toValue(structuredObject.list.value[1])
       );
       expect(flattenedValueArray[2]).toBe(
-        HelperObject.toValue(structuredObject.list.objects[2])
+        HelperObject.toValue(structuredObject.list.value[2])
+      );
+      expect(flattenedValueArray[3]).toBe(
+        HelperObject.toValue(structuredObject.list.value[3])
+      );
+    });
+    test('objeto estruturado com array tendo objetos estruturados contendo arrays retorna nome com index e seguido da estrutura de objetos', () => {
+      // Arrange, Given
+
+      const structuredObject = {
+        list: {
+          value: [
+            {
+              name: {
+                first: 'sergio',
+                last: 'cabral'
+              }
+            },
+            new Date(),
+            Math.random(),
+            Math.floor(Math.random() * 1000 + 1000) % 2 === 0
+          ]
+        }
+      };
+      const allowArray = false;
+
+      // Act, When
+
+      const flattened = HelperObject.flatten(structuredObject, allowArray);
+
+      // Assert, Then
+
+      expect(Object.keys(flattened).length).toBe(5);
+      expect(flattened['list.value.0.name.first']).toBe(
+        HelperObject.toValue((structuredObject.list.value[0] as any).name.first)
+      );
+      expect(flattened['list.value.0.name.last']).toBe(
+        HelperObject.toValue((structuredObject.list.value[0] as any).name.last)
+      );
+      expect(flattened['list.value.1']).toBe(
+        HelperObject.toValue(structuredObject.list.value[1])
+      );
+      expect(flattened['list.value.2']).toBe(
+        HelperObject.toValue(structuredObject.list.value[2])
+      );
+      expect(flattened['list.value.3']).toBe(
+        HelperObject.toValue(structuredObject.list.value[3])
       );
     });
     test('objeto estruturado com propriedades usando pontos vai valer as últimas', () => {
@@ -1809,6 +1860,97 @@ Methods:
 
       expect(flattened['my.value']).toBe(values.my.value);
       expect(Object.keys(flattened).length).toBe(1);
+    });
+    test('array não permitido', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: [
+            {
+              person: {
+                first: 'sergio',
+                last: 'cabral',
+                age: 40
+              }
+            },
+            new Date(),
+            Math.random(),
+            Math.floor(Math.random() * 1000 + 1000) % 2 === 0
+          ]
+        }
+      };
+      const allowArray = false;
+      const expectedArray = values.my.value.map(item =>
+        HelperObject.toValue(item)
+      );
+      const expectedValue = String(expectedArray);
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values, allowArray);
+
+      // Assert, Then
+
+      const flattenedKeys = Object.keys(flattened);
+
+      expect(flattenedKeys.length).toBe(10);
+      expect(flattenedKeys.includes('my.value.0.person.first')).toBe(true);
+      expect(flattenedKeys.includes('my.value.0.person.last')).toBe(true);
+      expect(flattenedKeys.includes('my.value.0.person.age')).toBe(true);
+      expect(flattenedKeys.includes('my.value.0.person.age.number')).toBe(true);
+      expect(flattenedKeys.includes('my.value.1')).toBe(true);
+      expect(flattenedKeys.includes('my.value.1.date')).toBe(true);
+      expect(flattenedKeys.includes('my.value.2')).toBe(true);
+      expect(flattenedKeys.includes('my.value.2.number')).toBe(true);
+      expect(flattenedKeys.includes('my.value.3')).toBe(true);
+      expect(flattenedKeys.includes('my.value.3.boolean')).toBe(true);
+
+      expect(flattened['my.value.0.person.first']).toBe(
+        (values.my.value[0] as any).person.first
+      );
+      expect(flattened['my.value.0.person.last']).toBe(
+        (values.my.value[0] as any).person.last
+      );
+      expect(flattened['my.value.0.person.age']).toBe(
+        (values.my.value[0] as any).person.age.toString()
+      );
+      expect(flattened['my.value.0.person.age.number']).toBe(
+        (values.my.value[0] as any).person.age
+      );
+      expect(flattened['my.value.1']).toBe(
+        (values.my.value[1] as Date).toISOString()
+      );
+      expect(new Date(flattened['my.value.1.date'] as any).getTime()).toBe(
+        new Date(values.my.value[1] as any).getTime()
+      );
+      expect(flattened['my.value.2']).toBe(values.my.value[2].toString());
+      expect(flattened['my.value.2.number']).toBe(values.my.value[2]);
+      expect(flattened['my.value.3']).toBe(values.my.value[3].toString());
+      expect(flattened['my.value.3.boolean']).toBe(values.my.value[3]);
+    });
+    test('array permitido', () => {
+      // Arrange, Given
+
+      const values = {
+        my: {
+          value: [{ name: 'sergio cabral' }, new Date(), Math.random()]
+        }
+      };
+      const expectedArray = values.my.value.map(item =>
+        HelperObject.toValue(item)
+      );
+      const expectedValue = String(expectedArray);
+
+      // Act, When
+
+      const flattened = HelperObject.flattenWithSafeType(values);
+
+      // Assert, Then
+
+      expect(flattened['my.value']).toBe(expectedValue);
+      expect(flattened['my.value.array']).toStrictEqual(expectedArray);
+      expect(Object.keys(flattened).length).toBe(2);
     });
   });
 });
