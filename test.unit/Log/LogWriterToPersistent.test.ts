@@ -14,6 +14,8 @@ describe('Class LogWriterToPersistent', () => {
   beforeEach(() => {
     originals['LogWriterToPersistent.waitInMillisecondsOnError'] =
       LogWriterToPersistent.waitInMillisecondsOnError;
+    originals['LogWriterToPersistent.waitInMillisecondsIfNotReady'] =
+      LogWriterToPersistent.waitInMillisecondsIfNotReady;
     originals['LogWriter.minimumLevel'] = LogWriter.minimumLevel;
     originals['LogWriter.defaultLogLevel'] = LogWriter.defaultLogLevel;
     originals['console.error'] = console.error;
@@ -22,6 +24,8 @@ describe('Class LogWriterToPersistent', () => {
   afterEach(() => {
     LogWriterToPersistent.waitInMillisecondsOnError =
       originals['LogWriterToPersistent.waitInMillisecondsOnError'];
+    LogWriterToPersistent.waitInMillisecondsIfNotReady =
+      originals['LogWriterToPersistent.waitInMillisecondsIfNotReady'];
     LogWriter.minimumLevel = originals['LogWriter.minimumLevel'];
     LogWriter.defaultLogLevel = originals['LogWriter.defaultLogLevel'];
     console.error = originals['console.error'];
@@ -256,6 +260,240 @@ describe('Class LogWriterToPersistent', () => {
       });
     });
   });
+  describe('waitInMillisecondsIfNotReady', () => {
+    test('o valor estático padrão é 1 segundo', () => {
+      // Arrange, Given
+
+      const expectedValue = 1000;
+
+      // Act, When
+
+      const receivedValue = LogWriterToPersistent.waitInMillisecondsIfNotReady;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('o valor estático é usado como padrão se não informado', () => {
+      // Arrange, Given
+
+      const randomValue = Math.floor(Math.random() * 1000);
+      LogWriterToPersistent.waitInMillisecondsIfNotReady = randomValue;
+
+      // Act, When
+
+      const sut = new LogWriterToPersistent(
+        {
+          state: ConnectionState.Ready
+        },
+        jest.fn()
+      );
+
+      // Assert, Then
+
+      expect(sut.waitInMillisecondsIfNotReady).toBe(randomValue);
+    });
+    describe('definido pelo construtor', () => {
+      test('deve poder especificar seu valor', () => {
+        // Arrange, Given
+
+        const staticValue = Math.floor(Math.random() * 1000);
+        const instanceValue = Math.floor(Math.random() * 1000);
+        LogWriterToPersistent.waitInMillisecondsIfNotReady = staticValue;
+
+        // Act, When
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn(),
+          LogWriter.minimumLevel,
+          LogWriter.defaultLogLevel,
+          LogWriterToPersistent.waitInMillisecondsOnError,
+          instanceValue
+        );
+
+        // Assert, Then
+
+        expect(sut.waitInMillisecondsIfNotReady).not.toBe(staticValue);
+        expect(sut.waitInMillisecondsIfNotReady).toBe(instanceValue);
+      });
+      test('não deve aceitar valor menor que zero', () => {
+        // Arrange, Given
+
+        const lessThanZero = -Math.random();
+
+        // Act, When
+
+        const setter = () =>
+          new LogWriterToPersistent(
+            {
+              state: ConnectionState.Ready
+            },
+            jest.fn(),
+            LogWriter.minimumLevel,
+            LogWriter.defaultLogLevel,
+            LogWriterToPersistent.waitInMillisecondsOnError,
+            lessThanZero
+          );
+
+        // Assert, Then
+
+        expect(setter).toThrow(InvalidArgumentError);
+      });
+      test('não deve aceitar valor NaN', () => {
+        // Arrange, Given
+
+        const notANumber = NaN;
+
+        // Act, When
+
+        const setter = () =>
+          new LogWriterToPersistent(
+            {
+              state: ConnectionState.Ready
+            },
+            jest.fn(),
+            LogWriter.minimumLevel,
+            LogWriter.defaultLogLevel,
+            LogWriterToPersistent.waitInMillisecondsOnError,
+            notANumber
+          );
+
+        // Assert, Then
+
+        expect(setter).toThrow(InvalidArgumentError);
+      });
+      test('pode aceitar zero', () => {
+        // Arrange, Given
+
+        const zero = 0;
+
+        // Act, When
+
+        const setter = () =>
+          new LogWriterToPersistent(
+            {
+              state: ConnectionState.Ready
+            },
+            jest.fn(),
+            LogWriter.minimumLevel,
+            LogWriter.defaultLogLevel,
+            LogWriterToPersistent.waitInMillisecondsOnError,
+            zero
+          );
+
+        // Assert, Then
+
+        expect(setter).not.toThrow();
+      });
+      test('pode aceitar qualquer valor positivo', () => {
+        // Arrange, Given
+
+        const randomValue = Math.random();
+
+        // Act, When
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn(),
+          LogWriter.minimumLevel,
+          LogWriter.defaultLogLevel,
+          LogWriterToPersistent.waitInMillisecondsOnError,
+          randomValue
+        );
+
+        // Assert, Then
+
+        expect(sut.waitInMillisecondsIfNotReady).toBe(randomValue);
+      });
+    });
+    describe('definido pela propriedade', () => {
+      test('não deve aceitar valor menor que zero', () => {
+        // Arrange, Given
+
+        const lessThanZero = -Math.random();
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn()
+        );
+
+        // Act, When
+
+        const setter = () => (sut.waitInMillisecondsIfNotReady = lessThanZero);
+
+        // Assert, Then
+
+        expect(setter).toThrow(InvalidArgumentError);
+      });
+      test('não deve aceitar valor NaN', () => {
+        // Arrange, Given
+
+        const notANumber = NaN;
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn()
+        );
+
+        // Act, When
+
+        const setter = () => (sut.waitInMillisecondsIfNotReady = notANumber);
+
+        // Assert, Then
+
+        expect(setter).toThrow(InvalidArgumentError);
+      });
+      test('pode aceitar zero', () => {
+        // Arrange, Given
+
+        const zero = 0;
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn()
+        );
+
+        // Act, When
+
+        const setter = () => (sut.waitInMillisecondsIfNotReady = zero);
+
+        // Assert, Then
+
+        expect(setter).not.toThrow();
+      });
+      test('pode aceitar qualquer valor positivo', () => {
+        // Arrange, Given
+
+        const randomValue = Math.random();
+
+        const sut = new LogWriterToPersistent(
+          {
+            state: ConnectionState.Ready
+          },
+          jest.fn()
+        );
+
+        // Act, When
+
+        sut.waitInMillisecondsIfNotReady = randomValue;
+
+        // Assert, Then
+
+        expect(sut.waitInMillisecondsIfNotReady).toBe(randomValue);
+      });
+    });
+  });
   describe('minimumLevel', () => {
     test('se não informado vem de LogWriter.minimumLevel', () => {
       // Arrange, Given
@@ -432,6 +670,7 @@ describe('Class LogWriterToPersistent', () => {
       // Arrange, Given
 
       const waitInMillisecondsOnError = 0;
+      const waitInMillisecondsIfNotReady = 0;
       const connection = { state: ConnectionState.Closed };
       const mockSave = jest.fn();
       const messages = Array<string>(10)
@@ -443,7 +682,8 @@ describe('Class LogWriterToPersistent', () => {
         mockSave,
         LogLevel.Verbose,
         LogLevel.Debug,
-        waitInMillisecondsOnError
+        waitInMillisecondsOnError,
+        waitInMillisecondsIfNotReady
       );
 
       // Act, When
@@ -476,12 +716,12 @@ describe('Class LogWriterToPersistent', () => {
       }, 1);
     });
   });
-  test('esperando o waitInMillisecondsOnError, deve guardar mensagens até que a conexão seja Ready', async () => {
+  test('esperando o waitInMillisecondsIfNotReady, deve guardar mensagens até que a conexão seja Ready', async () => {
     return new Promise<void>(resolve => {
       // Arrange, Given
 
       const connection = { state: ConnectionState.Closed };
-      const waitInMillisecondsOnError = 2;
+      const waitInMillisecondsIfNotReady = 2;
       const mockSave = jest.fn();
       const messages = Array<string>(10)
         .fill('')
@@ -492,7 +732,8 @@ describe('Class LogWriterToPersistent', () => {
         mockSave,
         LogLevel.Verbose,
         LogLevel.Debug,
-        waitInMillisecondsOnError
+        LogWriterToPersistent.waitInMillisecondsOnError,
+        waitInMillisecondsIfNotReady
       );
 
       // Act, When
@@ -517,8 +758,8 @@ describe('Class LogWriterToPersistent', () => {
           // Tear Down
 
           resolve();
-        }, waitInMillisecondsOnError * 10);
-      }, waitInMillisecondsOnError / 2);
+        }, waitInMillisecondsIfNotReady * 10);
+      }, waitInMillisecondsIfNotReady / 2);
     });
   });
   test('flush() pode ser chamado múltiplas vezes e não liberar mensagens se conexão não é Ready', async () => {
@@ -526,7 +767,7 @@ describe('Class LogWriterToPersistent', () => {
       // Arrange, Given
 
       const connectionState = ConnectionState.Closed;
-      const waitInMillisecondsOnError = 0;
+      const waitInMillisecondsIfNotReady = 0;
       const mockSave = jest.fn();
 
       const sut = new LogWriterToPersistent(
@@ -534,7 +775,8 @@ describe('Class LogWriterToPersistent', () => {
         mockSave,
         LogLevel.Verbose,
         LogLevel.Debug,
-        waitInMillisecondsOnError
+        LogWriterToPersistent.waitInMillisecondsOnError,
+        waitInMillisecondsIfNotReady
       );
 
       sut.post(Math.random().toString());

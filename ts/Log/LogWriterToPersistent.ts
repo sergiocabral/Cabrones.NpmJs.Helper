@@ -17,12 +17,18 @@ export class LogWriterToPersistent extends LogWriter {
   public static waitInMillisecondsOnError = 60000;
 
   /**
+   * Espera padrão em milissegundos caso a conexão não esteja pronta.
+   */
+  public static waitInMillisecondsIfNotReady = 1000;
+
+  /**
    * Construtor.
    * @param connection Conexão com a base persistente.
    * @param save Função que vai gravar o log na base persistente.
    * @param minimumLevel Nível mínimo de log para aceitar escrita do log recebido.
    * @param defaultLogLevel Nível padrão de log quando não informado
    * @param waitInMillisecondsOnError Espera em milissegundos em caso de erro.
+   * @param waitInMillisecondsIfNotReady Espera padrão em milissegundos caso a conexão não esteja pronta.
    */
   public constructor(
     public readonly connection: IConnectionState,
@@ -31,11 +37,14 @@ export class LogWriterToPersistent extends LogWriter {
     ) => Promise<void> | void,
     minimumLevel: LogLevel = LogWriter.minimumLevel,
     defaultLogLevel: LogLevel = LogWriter.defaultLogLevel,
-    waitInMillisecondsOnError = LogWriterToPersistent.waitInMillisecondsOnError
+    waitInMillisecondsOnError = LogWriterToPersistent.waitInMillisecondsOnError,
+    waitInMillisecondsIfNotReady = LogWriterToPersistent.waitInMillisecondsIfNotReady
   ) {
     super(minimumLevel, defaultLogLevel);
     this.waitInMillisecondsOnErrorValue = this.waitInMillisecondsOnError =
       waitInMillisecondsOnError;
+    this.waitInMillisecondsIfNotReadyValue = this.waitInMillisecondsIfNotReady =
+      waitInMillisecondsIfNotReady;
   }
 
   /**
@@ -68,6 +77,30 @@ export class LogWriterToPersistent extends LogWriter {
   }
 
   /**
+   * Espera padrão em milissegundos caso a conexão não esteja pronta.
+   */
+  private waitInMillisecondsIfNotReadyValue: number;
+
+  /**
+   * Espera padrão em milissegundos caso a conexão não esteja pronta.
+   */
+  public get waitInMillisecondsIfNotReady(): number {
+    return this.waitInMillisecondsIfNotReadyValue;
+  }
+
+  /**
+   * Espera padrão em milissegundos caso a conexão não esteja pronta.
+   */
+  public set waitInMillisecondsIfNotReady(value: number) {
+    if (!Number.isFinite(value) || value < 0) {
+      throw new InvalidArgumentError(
+        'Expected value greater than or equal to zero..'
+      );
+    }
+    this.waitInMillisecondsIfNotReadyValue = value;
+  }
+
+  /**
    * Escreve o log de fato.
    */
   protected override write(messageAndData: ILogMessageAndData): void {
@@ -95,6 +128,7 @@ export class LogWriterToPersistent extends LogWriter {
     clearTimeout(this.flushTimeout);
     this.isFlushing = true;
 
+    let hasError = false;
     let messageAndData: ILogMessageAndData | undefined;
     while (
       this.connection.state === ConnectionState.Ready &&
@@ -103,6 +137,7 @@ export class LogWriterToPersistent extends LogWriter {
       try {
         await this.save(messageAndData);
       } catch (error) {
+        hasError = true;
         this.buffer.unshift(messageAndData);
         const logger = LogWriterToConsole.getConsoleFunction('error');
         logger(
@@ -117,7 +152,9 @@ export class LogWriterToPersistent extends LogWriter {
     if (this.buffer.length > 0) {
       this.flushTimeout = setTimeout(
         () => void this.flush(),
-        this.waitInMillisecondsOnError
+        hasError
+          ? this.waitInMillisecondsOnError
+          : this.waitInMillisecondsIfNotReady
       );
     } else {
       this.isFlushing = false;

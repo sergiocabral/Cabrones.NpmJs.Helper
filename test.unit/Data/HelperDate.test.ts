@@ -1,8 +1,4 @@
-import {
-  HelperDate,
-  InvalidExecutionError,
-  IDateTimeFormat
-} from '../../ts';
+import { HelperDate, InvalidExecutionError, IDateTimeFormat } from '../../ts';
 
 describe('Classe HelperDate', () => {
   const originals: Record<string, any> = {};
