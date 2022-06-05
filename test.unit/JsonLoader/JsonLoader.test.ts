@@ -2,6 +2,7 @@
 
 import {
   EmptyError,
+  HelperDate,
   HelperList,
   InvalidArgumentError,
   JsonLoader,
@@ -71,6 +72,9 @@ class ConfigurationForNameD extends JsonLoader {
     );
     return errors;
   }
+}
+class TestConfiguration<T> extends JsonLoader {
+  property?: T;
 }
 
 describe('Class JsonLoader', () => {
@@ -1708,6 +1712,172 @@ describe('Class JsonLoader', () => {
         );
         expect(mockMustBe.mock.calls[0][3]).toBe(true);
         expect(mockMustBe.mock.calls[0][4]).toBe('UUID');
+      });
+      test('mustBeDate chama mustBeValidFormat', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const evaluate = HelperDate.isDateYYYMMDD.bind(HelperDate);
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5) => expectedResult
+        );
+        JsonLoader.mustBeValidFormat = mockMustBe;
+
+        // Act, When
+
+        const receivedResult = JsonLoader.mustBeDate<ConfigurationTestA>(
+          instance,
+          fieldName
+        );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2].toString()).toBe(
+          evaluate.toString()
+        );
+        expect(mockMustBe.mock.calls[0][3]).toBe(false);
+        expect(mockMustBe.mock.calls[0][4]).toBe('date YYYY-MM-DD');
+      });
+      test('mustBeDate chama mustBeValidFormat', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const evaluate = HelperDate.isDateYYYMMDD.bind(HelperDate);
+        const canBeNotInformed = false;
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5) => expectedResult
+        );
+        JsonLoader.mustBeValidFormat = mockMustBe;
+
+        // Act, When
+
+        const receivedResult = JsonLoader.mustBeDate<ConfigurationTestA>(
+          instance,
+          fieldName
+        );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2].toString()).toBe(
+          evaluate.toString()
+        );
+        expect(mockMustBe.mock.calls[0][3]).toBe(canBeNotInformed);
+        expect(mockMustBe.mock.calls[0][4]).toBe('date YYYY-MM-DD');
+      });
+      test('mustBeDateOrNotInformed chama mustBeValidFormat', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const evaluate = HelperDate.isDateYYYMMDD.bind(HelperDate);
+        const canBeNotInformed = true;
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5) => expectedResult
+        );
+        JsonLoader.mustBeValidFormat = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeDateOrNotInformed<ConfigurationTestA>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2].toString()).toBe(
+          evaluate.toString()
+        );
+        expect(mockMustBe.mock.calls[0][3]).toBe(canBeNotInformed);
+        expect(mockMustBe.mock.calls[0][4]).toBe('date YYYY-MM-DD');
+      });
+      test('mustBeDateTimeISO chama mustBeValidFormat', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const evaluate = HelperDate.isDateISO.bind(HelperDate);
+        const canBeNotInformed = false;
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5) => expectedResult
+        );
+        JsonLoader.mustBeValidFormat = mockMustBe;
+
+        // Act, When
+
+        const receivedResult = JsonLoader.mustBeDateTimeISO<ConfigurationTestA>(
+          instance,
+          fieldName
+        );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2].toString()).toBe(
+          evaluate.toString()
+        );
+        expect(mockMustBe.mock.calls[0][3]).toBe(canBeNotInformed);
+        expect(mockMustBe.mock.calls[0][4]).toBe('datetime ISO 8601');
+      });
+      test('mustBeDateTimeISOOrNotInformed chama mustBeValidFormat', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestA();
+        const fieldName = 'propertyNumber';
+        const expectedResult = Array<string>();
+        const evaluate = HelperDate.isDateISO.bind(HelperDate);
+        const canBeNotInformed = true;
+
+        const mockMustBe = jest.fn(
+          (arg1, arg2, arg3, arg4, arg5) => expectedResult
+        );
+        JsonLoader.mustBeValidFormat = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeDateTimeISOOrNotInformed<ConfigurationTestA>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toBe(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2].toString()).toBe(
+          evaluate.toString()
+        );
+        expect(mockMustBe.mock.calls[0][3]).toBe(canBeNotInformed);
+        expect(mockMustBe.mock.calls[0][4]).toBe('datetime ISO 8601');
       });
     });
     describe('Validadores de fato', () => {
@@ -4780,6 +4950,97 @@ describe('Class JsonLoader', () => {
       );
       expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
       expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
+    });
+  });
+  describe('testes com valores reais', () => {
+    test('mustBeUuidOrNotInformed', () => {
+      // Arrange, Given
+
+      const values: [boolean, string | undefined | null][] = [
+        [true, null],
+        [true, undefined],
+        [true, '1ddbf92b-854c-41d2-952f-23d97f185874'],
+        [true, '00000000-0000-0000-0000-000000000000'],
+        [true, 'f0000000-0000-0000-0000-000000000000'],
+        [true, 'F0000000-0000-0000-0000-000000000000'],
+        [false, 'g0000000-0000-0000-0000-000000000000']
+      ];
+
+      for (const test of values) {
+        const isValid = test[0];
+        const value = test[1];
+
+        const json = new TestConfiguration<string | undefined | null>();
+        json.property = value;
+
+        // Act, When
+
+        const errors = JsonLoader.mustBeUuidOrNotInformed<
+          TestConfiguration<string | undefined | null>
+        >(json, 'property');
+
+        // Assert, Then
+        expect(errors.length === 0).toBe(isValid);
+      }
+    });
+    test('mustBeDateOrNotInformed', () => {
+      // Arrange, Given
+
+      const values: [boolean, string | undefined | null][] = [
+        [true, null],
+        [true, undefined],
+        [true, '2020-01-01'],
+        [true, '2020-1-1'],
+        [false, '0000-00-00'],
+        [false, 'ops'],
+        [false, new Date().toString()]
+      ];
+
+      for (const test of values) {
+        const isValid = test[0];
+        const value = test[1];
+
+        const json = new TestConfiguration<string | undefined | null>();
+        json.property = value;
+
+        // Act, When
+
+        const errors = JsonLoader.mustBeDateOrNotInformed<
+          TestConfiguration<string | undefined | null>
+        >(json, 'property');
+
+        // Assert, Then
+        expect(errors.length === 0).toBe(isValid);
+      }
+    });
+    test('mustBeDateTimeISOOrNotInformed', () => {
+      // Arrange, Given
+
+      const values: [boolean, string | undefined | null][] = [
+        [true, null],
+        [true, undefined],
+        [true, '2022-06-05T16:27:40.792Z'],
+        [true, '2022-06-05T16:27:40.792+03:00'],
+        [true, '2022-06-05T16:27:40.792-03:00'],
+        [false, '0000-00-00T16:27:40.792Z']
+      ];
+
+      for (const test of values) {
+        const isValid = test[0];
+        const value = test[1];
+
+        const json = new TestConfiguration<string | undefined | null>();
+        json.property = value;
+
+        // Act, When
+
+        const errors = JsonLoader.mustBeDateTimeISOOrNotInformed<
+          TestConfiguration<string | undefined | null>
+        >(json, 'property');
+
+        // Assert, Then
+        expect(errors.length === 0).toBe(isValid);
+      }
     });
   });
 });

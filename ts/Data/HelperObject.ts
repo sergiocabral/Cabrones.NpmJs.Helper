@@ -2,6 +2,7 @@ import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { ResultEvent } from '../Type/Event/ResultEvent';
 import { PrimitiveValueType } from '../Type/Native/PrimitiveValueType';
 import { HelperNumeric } from './HelperNumeric';
+import { HelperDate } from './HelperDate';
 
 /**
  * Utilitários para objetos, classes, etc.
@@ -425,31 +426,29 @@ export class HelperObject {
 
       const dictionary = value as Record<string, unknown>;
       for (const dictionaryKey in dictionary) {
-        if (!Object.prototype.hasOwnProperty.call(dictionary, dictionaryKey)) {
-          continue;
-        }
-        const dictionaryValue = dictionary[dictionaryKey];
-        if (
-          !Array.isArray(dictionaryValue) &&
-          HelperObject.isValue(dictionaryValue)
-        ) {
-          const asValue = getValue(dictionaryValue);
-          if (asValue !== undefined && typeof asValue !== 'object') {
-            result[dictionaryKey] = asValue;
-          }
-        } else {
-          const inner = getValue(dictionaryValue);
-          if (typeof inner === 'object') {
-            if (!Array.isArray(inner)) {
-              for (const innerKey in inner) {
-                if (!Object.prototype.hasOwnProperty.call(inner, innerKey)) {
-                  continue;
+        if (Object.prototype.hasOwnProperty.call(dictionary, dictionaryKey)) {
+          const dictionaryValue = dictionary[dictionaryKey];
+          if (
+            !Array.isArray(dictionaryValue) &&
+            HelperObject.isValue(dictionaryValue)
+          ) {
+            const asValue = getValue(dictionaryValue);
+            if (asValue !== undefined && typeof asValue !== 'object') {
+              result[dictionaryKey] = asValue;
+            }
+          } else {
+            const inner = getValue(dictionaryValue);
+            if (typeof inner === 'object') {
+              if (!Array.isArray(inner)) {
+                for (const innerKey in inner) {
+                  if (Object.prototype.hasOwnProperty.call(inner, innerKey)) {
+                    result[`${dictionaryKey}${separator}${innerKey}`] =
+                      inner[innerKey];
+                  }
                 }
-                result[`${dictionaryKey}${separator}${innerKey}`] =
-                  inner[innerKey];
+              } else {
+                result[dictionaryKey] = inner;
               }
-            } else {
-              result[dictionaryKey] = inner;
             }
           }
         }
@@ -479,12 +478,6 @@ export class HelperObject {
   }
 
   /**
-   * Expressão regular para validar texto em formato data ISO.
-   */
-  private static regexIsIsoDate =
-    /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})(Z|[+-]\d{2}:\d{2})/;
-
-  /**
    * Achata um objeto num único nível tendo apenas valores simples (e Data).
    * Similar a flatten, mas garante que o valo seja armazenado como string e um novo campo criado para o tipo específico.
    * @param values Valores.
@@ -511,7 +504,7 @@ export class HelperObject {
           flattened[key] = value.toString();
         } else if (
           typeof value === 'string' &&
-          HelperObject.regexIsIsoDate.test(value)
+          HelperDate.regexIsIsoDate.test(value)
         ) {
           const date = new Date(value);
           if (Number.isFinite(date.getTime())) {

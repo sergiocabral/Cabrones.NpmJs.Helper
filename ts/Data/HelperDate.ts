@@ -15,6 +15,48 @@ export class HelperDate {
   }
 
   /**
+   * Expressão regular para validar texto em formato data YYY-MM-DD.
+   */
+  public static regexIsDateYearMonthDay = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
+  /**
+   * Verifica se um valor atende ao formato ISO de data.
+   * @param value
+   */
+  public static isDateYYYMMDD(value: unknown): boolean {
+    const match = String(value).match(HelperDate.regexIsDateYearMonthDay);
+    if (match !== null) {
+      const year = Number(match[1]);
+      const month = Number(match[2]);
+      const day = Number(match[3]);
+      const date = new Date(year, month - 1, day);
+      return (
+        Number.isFinite(date.getTime()) &&
+        date.getFullYear() === year &&
+        date.getMonth() + 1 === month &&
+        date.getDate() === day
+      );
+    }
+    return false;
+  }
+
+  /**
+   * Expressão regular para validar texto em formato data ISO.
+   */
+  public static regexIsIsoDate =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})(Z|[+-]\d{2}:\d{2})$/;
+
+  /**
+   * Verifica se um valor atende ao formato ISO de data.
+   * @param value
+   */
+  public static isDateISO(value: unknown): boolean {
+    const isoFormat = String(value);
+    const match = isoFormat.match(HelperDate.regexIsIsoDate);
+    return match !== null && Number.isFinite(new Date(isoFormat).getTime());
+  }
+
+  /**
    * Adiciona tempo a uma data: milissegundos
    * @param milliseconds milissegundos
    * @param fromDate Data de partida. Quando não informado usa a data atual.

@@ -1,4 +1,8 @@
-import { HelperDate, InvalidExecutionError, IDateTimeFormat } from '../../ts';
+import {
+  HelperDate,
+  InvalidExecutionError,
+  IDateTimeFormat
+} from '../../ts';
 
 describe('Classe HelperDate', () => {
   const originals: Record<string, any> = {};
@@ -9,6 +13,9 @@ describe('Classe HelperDate', () => {
     originals['HelperDate.addMinutes'] = HelperDate.addMinutes;
     originals['HelperDate.addHours'] = HelperDate.addHours;
     originals['HelperDate.addDays'] = HelperDate.addDays;
+    originals['HelperDate.regexIsDateYearMonthDay'] =
+      HelperDate.regexIsDateYearMonthDay;
+    originals['HelperDate.regexIsIsoDate'] = HelperDate.regexIsIsoDate;
   });
 
   afterEach(() => {
@@ -17,6 +24,9 @@ describe('Classe HelperDate', () => {
     HelperDate.addMinutes = originals['HelperDate.addMinutes'];
     HelperDate.addHours = originals['HelperDate.addHours'];
     HelperDate.addDays = originals['HelperDate.addDays'];
+    HelperDate.regexIsDateYearMonthDay =
+      originals['HelperDate.regexIsDateYearMonthDay'];
+    HelperDate.regexIsIsoDate = originals['HelperDate.regexIsIsoDate'];
   });
 
   test('Não deve permitir instanciar', () => {
@@ -271,6 +281,114 @@ describe('Classe HelperDate', () => {
       // Assert, Then
 
       expect(text).toEqual('01/01/1970 00:00:00');
+    });
+  });
+  test('Verifica regexIsIsoDate', () => {
+    // Arrange, Given
+
+    const expectedRegex =
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})(Z|[+-]\d{2}:\d{2})$/;
+
+    // Act, When
+
+    const regex = HelperDate.regexIsIsoDate;
+
+    // Assert, Then
+
+    expect(regex.toString()).toEqual(expectedRegex.toString());
+  });
+  test('Verifica regexIsDateYearMonthDay', () => {
+    // Arrange, Given
+
+    const expectedRegex = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
+    // Act, When
+
+    const regex = HelperDate.regexIsDateYearMonthDay;
+
+    // Assert, Then
+
+    expect(regex.toString()).toEqual(expectedRegex.toString());
+  });
+  describe('isDateYYYMMDD', () => {
+    test('Deve usar HelperDate.regexIsDateYearMonthDay', () => {
+      // Arrange, Given
+
+      const regexDontMatch = /^\0$/;
+      HelperDate.regexIsDateYearMonthDay = regexDontMatch;
+
+      const validValue = '2020-01-01';
+
+      // Act, When
+
+      const matach = HelperDate.isDateYYYMMDD(validValue);
+
+      // Assert, Then
+
+      expect(matach).toBe(false);
+    });
+    test('valida valores', () => {
+      // Arrange, Given
+
+      const values: [boolean, string | undefined | null][] = [
+        [true, '2020-01-01'],
+        [true, '2020-1-1'],
+        [false, '0000-00-00'],
+        [false, 'ops'],
+        [false, new Date().toString()]
+      ];
+
+      for (const test of values) {
+        const isValid = test[0];
+        const value = test[1];
+
+        // Act, When
+
+        const result = HelperDate.isDateYYYMMDD(value);
+
+        // Assert, Then
+        expect(result).toBe(isValid);
+      }
+    });
+  });
+  describe('isDateISO', () => {
+    test('Deve usar HelperDate.regexIsIsoDate', () => {
+      // Arrange, Given
+
+      const regexDontMatch = /^\0$/;
+      HelperDate.regexIsIsoDate = regexDontMatch;
+
+      const validValue = new Date().toISOString();
+
+      // Act, When
+
+      const matach = HelperDate.isDateISO(validValue);
+
+      // Assert, Then
+
+      expect(matach).toBe(false);
+    });
+    test('valida valores', () => {
+      // Arrange, Given
+
+      const values: [boolean, string | undefined | null][] = [
+        [true, '2022-06-05T16:27:40.792Z'],
+        [true, '2022-06-05T16:27:40.792+03:00'],
+        [true, '2022-06-05T16:27:40.792-03:00'],
+        [false, '0000-00-00T16:27:40.792Z']
+      ];
+
+      for (const test of values) {
+        const isValid = test[0];
+        const value = test[1];
+
+        // Act, When
+
+        const result = HelperDate.isDateISO(value);
+
+        // Assert, Then
+        expect(result).toBe(isValid);
+      }
     });
   });
 });

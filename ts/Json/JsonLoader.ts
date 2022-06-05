@@ -4,6 +4,7 @@ import { PrimitiveValueTypeName } from '../Type/Native/PrimitiveValueTypeName';
 import { EmptyError } from '../Error/EmptyError';
 import { HelperList } from '../Data/HelperList';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
+import { HelperDate } from '../Data/HelperDate';
 
 /**
  * Conjunto de informações de configuração.
@@ -1320,6 +1321,78 @@ export abstract class JsonLoader {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
       true,
       'UUID'
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma data.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeDate<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeValidFormat(
+      instance,
+      fieldName,
+      HelperDate.isDateYYYMMDD.bind(HelperDate),
+      false,
+      'date YYYY-MM-DD'
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma data.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeDateOrNotInformed<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeValidFormat(
+      instance,
+      fieldName,
+      HelperDate.isDateYYYMMDD.bind(HelperDate),
+      true,
+      'date YYYY-MM-DD'
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma data e hora em formato ISO.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeDateTimeISO<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeValidFormat(
+      instance,
+      fieldName,
+      HelperDate.isDateISO.bind(HelperDate),
+      false,
+      'datetime ISO 8601'
+    );
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser uma data e hora em formato ISO.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeDateTimeISOOrNotInformed<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeValidFormat(
+      instance,
+      fieldName,
+      HelperDate.isDateISO.bind(HelperDate),
+      true,
+      'datetime ISO 8601'
     );
   }
 }
