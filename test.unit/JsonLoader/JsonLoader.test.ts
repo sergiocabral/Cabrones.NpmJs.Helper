@@ -473,6 +473,118 @@ describe('Class JsonLoader', () => {
         expect(mockMustBe.mock.calls[0][2]).toBe('string');
         expect(mockMustBe.mock.calls[0][3]).toBe(true);
       });
+      test('mustBeStringWithContent chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestB();
+        instance.propertyString = '   ';
+        const fieldName = 'propertyString';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeStringWithContent<ConfigurationTestB>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toStrictEqual(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('string');
+        expect(mockMustBe.mock.calls[0][3]).toBe(false);
+      });
+      test('mustBeStringWithContentOrNotInformed chama mustBeOfType', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestB();
+        instance.propertyString = '   ';
+        const fieldName = 'propertyString';
+        const expectedResult = Array<string>();
+
+        const mockMustBe = jest.fn((arg1, arg2, arg3, arg4) => expectedResult);
+        JsonLoader.mustBeOfType = mockMustBe;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeStringWithContentOrNotInformed<ConfigurationTestB>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult).toStrictEqual(expectedResult);
+        expect(mockMustBe).toBeCalledTimes(1);
+        expect(mockMustBe.mock.calls[0][0]).toBe(instance);
+        expect(mockMustBe.mock.calls[0][1]).toBe(fieldName);
+        expect(mockMustBe.mock.calls[0][2]).toBe('string');
+        expect(mockMustBe.mock.calls[0][3]).toBe(true);
+      });
+      test('mustBeStringWithContent deve incluir "with content" na mensagem', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestB();
+        instance.propertyString = '   ';
+
+        const fieldName = 'propertyString';
+        const typeString = typeof '';
+        const expected = `${ConfigurationTestB.name}.${String(
+          fieldName
+        )} must be a ${[typeString + ' with content'].join(
+          ' or '
+        )}, but found: (${typeString}) "${instance.propertyString}"`;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeStringWithContent<ConfigurationTestB>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult[0]).toBe(expected);
+      });
+      test('mustBeStringWithContentOrNotInformed deve incluir "with content" na mensagem', () => {
+        // Arrange, Given
+
+        const instance = new ConfigurationTestB();
+        instance.propertyString = '   ';
+
+        const fieldName = 'propertyString';
+        const typeString = typeof '';
+        const expected = `${ConfigurationTestB.name}.${String(
+          fieldName
+        )} must be a ${[
+          typeString + ' with content',
+          String(null),
+          String(undefined)
+        ].join(' or ')}, but found: (${typeString}) "${
+          instance.propertyString
+        }"`;
+
+        // Act, When
+
+        const receivedResult =
+          JsonLoader.mustBeStringWithContentOrNotInformed<ConfigurationTestB>(
+            instance,
+            fieldName
+          );
+
+        // Assert, Then
+
+        expect(receivedResult[0]).toBe(expected);
+      });
       test('mustBeNumber chama mustBeOfType', () => {
         // Arrange, Given
 
@@ -1754,8 +1866,10 @@ describe('Class JsonLoader', () => {
               propertyType,
               String(null),
               String(undefined)
-            ].join(' or ')}, but found: ${typeof instance[propertyName]}: ${
-              instance[propertyName]
+            ].join(' or ')}, but found: (${typeof instance[propertyName]}) ${
+              typeof instance[propertyName] === 'string'
+                ? `"${instance[propertyName]}"`
+                : instance[propertyName]
             }`;
 
             // Act, When
@@ -1792,7 +1906,7 @@ describe('Class JsonLoader', () => {
 
             const expectedErrorMessage = `${
               ConfigurationForValidationTest.name
-            }.${propertyName} must be a ${propertyType}, but found: ${typeof value[1]}: ${
+            }.${propertyName} must be a ${propertyType}, but found: (${typeof value[1]}) ${
               value[1]
             }`;
 
@@ -2008,9 +2122,13 @@ describe('Class JsonLoader', () => {
                 canBeNotInformed
                   ? ', or an unspecified list with null or undefined'
                   : ''
-              }, but found: [ ${typeof (
+              }, but found: [ (${typeof (
                 instance[propertyName] as unknown[]
-              )[0]}: ${instance[propertyName]} ]`;
+              )[0]}) ${
+                typeof (instance[propertyName] as unknown[])[0] === 'string'
+                  ? `"${instance[propertyName]}"`
+                  : instance[propertyName]
+              } ]`;
 
               // Act, When
 
@@ -2123,9 +2241,9 @@ describe('Class JsonLoader', () => {
           }.${propertyName} must be a array of items of type ${propertyType.join(
             ' or '
           )}, but found: [ ${[
-            'string: a',
-            'number: 1',
-            'boolean: true',
+            '(string) "a"',
+            '(number) 1',
+            '(boolean) true',
             'undefined',
             'null'
           ].join(', ')} ]`;
@@ -2165,7 +2283,7 @@ describe('Class JsonLoader', () => {
 
             const expectedError = `${
               ConfigurationForValidationTest.name
-            }.${propertyName} must be a array of items of type ${propertyType}, but found: [ ${typeof value[1]}: ${
+            }.${propertyName} must be a array of items of type ${propertyType}, but found: [ (${typeof value[1]}) ${
               value[1]
             } ]`;
 
@@ -2300,7 +2418,12 @@ describe('Class JsonLoader', () => {
                 ? ', or an unspecified list with null or undefined'
                 : ''
             }, but found: [ ${(instance[propertyName] as unknown[])
-              .map(item => `${typeof item}: ${String(item)}`)
+              .map(
+                item =>
+                  `(${typeof item}) ${
+                    typeof item === 'string' ? `"${item}"` : String(item)
+                  }`
+              )
               .join(', ')} ]`;
 
             // Act, When
@@ -2342,7 +2465,12 @@ describe('Class JsonLoader', () => {
                 ? ', or an unspecified list with null or undefined'
                 : ''
             }, but found: [ ${(instance[propertyName] as unknown[])
-              .map(item => `${typeof item}: ${String(item)}`)
+              .map(
+                item =>
+                  `(${typeof item}) ${
+                    typeof item === 'string' ? `"${item}"` : String(item)
+                  }`
+              )
               .join(', ')} ]`;
 
             // Act, When
@@ -2506,7 +2634,12 @@ describe('Class JsonLoader', () => {
                   ? ', or an unspecified list with null or undefined'
                   : ''
               }, but found: [ ${(instance[propertyName] as unknown[])
-                .map(item => `${typeof item}: ${String(item)}`)
+                .map(
+                  item =>
+                    `(${typeof item}) ${
+                      typeof item === 'string' ? `"${item}"` : String(item)
+                    }`
+                )
                 .join(', ')} ]`;
 
               // Act, When
@@ -2611,9 +2744,11 @@ describe('Class JsonLoader', () => {
               ConfigurationForValidationTest.name
             }.${propertyName} must be ${validValuesForError.join(
               ' or '
-            )}, but found: ${typeof instance[propertyName]}: ${String(
-              instance[propertyName]
-            )}`;
+            )}, but found: (${typeof instance[propertyName]}) ${
+              typeof instance[propertyName] === 'string'
+                ? `"${instance[propertyName]}"`
+                : String(instance[propertyName])
+            }`;
 
             // Act, When
 
@@ -2653,9 +2788,11 @@ describe('Class JsonLoader', () => {
               ConfigurationForValidationTest.name
             }.${propertyName} must be ${validValuesForError.join(
               ' or '
-            )}, but found: ${typeof instance[propertyName]}: ${String(
-              instance[propertyName]
-            )}`;
+            )}, but found: (${typeof instance[propertyName]}) ${
+              typeof instance[propertyName] === 'string'
+                ? `"${instance[propertyName]}"`
+                : String(instance[propertyName])
+            }`;
 
             // Act, When
 
@@ -2695,9 +2832,11 @@ describe('Class JsonLoader', () => {
               ConfigurationForValidationTest.name
             }.${propertyName} must be ${validValuesForError.join(
               ' or '
-            )}, but found: ${typeof instance[propertyName]}: ${String(
-              instance[propertyName]
-            )}`;
+            )}, but found: (${typeof instance[propertyName]}) ${
+              typeof instance[propertyName] === 'string'
+                ? `"${instance[propertyName]}"`
+                : String(instance[propertyName])
+            }`;
 
             // Act, When
 
@@ -2737,9 +2876,11 @@ describe('Class JsonLoader', () => {
               ConfigurationForValidationTest.name
             }.${propertyName} must be ${validValuesForError.join(
               ' or '
-            )}, but found: ${typeof instance[propertyName]}: ${String(
-              instance[propertyName]
-            )}`;
+            )}, but found: (${typeof instance[propertyName]}) ${
+              typeof instance[propertyName] === 'string'
+                ? `"${instance[propertyName]}"`
+                : String(instance[propertyName])
+            }`;
 
             // Act, When
 
@@ -2858,9 +2999,11 @@ describe('Class JsonLoader', () => {
                 ConfigurationForValidationTest.name
               }.${propertyName} must be ${validValuesForError.join(
                 ' or '
-              )}, but found: ${typeof instance[propertyName]}: ${String(
-                instance[propertyName]
-              )}`;
+              )}, but found: (${typeof instance[propertyName]}) ${
+                typeof instance[propertyName] === 'string'
+                  ? `"${instance[propertyName]}"`
+                  : String(instance[propertyName])
+              }`;
 
               // Act, When
 
@@ -3240,9 +3383,11 @@ describe('Class JsonLoader', () => {
                     ConfigurationForValidationTest.name
                   }.${propertyName} must be a ${validTypes.join(
                     ' or '
-                  )}, but found: ${typeof wrongTypeValue}: ${String(
-                    wrongTypeValue
-                  )}`;
+                  )}, but found: (${typeof wrongTypeValue}) ${
+                    typeof wrongTypeValue === 'string'
+                      ? `"${wrongTypeValue}"`
+                      : String(wrongTypeValue)
+                  }`;
 
                   // Act, When
 
@@ -3297,9 +3442,11 @@ describe('Class JsonLoader', () => {
                   ConfigurationForValidationTest.name
                 }.${propertyName} must be a ${validTypes.join(
                   ' or '
-                )}, but found: ${typeof wrongTypeValue}: ${String(
-                  wrongTypeValue
-                )}`;
+                )}, but found: (${typeof wrongTypeValue}) ${
+                  typeof wrongTypeValue === 'string'
+                    ? `"${wrongTypeValue}"`
+                    : String(wrongTypeValue)
+                }`;
 
                 // Act, When
 
@@ -3345,7 +3492,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3395,7 +3542,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3445,7 +3592,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'greater than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3495,7 +3642,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'greater than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3544,7 +3691,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3593,7 +3740,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${maxValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3642,7 +3789,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'greater than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3691,7 +3838,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'greater than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
 
               // Act, When
 
@@ -3743,7 +3890,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than';
               const violationMax = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -3794,7 +3941,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than or equal';
               const violationMax = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -3845,7 +3992,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than';
               const violationMax = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -3896,7 +4043,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than or equal';
               const violationMax = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -3947,7 +4094,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than';
               const violationMax = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -3999,7 +4146,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than or equal';
               const violationMax = 'less than';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -4051,7 +4198,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than';
               const violationMax = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -4103,7 +4250,7 @@ describe('Class JsonLoader', () => {
 
               const violationMin = 'greater than or equal';
               const violationMax = 'less than or equal';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violationMin} ${minValue} and ${violationMax} ${maxValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -4153,7 +4300,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'equal to';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -4203,7 +4350,7 @@ describe('Class JsonLoader', () => {
               instance[propertyName] = test[1];
 
               const violation = 'equal to';
-              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: number: ${instance[propertyName]}`;
+              const expectedError = `${ConfigurationForValidationTest.name}.${propertyName} must be ${violation} ${minValue}, but found: (number) ${instance[propertyName]}`;
               // Act, When
 
               const receivedErrors =
@@ -4334,7 +4481,7 @@ describe('Class JsonLoader', () => {
               !canBeNotInformed
                 ? description
                 : [description, String(null), String(undefined)].join(' or ')
-            }, but found: ${typeof value}: ${String(value)}`;
+            }, but found: (${typeof value}) ${String(value)}`;
 
             // Act, When
 
