@@ -570,6 +570,68 @@ export abstract class JsonLoader {
   }
 
   /**
+   * Valida e retorna erro se não atender: deve ser string com conteúdo
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param canBeNotInformed Aceita que o campo não seja informado com null ou undefined.
+   */
+  private static mustBeStringWithContentBase<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson,
+    canBeNotInformed: boolean
+  ): string[] {
+    const errors = [];
+
+    const originalValue = instance[fieldName] as unknown;
+    if (typeof originalValue === 'string') {
+      instance[fieldName] = Symbol() as unknown as TJson[keyof TJson];
+
+      errors.push(
+        ...JsonLoader.mustBeOfType<TJson>(
+          instance,
+          fieldName,
+          'string',
+          canBeNotInformed
+        )
+      );
+
+      const typeString = typeof originalValue;
+      if (errors.length > 0) {
+        const regexValueDescription = /(?<=but found: ).*/;
+        errors[0] = errors[0]
+          .replace(typeString, `${typeString} with content`)
+          .replace(regexValueDescription, this.describeType(originalValue));
+      }
+    }
+
+    return errors;
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser string com conteúdo
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeStringWithContent<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeStringWithContentBase(instance, fieldName, false);
+  }
+
+  /**
+   * Valida e retorna erro se não atender: deve ser string com conteúdo ou não informado
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   */
+  public static mustBeStringWithContentOrNotInformed<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson
+  ): string[] {
+    return JsonLoader.mustBeStringWithContentBase(instance, fieldName, true);
+  }
+
+  /**
    * Valida e retorna erro se não atender: deve ser number
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
