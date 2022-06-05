@@ -354,6 +354,7 @@ describe('Class JsonLoader', () => {
       originals['JsonLoader.mustBeNumberInTheRange'] =
         JsonLoader.mustBeNumberInTheRange;
       originals['JsonLoader.mustMatchRegex'] = JsonLoader.mustMatchRegex;
+      originals['JsonLoader.mustBeValidFormat'] = JsonLoader.mustBeValidFormat;
     });
 
     afterEach(() => {
@@ -365,6 +366,7 @@ describe('Class JsonLoader', () => {
       JsonLoader.mustBeNumberInTheRange =
         originals['JsonLoader.mustBeNumberInTheRange'];
       JsonLoader.mustMatchRegex = originals['JsonLoader.mustMatchRegex'];
+      JsonLoader.mustBeValidFormat = originals['JsonLoader.mustBeValidFormat'];
     });
     describe('Validadores bypass que chamam os validadore de fato', () => {
       test('mustBeBoolean chama mustBeOfType', () => {
@@ -4490,6 +4492,133 @@ describe('Class JsonLoader', () => {
                 instance,
                 propertyName,
                 regex,
+                canBeNotInformed,
+                description
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(1);
+            expect(receivedErros[0]).toBe(expectedError);
+          }
+        });
+      });
+      describe('mustBeValidFormat', () => {
+        test('Esperado sucesso: Permitido valor vazio: SIM e NÃO. Valor válido: SIM', () => {
+          const evaluateEverTrue = () => true;
+          const value = Math.random();
+          const canBeNotInformedValues = [true, false];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = value;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustBeValidFormat<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                evaluateEverTrue,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(0);
+          }
+        });
+        test('Esperado sucesso: Permitido valor vazio: SIM. Valor vazio: null, undefined', () => {
+          const evaluateEverTrue = () => true;
+          const values = [null, undefined];
+          const canBeNotInformed = true;
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const value of values) {
+            instance[propertyName] = value;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustBeValidFormat<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                evaluateEverTrue,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(0);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: NÃO. Valor vazio: null, undefined', () => {
+          const evaluateEverTrue = () => true;
+          const values = [null, undefined];
+          const canBeNotInformed = false;
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const value of values) {
+            instance[propertyName] = value;
+
+            const description = `format`;
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a valid ${description}, but found: ${String(
+              value
+            )}`;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustBeValidFormat<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                evaluateEverTrue,
+                canBeNotInformed
+              );
+
+            // Assert, Then
+
+            expect(receivedErros.length).toBe(1);
+            expect(receivedErros[0]).toBe(expectedError);
+          }
+        });
+        test('Esperado falha: Permitido valor vazio: SIM e NÃO. Valor válido: NÃO. Exibir descrição do formato', () => {
+          // Arrange, Given
+
+          const evaluateEverFalse = () => false;
+          const description = Math.random().toString();
+          const value = Math.random();
+          const canBeNotInformedValues = [false, true];
+
+          const instance = new ConfigurationForValidationTest();
+          const propertyName: keyof ConfigurationForValidationTest = 'property';
+
+          for (const canBeNotInformed of canBeNotInformedValues) {
+            instance[propertyName] = value;
+
+            const expectedError = `${
+              ConfigurationForValidationTest.name
+            }.${propertyName} must be a valid ${
+              !canBeNotInformed
+                ? description
+                : [description, String(null), String(undefined)].join(' or ')
+            }, but found: (${typeof value}) ${String(value)}`;
+
+            // Act, When
+
+            const receivedErros =
+              JsonLoader.mustBeValidFormat<ConfigurationForValidationTest>(
+                instance,
+                propertyName,
+                evaluateEverFalse,
                 canBeNotInformed,
                 description
               );

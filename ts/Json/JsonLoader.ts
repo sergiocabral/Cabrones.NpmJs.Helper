@@ -519,6 +519,49 @@ export abstract class JsonLoader {
   }
 
   /**
+   * Valida e retorna erro se não atender: deve atender uma expressão regular.
+   * @param instance Instância do JSON
+   * @param fieldName Nome do campo.
+   * @param evaluate Função para avaliar o valor
+   * @param canBeNotInformed Aceita que o campo não seja informado com null ou undefined.
+   * @param formatDescription Descrição da regex que será embutida na mensagem.
+   */
+  public static mustBeValidFormat<TJson extends JsonLoader>(
+    instance: TJson,
+    fieldName: keyof TJson,
+    evaluate: (value: unknown) => boolean,
+    canBeNotInformed: boolean,
+    formatDescription?: string
+  ): string[] {
+    const errors = Array<string>();
+    const value = HelperObject.getProperty(instance, fieldName);
+
+    if (formatDescription === undefined) {
+      formatDescription = `format`;
+    }
+
+    const isValid =
+      (canBeNotInformed && (value === null || value === undefined)) ||
+      (value !== null && value !== undefined && evaluate(value));
+
+    if (!isValid) {
+      const validTypes: string[] = [formatDescription];
+      if (canBeNotInformed) {
+        validTypes.push(String(null), String(undefined));
+      }
+      errors.push(
+        `${instance.getFullName()}.${String(
+          fieldName
+        )} must be a valid ${validTypes.join(
+          ' or '
+        )}, but found: ${JsonLoader.describeType(value)}`
+      );
+    }
+
+    return errors;
+  }
+
+  /**
    * Valida e retorna erro se não atender: deve ser boolean
    * @param instance Instância do JSON
    * @param fieldName Nome do campo.
