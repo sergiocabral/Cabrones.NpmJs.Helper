@@ -1,9 +1,6 @@
+import { JsonValue } from './JsonValue';
+
 /**
- * Tipo JSON.
+ * Valor possível para JSON.
  */
-export type Json =
-  | string
-  | number
-  | boolean
-  | { [x: string]: Json }
-  | Array<Json>;
+export type Json = Record<string, JsonValue> | Array<JsonValue>;
