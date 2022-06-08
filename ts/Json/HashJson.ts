@@ -1,4 +1,3 @@
-import { HelperObject } from '../Data/HelperObject';
 import { HelperCryptography } from '../Cryptography/HelperCryptography';
 
 /**
@@ -29,7 +28,7 @@ export class HashJson<TValue> {
    * Resulta em um hash da informação.
    */
   private static hash(value: unknown): string {
-    return HelperCryptography.hashSha256(HelperObject.toText(value, 0));
+    return HelperCryptography.hash(value, 'sha256');
   }
 
   /**
