@@ -1,5 +1,6 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { FiltersType } from '../Type/Data/FiltersType';
+import { HelperObject } from './HelperObject';
 
 /**
  * Utilitários para texto (string).
@@ -150,8 +151,10 @@ export class HelperText {
     let errorAsText;
     return error instanceof Error
       ? error.message
+        ? error.message
+        : `${error.constructor.name}: ${HelperObject.toText(error, 0)}`
       : (errorAsText = String(error).trim())
       ? errorAsText
-      : 'Unknown error.';
+      : `Unknown error: ${HelperObject.toText(error, 0)}`;
   }
 }

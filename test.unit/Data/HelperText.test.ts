@@ -1,4 +1,13 @@
-import { HelperText, InvalidExecutionError, FiltersType } from '../../ts';
+import {
+  HelperText,
+  InvalidExecutionError,
+  FiltersType,
+  HelperObject
+} from '../../ts';
+
+class ErrorTest extends Error {
+  property: number = Math.random();
+}
 
 describe('Classe HelperText', () => {
   test('Não deve permitir instanciar', () => {
@@ -351,7 +360,10 @@ describe('Classe HelperText', () => {
       // Arrange, Given
 
       const blankText = '   ';
-      const expectedResult = 'Unknown error.';
+      const expectedResult = `Unknown error: ${HelperObject.toText(
+        blankText,
+        0
+      )}`;
 
       // Act, When
 
@@ -365,11 +377,31 @@ describe('Classe HelperText', () => {
       // Arrange, Given
 
       const blankText = '';
-      const expectedResult = 'Unknown error.';
+      const expectedResult = `Unknown error: ${HelperObject.toText(
+        blankText,
+        0
+      )}`;
 
       // Act, When
 
       const result = HelperText.formatError(blankText);
+
+      // Assert, Then
+
+      expect(result).toBe(expectedResult);
+    });
+    test('se for instância de Error mas mensagem for vazia exibe como JSON', () => {
+      // Arrange, Given
+
+      const error = new ErrorTest('');
+      const expectedResult = `${ErrorTest.name}: ${HelperObject.toText(
+        error,
+        0
+      )}`;
+
+      // Act, When
+
+      const result = HelperText.formatError(error);
 
       // Assert, Then
 
