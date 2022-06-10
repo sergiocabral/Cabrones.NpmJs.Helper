@@ -374,6 +374,38 @@ describe('Classe HelperCryptography', () => {
 
         expect(descriptographedJson['myValue']).not.toBe(myValue);
       });
+      test('deve descriptografar com base em needToApplyEncryption()', () => {
+        // Arrange, Given
+
+        const needToApplyEncryption = (keyPath: string) =>
+            keyPath === 'myValue1';
+        const password = Math.random().toString();
+        const myValue1 = Math.random();
+        const myValue2 = Math.random();
+        const criptographedJson = HelperCryptography.json(
+          CryptographyDirection.Encrypt,
+            {
+              myValue1,
+              myValue2
+            },
+          password
+        );
+
+        // Act, When
+
+        const descriptographedJson = HelperCryptography.json(
+          CryptographyDirection.Decrypt,
+          criptographedJson as Json,
+            password,
+            needToApplyEncryption
+        ) as Record<string, unknown>;
+
+        // Assert, Then
+
+        expect(descriptographedJson['myValue1']).toBe(myValue1);
+        expect(descriptographedJson['myValue2']).not.toBe(myValue2);
+      });
+      // TODO: Finalizar testes do Decrypt usando needToApplyEncryption, começar Encrypt
     });
   });
 });
