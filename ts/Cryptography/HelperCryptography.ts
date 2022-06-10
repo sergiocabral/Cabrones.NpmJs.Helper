@@ -8,7 +8,7 @@ import { PrimitiveValueType } from '../Type/Native/PrimitiveValueType';
 import { NotImplementedError } from '../Error/NotImplementedError';
 import { JsonValue } from '../Type/Data/JsonValue';
 
-// TODO: Teste de cobertura para propriedades estáticas e função Json
+// TODO: Teste de cobertura para função Json
 
 /**
  * Funcionalidades para uso em criptografia.
@@ -24,7 +24,7 @@ export class HelperCryptography {
    */
   public static defaultSymmetricAlgorithmKeyLengthInBytes = 32;
 
-  /**
+  /**0
    * Vetor de inicialização.
    */
   public static defaultInitializationVector = Buffer.alloc(16, 0);

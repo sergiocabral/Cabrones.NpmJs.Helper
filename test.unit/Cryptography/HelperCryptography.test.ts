@@ -198,4 +198,45 @@ describe('Classe HelperCryptography', () => {
       expect(ouput).toStrictEqual(expectedOutput);
     });
   });
+  describe('propriedades estática', () => {
+    test('defaultSymmetricAlgorithm', () => {
+      // Arrange, Given
+
+      const expectedValue = 'aes-256-cbc';
+
+      // Act, When
+
+      const receivedValue = HelperCryptography.defaultSymmetricAlgorithm;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('defaultSymmetricAlgorithmKeyLengthInBytes', () => {
+      // Arrange, Given
+
+      const expectedValue = 32;
+
+      // Act, When
+
+      const receivedValue = HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('defaultInitializationVector', () => {
+      // Arrange, Given
+
+      const expectedValue = Buffer.alloc(16, 0);
+
+      // Act, When
+
+      const receivedValue = HelperCryptography.defaultInitializationVector;
+
+      // Assert, Then
+
+      expect(receivedValue).toStrictEqual(expectedValue);
+    });
+  })
 });
