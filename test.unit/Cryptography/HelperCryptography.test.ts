@@ -1,5 +1,11 @@
-import { HelperCryptography, HelperObject } from '../../ts';
-import { HashAlgorithm } from '../../ts/Cryptography/HashAlgorithm';
+import {
+  HelperCryptography,
+  HashAlgorithm,
+  CryptographyDirection,
+  HelperObject,
+  Json,
+  NotImplementedError
+} from '../../ts';
 
 describe('Classe HelperCryptography', () => {
   const originals: Record<string, any> = {};
@@ -219,7 +225,8 @@ describe('Classe HelperCryptography', () => {
 
       // Act, When
 
-      const receivedValue = HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes;
+      const receivedValue =
+        HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes;
 
       // Assert, Then
 
@@ -238,5 +245,135 @@ describe('Classe HelperCryptography', () => {
 
       expect(receivedValue).toStrictEqual(expectedValue);
     });
-  })
+  });
+  describe('HelperCryptography.json', () => {
+    test('mode diferente de Encrypt ou Decrypt deve falhar', () => {
+      // Arrange, Given
+
+      const invalidMode = Math.random().toString() as CryptographyDirection;
+
+      // Act, When
+
+      const action = () =>
+        HelperCryptography.json(
+          invalidMode,
+          {
+            anyProperty: null
+          },
+          ''
+        );
+
+      // Assert, Then
+
+      expect(action).toThrow(NotImplementedError);
+    });
+    describe('Decrypt', () => {
+      test('o resultado de saída não deve ser a mesma referência da entrada', () => {
+        // Arrange, Given
+
+        const inputJson = {
+          property: Math.random()
+        };
+
+        // Act, When
+
+        const outputJson = HelperCryptography.json(
+          CryptographyDirection.Decrypt,
+          inputJson,
+          ''
+        );
+
+        // Assert, Then
+
+        expect(outputJson).not.toBe(inputJson);
+        expect(JSON.stringify(outputJson)).toBe(JSON.stringify(inputJson));
+      });
+      test('Retorna o valor corrente de uma propriedade que não foi criptografada', () => {
+        // Arrange, Given
+
+        const inputJson = {
+          property: Math.random()
+        };
+
+        // Act, When
+
+        const outputJson = HelperCryptography.json(
+          CryptographyDirection.Decrypt,
+          inputJson,
+          ''
+        ) as Record<string, unknown>;
+
+        // Assert, Then
+
+        expect(outputJson['property']).toBe(inputJson['property']);
+      });
+      test('Tentar descriptografar um valor não criptografado não deve falhar', () => {
+        // Arrange, Given
+
+        const nonCriptographed = [Math.random().toString()];
+
+        // Act, When
+
+        const decrypt = () =>
+          HelperCryptography.json(
+            CryptographyDirection.Decrypt,
+            nonCriptographed,
+            ''
+          ) as Record<string, unknown>;
+
+        // Assert, Then
+
+        expect(decrypt).not.toThrow();
+      });
+      test('deve descriptografar quando a senha estiver correta', () => {
+        // Arrange, Given
+
+        const rightPassword = Math.random().toString();
+        const myValue = Math.random();
+        const originalJson = { myValue };
+        const criptographedJson = HelperCryptography.json(
+          CryptographyDirection.Encrypt,
+          originalJson,
+          rightPassword
+        );
+
+        // Act, When
+
+        const descriptographedJson = HelperCryptography.json(
+          CryptographyDirection.Decrypt,
+          criptographedJson,
+          rightPassword
+        ) as Record<string, unknown>;
+
+        // Assert, Then
+
+        expect(descriptographedJson['myValue']).toBe(myValue);
+      });
+      test('não deve descriptografar se a senha estiver errada', () => {
+        // Arrange, Given
+
+        const rightPassword = Math.random().toString();
+        const wrongPassword = Math.random().toString();
+        const myValue = Math.random();
+        const originalJson = { myValue };
+        const criptographedJson = HelperCryptography.json(
+          CryptographyDirection.Encrypt,
+          originalJson,
+          rightPassword
+        );
+
+        // Act, When
+
+        const descriptographedJson = HelperCryptography.json(
+          CryptographyDirection.Decrypt,
+          criptographedJson as Json,
+          wrongPassword
+        ) as Record<string, unknown>;
+
+        // Assert, Then
+
+        expect(descriptographedJson['myValue']).not.toBe(myValue);
+      });
+    });
+  });
 });

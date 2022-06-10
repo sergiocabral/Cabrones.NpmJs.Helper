@@ -127,7 +127,8 @@ export class HelperCryptography {
         if (
           typeof keyValue === 'string' ||
           typeof keyValue === 'number' ||
-          typeof keyValue === 'boolean'
+          typeof keyValue === 'boolean' ||
+          keyValue === null
         ) {
           if (
             needToApplyEncryption === undefined ||

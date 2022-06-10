@@ -4,6 +4,9 @@ import { Message } from './Bus/Message';
 import { MessageListener } from './Bus/MessageListener';
 import { MessageSubscription } from './Bus/MessageSubscription';
 
+import { CipherAlgorithm } from './Cryptography/CipherAlgorithm';
+import { CryptographyDirection } from './Cryptography/CryptographyDirection';
+import { HashAlgorithm } from './Cryptography/HashAlgorithm';
 import { HelperCryptography } from './Cryptography/HelperCryptography';
 
 import { DateTimeFormat } from './Data/DateTimeFormat';
@@ -79,6 +82,8 @@ import { IConnectionState } from './Type/Connection/IConnectionState';
 
 import { FiltersType } from './Type/Data/FiltersType';
 import { FilterType } from './Type/Data/FilterType';
+import { Json } from './Type/Data/Json';
+import { JsonValue } from './Type/Data/JsonValue';
 import { KeyValue } from './Type/Data/KeyValue';
 
 import { ResultEvent } from './Type/Event/ResultEvent';
@@ -94,6 +99,9 @@ export {
   Message,
   MessageListener,
   MessageSubscription,
+  CipherAlgorithm,
+  CryptographyDirection,
+  HashAlgorithm,
   HelperCryptography,
   DateTimeFormat,
   DateTimeFormatMask,
@@ -153,6 +161,8 @@ export {
   IConnectionState,
   FiltersType,
   FilterType,
+  Json,
+  JsonValue,
   KeyValue,
   ResultEvent,
   PrimitiveEmptyType,
