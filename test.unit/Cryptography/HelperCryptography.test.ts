@@ -6,16 +6,29 @@ import {
   Json,
   NotImplementedError
 } from '../../ts';
+import crypto from 'crypto';
 
 describe('Classe HelperCryptography', () => {
   const originals: Record<string, any> = {};
 
   beforeEach(() => {
     originals['HelperCryptography.toBuffer'] = HelperCryptography.toBuffer;
+    originals['HelperCryptography.defaultSymmetricAlgorithm'] =
+      HelperCryptography.defaultSymmetricAlgorithm;
+    originals['HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes'] =
+      HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes;
+    originals['HelperCryptography.defaultInitializationVector'] =
+      HelperCryptography.defaultInitializationVector;
   });
 
   afterEach(() => {
     HelperCryptography.toBuffer = originals['HelperCryptography.toBuffer'];
+    HelperCryptography.defaultSymmetricAlgorithm =
+      originals['HelperCryptography.defaultSymmetricAlgorithm'];
+    HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes =
+      originals['HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes'];
+    HelperCryptography.defaultInitializationVector =
+      originals['HelperCryptography.defaultInitializationVector'];
   });
 
   describe('hash', () => {
@@ -267,27 +280,120 @@ describe('Classe HelperCryptography', () => {
 
       expect(action).toThrow(NotImplementedError);
     });
+    test('o resultado de saída não deve ser a mesma referência da entrada', () => {
+      // Arrange, Given
+
+      const inputJson = {
+        property: Math.random()
+      };
+
+      // Act, When
+
+      const outputJson = HelperCryptography.json(
+        CryptographyDirection.Decrypt,
+        inputJson,
+        ''
+      );
+
+      // Assert, Then
+
+      expect(outputJson).not.toBe(inputJson);
+      expect(JSON.stringify(outputJson)).toBe(JSON.stringify(inputJson));
+    });
+    test('O processo de criptografia deve usar o algoritmo e length padrão', () => {
+      // Arrange, Given
+
+      const symmetricAlgorithm = 'aes-128-cbc';
+      const symmetricAlgorithmKeyLengthInBytes = 16;
+
+      HelperCryptography.defaultSymmetricAlgorithm = symmetricAlgorithm;
+      HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes =
+        symmetricAlgorithmKeyLengthInBytes;
+
+      const iv = HelperCryptography.defaultInitializationVector;
+      const password = Math.random().toString();
+      const salt = Math.random().toString();
+      const inputEncoding = 'utf8';
+      const outputEncoding = 'base64';
+
+      const propertyName = salt;
+      const propertyValue = Math.random();
+      const inputJson: Record<string, unknown> = {};
+      inputJson[propertyName] = propertyValue;
+
+      const keyFromPassword = crypto.scryptSync(
+        password,
+        salt,
+        symmetricAlgorithmKeyLengthInBytes
+      );
+      const cipher = crypto.createCipheriv(
+        symmetricAlgorithm,
+        keyFromPassword,
+        iv
+      );
+      const expectedCriptographedValue =
+        cipher
+          .update(JSON.stringify(propertyValue), inputEncoding, outputEncoding)
+          .toString() + cipher.final(outputEncoding).toString();
+
+      // Act, When
+
+      const outputJson = HelperCryptography.json(
+        CryptographyDirection.Encrypt,
+        inputJson as Json,
+        password
+      ) as Record<string, any>;
+
+      // Assert, Then
+
+      expect(outputJson[propertyName]).toBe(expectedCriptographedValue);
+    });
+    test('O processo de criptografia deve usar o Initialization Vector', () => {
+      // Arrange, Given
+
+      const iv = Buffer.alloc(16, 0);
+      crypto.randomFill(iv, () => {});
+
+      HelperCryptography.defaultInitializationVector = iv;
+
+      const password = Math.random().toString();
+      const salt = Math.random().toString();
+      const inputEncoding = 'utf8';
+      const outputEncoding = 'base64';
+
+      const propertyName = salt;
+      const propertyValue = Math.random();
+      const inputJson: Record<string, unknown> = {};
+      inputJson[propertyName] = propertyValue;
+
+      const keyFromPassword = crypto.scryptSync(
+        password,
+        salt,
+        HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes
+      );
+      const cipher = crypto.createCipheriv(
+        HelperCryptography.defaultSymmetricAlgorithm,
+        keyFromPassword,
+        iv
+      );
+      const expectedCriptographedValue =
+        cipher
+          .update(JSON.stringify(propertyValue), inputEncoding, outputEncoding)
+          .toString() + cipher.final(outputEncoding).toString();
+
+      // Act, When
+
+      const outputJson = HelperCryptography.json(
+        CryptographyDirection.Encrypt,
+        inputJson as Json,
+        password
+      ) as Record<string, any>;
+
+      // Assert, Then
+
+      expect(outputJson[propertyName]).toBe(expectedCriptographedValue);
+    });
     describe('Decrypt', () => {
-      test('o resultado de saída não deve ser a mesma referência da entrada', () => {
-        // Arrange, Given
-
-        const inputJson = {
-          property: Math.random()
-        };
-
-        // Act, When
-
-        const outputJson = HelperCryptography.json(
-          CryptographyDirection.Decrypt,
-          inputJson,
-          ''
-        );
-
-        // Assert, Then
-
-        expect(outputJson).not.toBe(inputJson);
-        expect(JSON.stringify(outputJson)).toBe(JSON.stringify(inputJson));
-      });
       test('Retorna o valor corrente de uma propriedade que não foi criptografada', () => {
         // Arrange, Given
 
@@ -378,16 +484,16 @@ describe('Classe HelperCryptography', () => {
         // Arrange, Given
 
         const needToApplyEncryption = (keyPath: string) =>
-            keyPath === 'myValue1';
+          keyPath === 'myValue1';
         const password = Math.random().toString();
         const myValue1 = Math.random();
         const myValue2 = Math.random();
         const criptographedJson = HelperCryptography.json(
           CryptographyDirection.Encrypt,
-            {
-              myValue1,
-              myValue2
-            },
+          {
+            myValue1,
+            myValue2
+          },
           password
         );
 
@@ -396,8 +502,8 @@ describe('Classe HelperCryptography', () => {
         const descriptographedJson = HelperCryptography.json(
           CryptographyDirection.Decrypt,
           criptographedJson as Json,
-            password,
-            needToApplyEncryption
+          password,
+          needToApplyEncryption
         ) as Record<string, unknown>;
 
         // Assert, Then
@@ -405,7 +511,84 @@ describe('Classe HelperCryptography', () => {
         expect(descriptographedJson['myValue1']).toBe(myValue1);
         expect(descriptographedJson['myValue2']).not.toBe(myValue2);
       });
-      // TODO: Finalizar testes do Decrypt usando needToApplyEncryption, começar Encrypt
+    });
+    describe('Encrypt', () => {
+      test('A criptografia usa a senha e o endereço do Json como salt', () => {
+        // Arrange, Given
+
+        const propertyValue = Math.random();
+        const inputJson = {
+          level1: {
+            level2: {
+              level3: {
+                property: propertyValue
+              }
+            }
+          }
+        };
+        const password = Math.random().toString();
+        const salt = 'level1.level2.level3.property';
+        const inputEncoding = 'utf8';
+        const outputEncoding = 'base64';
+
+        const keyFromPassword = crypto.scryptSync(
+          password,
+          salt,
+          HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes
+        );
+        const cipher = crypto.createCipheriv(
+          HelperCryptography.defaultSymmetricAlgorithm,
+          keyFromPassword,
+          HelperCryptography.defaultInitializationVector
+        );
+        const expectedCriptographedValue =
+          cipher
+            .update(
+              JSON.stringify(propertyValue),
+              inputEncoding,
+              outputEncoding
+            )
+            .toString() + cipher.final(outputEncoding).toString();
+
+        // Act, When
+
+        const outputJson = HelperCryptography.json(
+          CryptographyDirection.Encrypt,
+          inputJson,
+          password
+        ) as Record<string, any>;
+
+        // Assert, Then
+
+        expect(outputJson['level1']['level2']['level3']['property']).toBe(
+          expectedCriptographedValue
+        );
+      });
+      test('deve criptografar com base em needToApplyEncryption', () => {
+        // Arrange, Given
+
+        const needToApplyEncryption = (keyPath: string) =>
+          keyPath === 'property1';
+
+        const inputJson = {
+          property1: Math.random(),
+          property2: Math.random()
+        };
+
+        // Act, When
+
+        const outputJson = HelperCryptography.json(
+          CryptographyDirection.Encrypt,
+          inputJson,
+          '',
+          needToApplyEncryption
+        ) as Record<string, any>;
+
+        // Assert, Then
+
+        expect(inputJson['property1']).not.toBe(outputJson['property1']);
+        expect(inputJson['property2']).toBe(outputJson['property2']);
+      });
     });
   });
 });

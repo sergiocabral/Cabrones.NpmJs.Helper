@@ -286,7 +286,7 @@ describe('Classe FileSystemFields', () => {
 
           const file = `test-${Math.random()}`;
           const fileContent = ''.padStart(
-            Math.random() * 100,
+            Math.random() * 100 + 100,
             Math.random().toString()
           );
           fs.writeFileSync(file, fileContent);

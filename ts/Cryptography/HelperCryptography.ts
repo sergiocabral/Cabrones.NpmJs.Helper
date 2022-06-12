@@ -29,6 +29,9 @@ export class HelperCryptography {
    */
   public static defaultInitializationVector = Buffer.alloc(16, 0);
 
+  /**
+   * Converte qualquer dado em Buffer
+   */
   public static toBuffer(input: unknown): Buffer {
     return input instanceof Buffer
       ? input
@@ -75,6 +78,11 @@ export class HelperCryptography {
       keyValue: PrimitiveValueType | null
     ) => boolean
   ): Json {
+    const symmetricAlgorithm = HelperCryptography.defaultSymmetricAlgorithm;
+    const symmetricAlgorithmKeyLengthInBytes =
+      HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes;
+    const initializationVector = HelperCryptography.defaultInitializationVector;
+
     const crypt = (
       keyPath: string,
       value: PrimitiveValueType | null
@@ -82,7 +90,7 @@ export class HelperCryptography {
       const keyFromPassword = crypto.scryptSync(
         password,
         keyPath,
-        HelperCryptography.defaultSymmetricAlgorithmKeyLengthInBytes
+        symmetricAlgorithmKeyLengthInBytes
       );
 
       let cipherDecipher: crypto.Cipher | crypto.Decipher;
@@ -90,9 +98,9 @@ export class HelperCryptography {
       switch (mode) {
         case CryptographyDirection.Encrypt:
           cipherDecipher = crypto.createCipheriv(
-            HelperCryptography.defaultSymmetricAlgorithm,
+            symmetricAlgorithm,
             keyFromPassword,
-            HelperCryptography.defaultInitializationVector
+            initializationVector
           );
           return (
             cipherDecipher
@@ -102,9 +110,9 @@ export class HelperCryptography {
         case CryptographyDirection.Decrypt:
           try {
             cipherDecipher = crypto.createDecipheriv(
-              HelperCryptography.defaultSymmetricAlgorithm,
+              symmetricAlgorithm,
               keyFromPassword,
-              HelperCryptography.defaultInitializationVector
+              initializationVector
             );
             return JSON.parse(
               cipherDecipher
