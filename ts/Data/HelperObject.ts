@@ -166,15 +166,24 @@ export class HelperObject {
   public static getFunctionSignature(func: unknown): string {
     if (!this.isFunction(func)) return '';
     const asText = String(func);
+
+    const regexClassName = /(?<=class\s)[^{\s]+/;
+    const matchClassSignature = regexClassName.exec(asText);
+    if (matchClassSignature !== null) {
+      return `${matchClassSignature[0]}{}`;
+    }
+
     const regexFunctionSignature = /[^(\s]*\([^)]*\)/;
     let signature = Array<string>().concat(
       regexFunctionSignature.exec(asText) as RegExpExecArray
     )[0];
+
     const nativeCode = '[native code]';
     if (asText.includes(nativeCode)) {
       const regexArguments = /\([^)]*\)/;
       signature = signature.replace(regexArguments, `(/* ${nativeCode} */)`);
     }
+
     return signature;
   }
 

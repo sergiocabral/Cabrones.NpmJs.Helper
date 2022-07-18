@@ -483,6 +483,20 @@ describe('Classe HelperObject', () => {
 
     expect(signature).toBe('(arg1, arg2 = 10)');
   });
+  test('getFunctionSignature() deve trazar o nome da classe', () => {
+    // Arrange, Given
+
+    const classConstructor = ClassBase;
+    const expectedSignature = `${classConstructor.name}{}`;
+
+    // Act, When
+
+    const signature = HelperObject.getFunctionSignature(classConstructor);
+
+    // Assert, Then
+
+    expect(signature).toBe(expectedSignature);
+  });
   test('describe() deve usar HelperObject.getMembers para obter lista de propriedades', () => {
     // Arrange, Given
 
