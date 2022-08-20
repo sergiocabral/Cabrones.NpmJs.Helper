@@ -1,5 +1,12 @@
 import { HelperList, InvalidExecutionError } from '../../ts';
 
+enum TestEnum {
+  Valor1 = 'hahaha',
+  Valor2 = 123,
+  Valor3,
+  Valor4 = 'Valor4'
+}
+
 describe('Classe HelperList', () => {
   test('Não deve permitir instanciar', () => {
     // Arrange, Given
@@ -10,6 +17,53 @@ describe('Classe HelperList', () => {
     // Assert, Then
 
     expect(instantiate).toThrowError(InvalidExecutionError);
+  });
+
+  describe('enum', () => {
+    test('enumEntries', () => {
+      // Arrange, Given
+
+      const expectedList = [
+        ['Valor1', 'hahaha'],
+        ['Valor2', 123],
+        ['Valor3', 124],
+        ['Valor4', 'Valor4']
+      ];
+
+      // Act, When
+
+      const receivedList = HelperList.enumEntries(TestEnum);
+
+      // Assert, Then
+
+      expect(receivedList).toStrictEqual(expectedList);
+    });
+    test('enumKeys', () => {
+      // Arrange, Given
+
+      const expectedList = ['Valor1', 'Valor2', 'Valor3', 'Valor4'];
+
+      // Act, When
+
+      const receivedList = HelperList.enumKeys(TestEnum);
+
+      // Assert, Then
+
+      expect(receivedList).toStrictEqual(expectedList);
+    });
+    test('enumValues', () => {
+      // Arrange, Given
+
+      const expectedList = ['hahaha', 123, 124, 'Valor4'];
+
+      // Act, When
+
+      const receivedList = HelperList.enumValues(TestEnum);
+
+      // Assert, Then
+
+      expect(receivedList).toStrictEqual(expectedList);
+    });
   });
 
   describe('getRandom', () => {
