@@ -629,25 +629,25 @@ export abstract class JsonLoader {
     const errors = [];
 
     const originalValue = instance[fieldName] as unknown;
-    if (typeof originalValue === 'string') {
+    if (typeof originalValue === 'string' && originalValue.trim() === '') {
       instance[fieldName] = Symbol() as unknown as TJson[keyof TJson];
+    }
 
-      errors.push(
-        ...JsonLoader.mustBeOfType<TJson>(
-          instance,
-          fieldName,
-          'string',
-          canBeNotInformed
-        )
-      );
+    errors.push(
+      ...JsonLoader.mustBeOfType<TJson>(
+        instance,
+        fieldName,
+        'string',
+        canBeNotInformed
+      )
+    );
 
-      const typeString = typeof originalValue;
-      if (errors.length > 0) {
-        const regexValueDescription = /(?<=but found: ).*/;
-        errors[0] = errors[0]
-          .replace(typeString, `${typeString} with content`)
-          .replace(regexValueDescription, this.describeType(originalValue));
-      }
+    const typeString = typeof originalValue;
+    if (errors.length > 0) {
+      const regexValueDescription = /(?<=but found: ).*/;
+      errors[0] = errors[0]
+        .replace(typeString, `${typeString} with content`)
+        .replace(regexValueDescription, this.describeType(originalValue));
     }
 
     return errors;
