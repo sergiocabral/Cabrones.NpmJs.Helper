@@ -8,8 +8,6 @@ import { PrimitiveValueType } from '../Type/Native/PrimitiveValueType';
 import { NotImplementedError } from '../Error/NotImplementedError';
 import { JsonValue } from '../Type/Data/JsonValue';
 
-// TODO: Teste de cobertura para função Json
-
 /**
  * Funcionalidades para uso em criptografia.
  */
