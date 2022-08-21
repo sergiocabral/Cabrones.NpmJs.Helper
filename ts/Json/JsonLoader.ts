@@ -28,7 +28,7 @@ export abstract class JsonLoader {
   /**
    * Nome completo da configuração incluindo ancestrais.
    */
-  private getFullName: () => string;
+  public getFullName: () => string;
 
   /**
    * Instância ancetral

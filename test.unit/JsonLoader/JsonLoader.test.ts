@@ -4834,6 +4834,20 @@ describe('Class JsonLoader', () => {
       expect(receivedName).not.toBe(defaultName);
       expect(receivedName).toBe(newName);
     });
+    test('Deve indicar o nome de todos ancestrais', () => {
+      // Arrange, Given
+
+      const sut = new ConfigurationForNameA();
+      const expectedName = `${ConfigurationForNameA.name}.${nameForConfigurationForNameB}`;
+
+      // Act, When
+
+      const receivedName = sut.property2.getFullName();
+
+      // Assert, Then
+
+      expect(receivedName).toBe(expectedName);
+    });
     test('O nome deve ser usado na mensagem de erro.', () => {
       // Arrange, Given
 
@@ -4923,7 +4937,7 @@ describe('Class JsonLoader', () => {
       expect(receivedErrors).not.toContain(ConfigurationForNameA.name);
       expect(receivedErrors).not.toContain(ConfigurationForNameB.name);
     });
-    test('Os nomes das configurações não devem ser concatenadas se patent não é informado', () => {
+    test('Os nomes das configurações não devem ser concatenadas se parent não é informado', () => {
       // Arrange, Given
 
       const nameForConfigurationForNameD = Math.random().toString();
