@@ -1,6 +1,7 @@
 import { LockState } from './LockState';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
+import { HelperObject } from '../Data/HelperObject';
 
 /**
  * Dados do Lock.
@@ -71,26 +72,6 @@ export class Lock {
       throw new InvalidArgumentError('Expected value number greater than 0.');
     }
     return value;
-  }
-
-  /**
-   * Garante que uma função será uma Promise.
-   * @param callback Função de callback.
-   */
-  private static promisify(
-    callback: () => void | Promise<void>
-  ): () => Promise<void> {
-    return callback.constructor === Promise
-      ? callback
-      : () =>
-          new Promise<void>((resolve, reject) => {
-            try {
-              void callback();
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          });
   }
 
   /**
@@ -219,7 +200,7 @@ export class Lock {
       checkIntervalInMilliseconds ?? this.defaultCheckIntervalInMilliseconds
     );
 
-    const callbackAsPromise = Lock.promisify(callback);
+    const callbackAsPromise = HelperObject.promisify(callback);
 
     let amIExpired = false;
     let expiredTimeout: NodeJS.Timeout | undefined;

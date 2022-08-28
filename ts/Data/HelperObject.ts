@@ -36,6 +36,26 @@ export class HelperObject {
   }
 
   /**
+   * Garante que uma função seja uma Promise.
+   * @param theFunction Função a ser retornada como promise.
+   */
+  public static promisify(
+    theFunction: (...args: unknown[]) => void | Promise<void>
+  ): (...args: unknown[]) => Promise<void> {
+    return theFunction.constructor === Promise
+      ? theFunction
+      : (...args: unknown[]) =>
+          new Promise<void>((resolve, reject) => {
+            try {
+              void theFunction(...args);
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          });
+  }
+
+  /**
    * Retorna um nome identificador do tipo de uma instância.
    * @param instance Instância.
    * @returns Nome.
