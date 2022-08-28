@@ -270,4 +270,25 @@ export class Lock {
       waitForUnlock();
     });
   }
+
+  /**
+   * Espera o lock estar liberado.
+   * @param identifier Identificador de lock
+   * @param expirationInMilliseconds Tempo de expiração para o lock existir.
+   * @param checkIntervalInMilliseconds Intervalo para verificação de liberação do lock.
+   */
+  public async wait(
+    identifier: string,
+    expirationInMilliseconds?: number,
+    checkIntervalInMilliseconds?: number
+  ): Promise<LockState> {
+    return this.run(
+      identifier,
+      () => {
+        // Nothing to do.
+      },
+      expirationInMilliseconds,
+      checkIntervalInMilliseconds
+    );
+  }
 }
