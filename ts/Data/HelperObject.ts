@@ -39,20 +39,26 @@ export class HelperObject {
    * Garante que uma função seja uma Promise.
    * @param theFunction Função a ser retornada como promise.
    */
-  public static promisify(
-    theFunction: (...args: unknown[]) => void | Promise<void>
-  ): (...args: unknown[]) => Promise<void> {
-    return theFunction.constructor === Promise
-      ? theFunction
-      : (...args: unknown[]) =>
-          new Promise<void>((resolve, reject) => {
-            try {
-              void theFunction(...args);
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          });
+  public static promisify<TResult>(
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    theFunction: (...args: any[]) => TResult | Promise<TResult>
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  ): (...args: any[]) => Promise<TResult> {
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    return (...args: any[]) =>
+      new Promise<TResult>((resolve, reject) => {
+        try {
+          // eslint-disable-next-line  @typescript-eslint/no-unsafe-argument
+          const result = theFunction(...args);
+          if (result instanceof Promise) {
+            result.then(resolve).catch(reject);
+          } else {
+            resolve(result);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
   }
 
   /**

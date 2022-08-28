@@ -1,6 +1,11 @@
 // noinspection JSPrimitiveTypeWrapperUsage,JSUnusedLocalSymbols
 
-import { HelperObject, InvalidExecutionError, ResultEvent } from '../../ts';
+import {
+  HelperObject,
+  InvalidExecutionError,
+  ResultEvent,
+  ShouldNeverHappenError
+} from '../../ts';
 
 abstract class ClassBase {
   public thisValue = 123;
@@ -2011,6 +2016,161 @@ Methods:
       expect(flattened['my__value']).toBe(expectedValue);
       expect(flattened['my__value__array']).toStrictEqual(expectedArray);
       expect(Object.keys(flattened).length).toBe(2);
+    });
+  });
+  describe('promisify', () => {
+    describe('deve receber parâmetros e retorna valores', () => {
+      test('Sendo Async', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const param1 = Math.random();
+          const param2 = Math.random();
+          const expectedValue = [param2, param1];
+
+          const wait = <T>(input: T): Promise<T> =>
+            new Promise(resolve => setTimeout(() => resolve(input), 1));
+          const promiseFunction = async (value1: number, value2: number) => [
+            await wait(value2),
+            await wait(value1)
+          ];
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise(param1, param2).then(result => {
+            // Assert, Then
+
+            expect(result).toStrictEqual(expectedValue);
+
+            resolve();
+          });
+        }));
+      test('Sendo Promise', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const param1 = Math.random();
+          const param2 = Math.random();
+          const expectedValue = [param2, param1];
+
+          const promiseFunction = (value1: number, value2: number) =>
+            new Promise<number[]>(resolve => resolve([value2, value1]));
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise(param1, param2).then(result => {
+            // Assert, Then
+
+            expect(result).toStrictEqual(expectedValue);
+
+            resolve();
+          });
+        }));
+      test('Não sendo Promise', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const param1 = Math.random();
+          const param2 = Math.random();
+          const expectedValue = [param2, param1];
+
+          const promiseFunction = (value1: number, value2: number) => [
+            value2,
+            value1
+          ];
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise(param1, param2).then(result => {
+            // Assert, Then
+
+            expect(result).toStrictEqual(expectedValue);
+
+            resolve();
+          });
+        }));
+    });
+    describe('deve lançar o erro', () => {
+      test('Sendo Async', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const expectedError = Math.random();
+
+          const wait = (): Promise<void> =>
+            new Promise(resolve => setTimeout(resolve, 1));
+          const promiseFunction = async () => {
+            await wait();
+            throw expectedError;
+          };
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise()
+            .then(() => {
+              throw new ShouldNeverHappenError();
+            })
+            .catch(error => {
+              // Assert, Then
+              expect(error).toBe(expectedError);
+              resolve();
+            });
+        }));
+      test('Sendo Promise', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const expectedError = Math.random();
+
+          const promiseFunction = (value1: number, value2: number) =>
+            new Promise<number[]>((resolve, reject) => reject(expectedError));
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise()
+            .then(() => {
+              throw new ShouldNeverHappenError();
+            })
+            .catch(error => {
+              // Assert, Then
+              expect(error).toBe(expectedError);
+              resolve();
+            });
+        }));
+      test('Não sendo Promise', async () =>
+        new Promise<void>(resolve => {
+          // Arrange, Given
+
+          const expectedError = Math.random();
+
+          const promiseFunction = () => {
+            throw expectedError;
+          };
+
+          const mustBePromise = HelperObject.promisify(promiseFunction);
+
+          // Act, When
+
+          mustBePromise()
+            .then(() => {
+              throw new ShouldNeverHappenError();
+            })
+            .catch(error => {
+              // Assert, Then
+              expect(error).toBe(expectedError);
+              resolve();
+            });
+        }));
     });
   });
 });
