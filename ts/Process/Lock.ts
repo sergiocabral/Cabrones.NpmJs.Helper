@@ -85,11 +85,9 @@ export class Lock {
       | undefined = Lock.defaultExpirationInMilliseconds,
     defaultCheckIntervalInMilliseconds: number = Lock.defaultCheckIntervalInMilliseconds
   ) {
-    this.defaultExpirationInMilliseconds = Lock.validateNumberGreaterThenZero(
-      defaultExpirationInMilliseconds
-    );
+    this.defaultExpirationInMilliseconds = defaultExpirationInMilliseconds;
     this.defaultCheckIntervalInMilliseconds =
-      Lock.validateNumberGreaterThenZero(defaultCheckIntervalInMilliseconds);
+      defaultCheckIntervalInMilliseconds;
   }
 
   /**
