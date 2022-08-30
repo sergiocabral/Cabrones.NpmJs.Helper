@@ -1,5 +1,6 @@
 import { Lock } from '../../ts/Process/Lock';
 import { InvalidArgumentError } from '../../ts';
+import { LockState } from '../../ts/Process/LockState';
 
 describe('Class Lock', function () {
   const originals: Record<string, any> = {};
@@ -289,6 +290,145 @@ describe('Class Lock', function () {
     });
   });
   describe('função run()', function () {
+    describe('expirationInMilliseconds', function () {
+      test('se não informado deve ser o valor padrão da instância', async () => {
+        // Arrange, Given
+
+        const instanceExpirationInMilliseconds = 100;
+
+        const wait = () =>
+          new Promise<void>(resolve =>
+            setTimeout(resolve, instanceExpirationInMilliseconds * 2)
+          );
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock(instanceExpirationInMilliseconds);
+
+        // Act, When
+
+        const startTime = performance.now();
+        const lockState = await sut.run(lockIdentifier, wait);
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        const executionDuration = endTime - startTime;
+        expect(executionDuration).toBeLessThanOrEqual(
+          instanceExpirationInMilliseconds * 2
+        );
+
+        expect(lockState).toBe(LockState.Expired);
+      });
+      test('deve usar o valor informado', async () => {
+        // Arrange, Given
+
+        const instanceExpirationInMilliseconds = 1000;
+        const informedExpirationInMilliseconds = 100;
+
+        const wait = () =>
+          new Promise<void>(resolve =>
+            setTimeout(resolve, instanceExpirationInMilliseconds * 2)
+          );
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock(instanceExpirationInMilliseconds);
+
+        // Act, When
+
+        const startTime = performance.now();
+        const lockState = await sut.run(
+          lockIdentifier,
+          wait,
+          informedExpirationInMilliseconds
+        );
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        const executionDuration = endTime - startTime;
+        expect(executionDuration).toBeLessThanOrEqual(
+          informedExpirationInMilliseconds * 2
+        );
+
+        expect(lockState).toBe(LockState.Expired);
+      });
+      test('não deve aceitar valor menor que zero', async () => {
+        // Arrange, Given
+
+        const values: [boolean, number | undefined][] = [
+          [true, undefined],
+          [true, 1],
+          [true, 100],
+          [false, 0],
+          [false, -1],
+          [false, -100],
+          [false, Number.MIN_SAFE_INTEGER]
+        ];
+
+        const sut = new Lock();
+
+        for (const set of values) {
+          const isValid = set[0];
+          const value = set[1];
+
+          // Act, When
+
+          try {
+            await sut.run(Math.random().toString(), jest.fn(), value);
+            throw undefined;
+          } catch (error) {
+            // Assert, Then
+
+            if (isValid) {
+              expect(error).toBeUndefined();
+            } else {
+              expect(error).toBeInstanceOf(InvalidArgumentError);
+            }
+          }
+        }
+      });
+    });
+    describe('checkIntervalInMilliseconds', () => {
+      test('não deve aceitar valor menor que zero', async () => {
+        // Arrange, Given
+
+        const values: [boolean, number][] = [
+          [true, 1],
+          [true, 100],
+          [false, 0],
+          [false, -1],
+          [false, -100],
+          [false, Number.MIN_SAFE_INTEGER]
+        ];
+
+        const sut = new Lock();
+
+        for (const set of values) {
+          const isValid = set[0];
+          const value = set[1];
+
+          // Act, When
+
+          try {
+            await sut.run(
+              Math.random().toString(),
+              jest.fn(),
+              undefined,
+              value
+            );
+            throw undefined;
+          } catch (error) {
+            // Assert, Then
+
+            if (isValid) {
+              expect(error).toBeUndefined();
+            } else {
+              expect(error).toBeInstanceOf(InvalidArgumentError);
+            }
+          }
+        }
+      });
+    });
     test('se o lock nunca foi usado a execução deve ocorrer logo cedo', async () => {
       // Arrange, Given
 
