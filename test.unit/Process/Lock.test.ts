@@ -389,6 +389,68 @@ describe('Class Lock', function () {
       });
     });
     describe('checkIntervalInMilliseconds', () => {
+      test('se não informado deve ser o valor padrão da instância', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const instanceCheckIntervalInMilliseconds = executionInterval * 3;
+
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+        const noWait = jest.fn();
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock(undefined, instanceCheckIntervalInMilliseconds);
+
+        // Act, When
+
+        const startTime = performance.now();
+        void sut.run(lockIdentifier, wait);
+        await sut.run(lockIdentifier, noWait);
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        const executionDuration = endTime - startTime;
+        expect(executionDuration).toBeGreaterThan(
+          instanceCheckIntervalInMilliseconds
+        );
+      });
+      test('deve usar o valor informado', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const instanceCheckIntervalInMilliseconds = executionInterval * 3;
+        const informedCheckIntervalInMilliseconds = executionInterval * 6;
+
+        const wait = () =>
+          new Promise<void>(resolve =>
+            setTimeout(resolve, executionInterval * 2)
+          );
+        const noWait = jest.fn();
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock(undefined, instanceCheckIntervalInMilliseconds);
+
+        // Act, When
+
+        const startTime = performance.now();
+        void sut.run(lockIdentifier, wait);
+        await sut.run(
+          lockIdentifier,
+          noWait,
+          undefined,
+          informedCheckIntervalInMilliseconds
+        );
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        const executionDuration = endTime - startTime;
+        expect(executionDuration).toBeGreaterThan(
+          informedCheckIntervalInMilliseconds
+        );
+      });
       test('não deve aceitar valor menor que zero', async () => {
         // Arrange, Given
 
