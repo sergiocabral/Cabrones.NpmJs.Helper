@@ -265,6 +265,7 @@ export class Lock {
       identifier,
       () => {
         // Nothing to do.
+        // TODO: O wait não deve esperar apenas ele mesmo, mas todos os locks na fila
       },
       expirationInMilliseconds,
       checkIntervalInMilliseconds
