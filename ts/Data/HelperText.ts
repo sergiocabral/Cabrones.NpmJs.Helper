@@ -1,6 +1,8 @@
 import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 import { FiltersType } from '../Type/Data/FiltersType';
 import { HelperObject } from './HelperObject';
+import { Buffer } from 'buffer';
+import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 
 /**
  * Utilitários para texto (string).
@@ -156,5 +158,22 @@ export class HelperText {
       : (errorAsText = String(error).trim())
       ? errorAsText
       : `Unknown error: ${HelperObject.toText(error, 0)}`;
+  }
+
+  /**
+   * Gera um texto aleatório.
+   * @param length Comprimento do texto.
+   */
+  public static random(length = 10): string {
+    if (length < 1) {
+      throw new InvalidArgumentError('Length mut be greater than zero.');
+    }
+    let result = '';
+    while (result.length < length) {
+      result += Buffer.from(Math.random().toString().substring(2)).toString(
+        'base64'
+      );
+    }
+    return result.substring(0, length);
   }
 }

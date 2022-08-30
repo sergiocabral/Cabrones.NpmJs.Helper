@@ -2,7 +2,9 @@ import {
   HelperText,
   InvalidExecutionError,
   FiltersType,
-  HelperObject
+  HelperObject,
+  HelperList,
+  InvalidArgumentError
 } from '../../ts';
 
 class ErrorTest extends Error {
@@ -406,6 +408,54 @@ describe('Classe HelperText', () => {
       // Assert, Then
 
       expect(result).toBe(expectedResult);
+    });
+  });
+
+  describe('Função random()', () => {
+    test('deve retornar valores aleatórios', () => {
+      // Arrange, Given
+
+      const originalValues = Array<string>();
+      const count = Math.random() * 1000 + 100;
+
+      // Act, When
+
+      for (let i = 0; i < count; i++) {
+        originalValues.push(HelperText.random());
+      }
+      const uniqueValues = HelperList.unique(originalValues);
+
+      // Assert, Then
+
+      expect(uniqueValues).toStrictEqual(originalValues);
+    });
+    test('deve poder especificar o comprimento do retorno', () => {
+      // Arrange, Given
+
+      const expectedLength = Math.floor(Math.random() * 1000);
+
+      // Act, When
+
+      const receivedValue = HelperText.random(expectedLength);
+
+      // Assert, Then
+
+      expect(receivedValue.length).toStrictEqual(expectedLength);
+    });
+    test('comprimento menor que 1 deve falhar', () => {
+      // Arrange, Given
+
+      const invalidLengthList = [0, -1, -100, Number.MIN_SAFE_INTEGER];
+
+      for (const invalidLength of invalidLengthList) {
+        // Act, When
+
+        const action = () => HelperText.random(invalidLength);
+
+        // Assert, Then
+
+        expect(action).toThrow(InvalidArgumentError);
+      }
     });
   });
 });
