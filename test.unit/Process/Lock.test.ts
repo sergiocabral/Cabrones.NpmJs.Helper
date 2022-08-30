@@ -513,7 +513,7 @@ describe('Class Lock', function () {
     test('as execuções devem ser sequenciais, esperando a a atual terminar', async () => {
       // Arrange, Given
 
-      const extraTime = 50;
+      const extraTime = 100;
 
       const executionInterval = 100;
       const wait = () =>
