@@ -218,9 +218,9 @@ export class Lock {
 
         if (amIExpired) {
           resolve((myLock.state = LockState.Expired));
-        } else if (myLock.state === LockState.Canceled) {
+        } else if (currentLock.state === LockState.Canceled) {
           clearTimeout(expiredTimeout);
-          resolve(myLock.state);
+          resolve(currentLock.state);
         } else if (currentLock.state === LockState.Locked) {
           waitForUnlockTimeout = setTimeout(
             waitForUnlock,

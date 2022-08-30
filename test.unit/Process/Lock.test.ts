@@ -538,5 +538,85 @@ describe('Class Lock', function () {
         executionInterval * times + extraTime
       );
     });
+    describe('cancelar lock', () => {
+      test('deve ser possível cancelar um lock', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+        const noWait = jest.fn();
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        const startTime = performance.now();
+        void sut.run(lockIdentifier, wait);
+        setTimeout(() => sut.cancel(lockIdentifier), executionInterval / 2);
+        const lockState = await sut.run(lockIdentifier, noWait);
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        const executionDuration = endTime - startTime;
+        expect(executionDuration).toBeLessThan(executionInterval);
+
+        expect(lockState).toBe(LockState.Canceled);
+      });
+      test('retorna true se houver lock para cancelar', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        void sut.run(lockIdentifier, wait);
+        const canceled = sut.cancel(lockIdentifier);
+
+        // Assert, Then
+
+        expect(canceled).toBe(true);
+      });
+      test('retorna false se o lock nunca foi usado', async () => {
+        // Arrange, Given
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        const canceled = sut.cancel(lockIdentifier);
+
+        // Assert, Then
+
+        expect(canceled).toBe(false);
+      });
+      test('retorna false se o lock já foi liberado', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        await sut.run(lockIdentifier, wait);
+        const canceled = sut.cancel(lockIdentifier);
+
+        // Assert, Then
+
+        expect(canceled).toBe(false);
+      });
+    });
   });
 });
