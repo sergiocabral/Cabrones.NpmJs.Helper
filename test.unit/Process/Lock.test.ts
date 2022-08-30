@@ -290,25 +290,51 @@ describe('Class Lock', function () {
   });
   describe('função run()', function () {
     test('se o lock nunca foi usado a execução deve ocorrer logo cedo', async () => {
-        // Arrange, Given
+      // Arrange, Given
 
-        const mock = jest.fn();
+      const minimumInterval = 2;
+      const longInterval = 1000;
 
-        const minimumInterval = 2;
-        const longInterval = 1000;
+      const sut = new Lock(undefined, longInterval);
 
-        const lockIdentifier = Math.random().toString();
-        const sut = new Lock(undefined, longInterval);
+      // Act, When
 
-        // Act, When
+      const startTime = performance.now();
+      await sut.run(Math.random().toString(), jest.fn());
+      const endTime = performance.now();
 
-        const startTime = performance.now();
-        await sut.run(lockIdentifier, mock);
-        const endTime = performance.now();
+      // Assert, Then
 
-        // Assert, Then
+      const executionDuration = endTime - startTime;
+      expect(executionDuration).toBeLessThanOrEqual(minimumInterval);
+    });
+    test('as execuções devem ser sequenciais, esperando a a atual terminar', async () => {
+      // Arrange, Given
 
-        expect(endTime - startTime).toBeLessThanOrEqual(minimumInterval);
+      const extraTime = 50;
+
+      const executionInterval = 100;
+      const wait = () =>
+        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+      const lockIdentifier = Math.random().toString();
+      const sut = new Lock();
+      const times = Math.floor(Math.random() * 10 + 3);
+
+      // Act, When
+
+      const startTime = performance.now();
+      for (let i = 0; i < times; i++) {
+        await sut.run(lockIdentifier, wait);
+      }
+      const endTime = performance.now();
+
+      // Assert, Then
+
+      const executionDuration = endTime - startTime;
+      expect(executionDuration).toBeLessThanOrEqual(
+        executionInterval * times + extraTime
+      );
     });
   });
 });
