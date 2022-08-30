@@ -146,21 +146,21 @@ describe('Class Lock', function () {
 
         expect(receivedValue).toBe(expectedValue);
       });
-    })
+    });
     describe('validação de valor maior que zero', () => {
       test('defaultExpirationInMilliseconds', () => {
         // Arrange, Given
 
         const values: [boolean, number | undefined][] = [
-            [true, undefined],
-            [true, 1],
-            [true, 100],
-            [true, Number.MAX_SAFE_INTEGER],
-            [false, 0],
-            [false, -1],
-            [false, -100],
-            [false, Number.MIN_SAFE_INTEGER]
-        ]
+          [true, undefined],
+          [true, 1],
+          [true, 100],
+          [true, Number.MAX_SAFE_INTEGER],
+          [false, 0],
+          [false, -1],
+          [false, -100],
+          [false, Number.MIN_SAFE_INTEGER]
+        ];
 
         for (const set of values) {
           const isValid = set[0];
@@ -178,7 +178,7 @@ describe('Class Lock', function () {
             expect(action).toThrow(InvalidArgumentError);
           }
         }
-      })
+      });
       test('defaultCheckIntervalInMilliseconds', () => {
         // Arrange, Given
 
@@ -190,7 +190,7 @@ describe('Class Lock', function () {
           [false, -1],
           [false, -100],
           [false, Number.MIN_SAFE_INTEGER]
-        ]
+        ];
 
         for (const set of values) {
           const isValid = set[0];
@@ -208,8 +208,8 @@ describe('Class Lock', function () {
             expect(action).toThrow(InvalidArgumentError);
           }
         }
-      })
-    })
+      });
+    });
     describe('parâmetros de entrada devem ser lidos nas respectivas propriedades', () => {
       test('defaultExpirationInMilliseconds', () => {
         // Arrange, Given
@@ -238,7 +238,77 @@ describe('Class Lock', function () {
         // Assert, Then
 
         expect(receivedValue).toBe(expectedValue);
-      })
-    })
-  })
+      });
+    });
+  });
+  describe('Teste das propriedades', () => {
+    test('defaultExpirationInMilliseconds recebendo valor numérico', () => {
+      // Arrange, Given
+
+      const expectedValue = Math.random();
+      const sut = new Lock();
+
+      // Act, When
+
+      sut.defaultExpirationInMilliseconds = expectedValue;
+      const receivedValue = sut.defaultExpirationInMilliseconds;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('defaultExpirationInMilliseconds recebendo valor undefined', () => {
+      // Arrange, Given
+
+      const expectedValue = undefined;
+      const sut = new Lock();
+
+      // Act, When
+
+      sut.defaultExpirationInMilliseconds = expectedValue;
+      const receivedValue = sut.defaultExpirationInMilliseconds;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('defaultCheckIntervalInMilliseconds', () => {
+      // Arrange, Given
+
+      const expectedValue = Math.random();
+      const sut = new Lock();
+
+      // Act, When
+
+      sut.defaultCheckIntervalInMilliseconds = expectedValue;
+      const receivedValue = sut.defaultCheckIntervalInMilliseconds;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+  });
+  describe('função run()', function () {
+    test('se o lock nunca foi usado a execução deve ocorrer logo cedo', async () => {
+        // Arrange, Given
+
+        const mock = jest.fn();
+
+        const minimumInterval = 2;
+        const longInterval = 1000;
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock(undefined, longInterval);
+
+        // Act, When
+
+        const startTime = performance.now();
+        await sut.run(lockIdentifier, mock);
+        const endTime = performance.now();
+
+        // Assert, Then
+
+        expect(endTime - startTime).toBeLessThanOrEqual(minimumInterval);
+    });
+  });
 });
