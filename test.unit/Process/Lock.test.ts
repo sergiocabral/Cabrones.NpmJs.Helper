@@ -618,5 +618,98 @@ describe('Class Lock', function () {
         expect(canceled).toBe(false);
       });
     });
+    describe('verificar estado do lock', () => {
+      test('Undefined', async () => {
+        // Arrange, Given
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        const lockState = sut.getState(lockIdentifier);
+
+        // Assert, Then
+
+        expect(lockState).toBe(LockState.Undefined);
+      });
+      test('Locked', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        void sut.run(lockIdentifier, wait);
+        const lockState = sut.getState(lockIdentifier);
+
+        // Assert, Then
+
+        expect(lockState).toBe(LockState.Locked);
+      });
+      test('Unlocked', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        await sut.run(lockIdentifier, wait);
+        const lockState = sut.getState(lockIdentifier);
+
+        // Assert, Then
+
+        expect(lockState).toBe(LockState.Unlocked);
+      });
+      test('Expired', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        await sut.run(lockIdentifier, wait, executionInterval / 2);
+        const lockState = sut.getState(lockIdentifier);
+
+        // Assert, Then
+
+        expect(lockState).toBe(LockState.Expired);
+      });
+      test('Canceled', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        void sut.run(lockIdentifier, wait, executionInterval / 2);
+        sut.cancel(lockIdentifier);
+        const lockState = sut.getState(lockIdentifier);
+
+        // Assert, Then
+
+        expect(lockState).toBe(LockState.Canceled);
+      });
+    });
   });
 });
