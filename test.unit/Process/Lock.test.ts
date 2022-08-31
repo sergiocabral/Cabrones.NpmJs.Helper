@@ -712,4 +712,93 @@ describe('Class Lock', function () {
       });
     });
   });
+  test('ciclo de vida do estado do lock: Undefined, Locked, Unlocked', async () => {
+    // Arrange, Given
+
+    const executionInterval = 100;
+    const wait = () =>
+        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+    const lockIdentifier = Math.random().toString();
+    const sut = new Lock();
+    const lockStates: LockState[] = [];
+
+    // Act, When
+
+    lockStates.push(sut.getState(lockIdentifier));
+    setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
+    await sut.run(lockIdentifier, wait);
+    lockStates.push(sut.getState(lockIdentifier))
+    setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
+    await sut.run(lockIdentifier, wait);
+    lockStates.push(sut.getState(lockIdentifier))
+
+    // Assert, Then
+
+    expect(lockStates[0]).toBe(LockState.Undefined);
+    expect(lockStates[1]).toBe(LockState.Locked);
+    expect(lockStates[2]).toBe(LockState.Unlocked);
+    expect(lockStates[3]).toBe(LockState.Locked);
+    expect(lockStates[4]).toBe(LockState.Unlocked);
+  })
+  test('ciclo de vida do estado do lock: Undefined, Locked, Expired, Locked, Unlocked', async () => {
+    // Arrange, Given
+
+    const executionInterval = 100;
+    const wait = () =>
+        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+    const lockIdentifier = Math.random().toString();
+    const sut = new Lock();
+    const lockStates: LockState[] = [];
+
+    // Act, When
+
+    lockStates.push(sut.getState(lockIdentifier));
+    setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
+    await sut.run(lockIdentifier, wait, executionInterval / 2);
+    lockStates.push(sut.getState(lockIdentifier))
+    setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
+    await sut.run(lockIdentifier, wait);
+    lockStates.push(sut.getState(lockIdentifier))
+
+    // Assert, Then
+
+    expect(lockStates[0]).toBe(LockState.Undefined);
+    expect(lockStates[1]).toBe(LockState.Locked);
+    expect(lockStates[2]).toBe(LockState.Expired);
+    expect(lockStates[3]).toBe(LockState.Locked);
+    expect(lockStates[4]).toBe(LockState.Unlocked);
+  })
+  test('ciclo de vida do estado do lock: Undefined, Locked, Canceled, Locked, Unlocked', async () => {
+    // Arrange, Given
+
+    const executionInterval = 100;
+    const wait = () =>
+        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+    const lockIdentifier = Math.random().toString();
+    const sut = new Lock();
+    const lockStates: LockState[] = [];
+
+    // Act, When
+
+    lockStates.push(sut.getState(lockIdentifier));
+    setTimeout(() => lockStates.push(sut.getState(lockIdentifier)), executionInterval / 2);
+    setTimeout(() => sut.cancel(lockIdentifier), executionInterval / 2);
+    await sut.run(lockIdentifier, wait);
+    lockStates.push(sut.getState(lockIdentifier))
+    setTimeout(() => lockStates.push(sut.getState(lockIdentifier)), executionInterval / 2);
+    await sut.run(lockIdentifier, wait);
+    lockStates.push(sut.getState(lockIdentifier))
+
+    // Assert, Then
+
+    expect(lockStates[0]).toBe(LockState.Undefined);
+    expect(lockStates[1]).toBe(LockState.Locked);
+    expect(lockStates[2]).toBe(LockState.Canceled);
+    expect(lockStates[3]).toBe(LockState.Locked);
+    expect(lockStates[4]).toBe(LockState.Unlocked);
+  })
 });
+
