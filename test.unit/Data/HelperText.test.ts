@@ -416,7 +416,7 @@ describe('Classe HelperText', () => {
       // Arrange, Given
 
       const originalValues = Array<string>();
-      const count = Math.random() * 1000 + 100;
+      const count = Math.random() * 10000 + 100;
 
       // Act, When
 

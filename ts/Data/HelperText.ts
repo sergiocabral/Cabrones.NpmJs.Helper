@@ -170,9 +170,12 @@ export class HelperText {
     }
     let result = '';
     while (result.length < length) {
-      result += Buffer.from(Math.random().toString().substring(2)).toString(
-        'base64'
-      );
+      result += Buffer.from(
+        (new Date().getMilliseconds() * Math.random())
+          .toString()
+          .replace('.', ''),
+        'hex'
+      ).toString('base64');
     }
     return result.substring(0, length);
   }
