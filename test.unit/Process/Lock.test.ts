@@ -515,19 +515,26 @@ describe('Class Lock', function () {
 
       const extraTime = 100;
 
+      const times = Math.floor(Math.random() * 10 + 3);
       const executionInterval = 100;
-      const wait = () =>
-        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+      const expectedOrder: number[] = Array<number>(times)
+        .fill(0)
+        .map((_, index) => index);
+      const receivedOrder: number[] = [];
+      const wait = (order: number) => () =>
+        new Promise<void>(
+          resolve =>
+            receivedOrder.push(order) && setTimeout(resolve, executionInterval)
+        );
 
       const lockIdentifier = Math.random().toString();
       const sut = new Lock();
-      const times = Math.floor(Math.random() * 10 + 3);
 
       // Act, When
 
       const startTime = performance.now();
       for (let i = 0; i < times; i++) {
-        await sut.run(lockIdentifier, wait);
+        await sut.run(lockIdentifier, wait(i));
       }
       const endTime = performance.now();
 
@@ -537,6 +544,7 @@ describe('Class Lock', function () {
       expect(executionDuration).toBeLessThanOrEqual(
         executionInterval * times + extraTime
       );
+      expect(receivedOrder).toStrictEqual(expectedOrder);
     });
     describe('cancelar lock', () => {
       test('deve ser possível cancelar um lock', async () => {
@@ -565,7 +573,7 @@ describe('Class Lock', function () {
 
         expect(lock.lockState).toBe(LockState.Canceled);
       });
-      test('retorna true se houver lock para cancelar', async () => {
+      test('retorna 1 se houver 1 lock para cancelar', async () => {
         // Arrange, Given
 
         const executionInterval = 100;
@@ -584,7 +592,7 @@ describe('Class Lock', function () {
 
         expect(canceled).toBe(1);
       });
-      test('retorna false se o lock nunca foi usado', async () => {
+      test('retorna 0 se o lock nunca foi usado', async () => {
         // Arrange, Given
 
         const lockIdentifier = Math.random().toString();
@@ -598,7 +606,7 @@ describe('Class Lock', function () {
 
         expect(canceled).toBe(0);
       });
-      test('retorna false se o lock já foi liberado', async () => {
+      test('retorna 0 se o lock já foi liberado', async () => {
         // Arrange, Given
 
         const executionInterval = 100;
@@ -616,6 +624,74 @@ describe('Class Lock', function () {
         // Assert, Then
 
         expect(canceled).toBe(0);
+      });
+      test('modo "current", retorna 1 se cancelar apenas o lock corrente', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        let executionCount = 0;
+        const wait = () =>
+          new Promise<void>(resolve =>
+            setTimeout(() => executionCount++ && resolve(), executionInterval)
+          );
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        const canceled = sut.cancel(lockIdentifier, 'current');
+        await sut.run(lockIdentifier, wait);
+
+        // Assert, Then
+
+        expect(canceled).toBe(1);
+        expect(executionCount).toBe(5);
+      });
+      test('modo "all", retorna total locks e executa apenas o primeiro', async () => {
+        // Arrange, Given
+
+        const executionInterval = 100;
+        let executionCount = 0;
+        const wait = () =>
+          new Promise<void>(resolve =>
+            setTimeout(() => executionCount++ && resolve(), executionInterval)
+          );
+
+        const lockIdentifier = Math.random().toString();
+        const sut = new Lock();
+
+        // Act, When
+
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        void sut.run(lockIdentifier, wait);
+        const canceled = sut.cancel(lockIdentifier, 'all');
+        await sut.run(lockIdentifier, wait);
+
+        // Assert, Then
+
+        expect(canceled).toBe(4);
+        expect(executionCount).toBe(2);
+      });
+      test('modo diferente de "all" e "current" deve falhar', async () => {
+        // Arrange, Given
+
+        const invalidValue = Math.random().toString() as unknown as 'all';
+        const sut = new Lock();
+
+        // Act, When
+
+        const action = () => sut.cancel(Math.random().toString(), invalidValue);
+
+        // Assert, Then
+
+        expect(action).toThrow(InvalidArgumentError);
       });
     });
     describe('verificar estado do lock', () => {
@@ -805,5 +881,206 @@ describe('Class Lock', function () {
     expect(lockStates[2]).toBe(LockState.Canceled);
     expect(lockStates[3]).toBe(LockState.Locked);
     expect(lockStates[4]).toBe(LockState.Unlocked);
+  });
+  describe('Retorno da execução', () => {
+    test('quando há sucesso no callback', async () => {
+      // Arrange, Given
+
+      const expectedResult = Math.random();
+      const callback = () => expectedResult;
+
+      const sut = new Lock();
+
+      // Act, When
+
+      const result = await sut.run(Math.random().toString(), callback);
+
+      // Assert, Then
+
+      expect(result.lockState).toBe(LockState.Unlocked);
+      expect(result.callbackResult).toBe(expectedResult);
+      expect(result.callbackSuccess).toBe(true);
+      expect(result.callbackError).toBeUndefined();
+    });
+    test('quando há falha no callback', async () => {
+      // Arrange, Given
+
+      const expectedError = Math.random();
+      const callback = () => {
+        throw expectedError;
+      };
+
+      const sut = new Lock();
+
+      // Act, When
+
+      const result = await sut.run(Math.random().toString(), callback);
+
+      // Assert, Then
+
+      expect(result.lockState).toBe(LockState.Unlocked);
+      expect(result.callbackResult).toBeUndefined();
+      expect(result.callbackSuccess).toBe(false);
+      expect(result.callbackError).toBe(expectedError);
+    });
+  });
+  describe('precedência do status do lock', () => {
+    test('Undefined quando não há lock definido', async () => {
+      // Arrange, Given
+
+      const expectedStatus = LockState.Undefined;
+      const lockName = Math.random().toString();
+      const sut = new Lock();
+
+      // Act, When
+
+      const receivedStatus = sut.getState(lockName);
+
+      // Assert, Then
+
+      expect(receivedStatus).toBe(expectedStatus);
+    });
+    test('(Canceled), Expired e Unlocked: vale o definido por último ', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const expectedStatus = LockState.Canceled;
+
+        const lockName = Math.random().toString();
+        const executionInterval = 300;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const sut = new Lock();
+
+        // Act, When
+
+        sut.run(lockName, wait).then(() => {
+          void sut.run(lockName, wait);
+          void sut.run(lockName, wait, executionInterval / 3);
+          setTimeout(
+            () => sut.cancel(lockName, 'current'),
+            executionInterval / 2
+          );
+
+          setTimeout(() => {
+            const receivedStatus = sut.getState(lockName);
+
+            // Assert, Then
+
+            expect(receivedStatus).toBe(expectedStatus);
+
+            // Tear Down
+
+            resolve();
+          }, executionInterval * 2);
+        });
+      });
+    });
+    test('Canceled, (Expired) e Unlocked: vale o definido por último ', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const expectedStatus = LockState.Expired;
+
+        const lockName = Math.random().toString();
+        const executionInterval = 200;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const sut = new Lock();
+
+        // Act, When
+
+        sut.run(lockName, wait).then(() => {
+          void sut.run(lockName, wait);
+          void sut.run(lockName, wait, executionInterval / 2);
+          sut.cancel(lockName, 'current');
+
+          setTimeout(() => {
+            const receivedStatus = sut.getState(lockName);
+
+            // Assert, Then
+
+            expect(receivedStatus).toBe(expectedStatus);
+
+            // Tear Down
+
+            resolve();
+          }, executionInterval * 2);
+        });
+      });
+    });
+    test('Canceled, Expired e (Unlocked): vale o definido por último ', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const expectedStatus = LockState.Unlocked;
+
+        const lockName = Math.random().toString();
+        const executionInterval = 200;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const sut = new Lock();
+
+        // Act, When
+
+        sut.run(lockName, wait).then(() => {
+          void sut.run(lockName, wait);
+          void sut.run(lockName, wait, executionInterval / 2);
+          sut.cancel(lockName, 'current');
+
+          setTimeout(() => {
+            sut.run(lockName, wait).then(() => {
+              const receivedStatus = sut.getState(lockName);
+
+              // Assert, Then
+
+              expect(receivedStatus).toBe(expectedStatus);
+
+              // Tear Down
+
+              resolve();
+            });
+          }, executionInterval * 2);
+        });
+      });
+    });
+    test('Locked precede a todos', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const expectedStatus = LockState.Locked;
+
+        const lockName = Math.random().toString();
+        const executionInterval = 300;
+        const wait = () =>
+          new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+
+        const sut = new Lock();
+
+        // Act, When
+
+        sut.run(lockName, wait).then(() => {
+          void sut.run(lockName, wait);
+          void sut.run(lockName, wait);
+          void sut.run(lockName, wait, executionInterval / 3);
+          sut.cancel(lockName, 'current');
+
+          setTimeout(() => {
+            const receivedStatus = sut.getState(lockName);
+
+            // Assert, Then
+
+            expect(receivedStatus).toBe(expectedStatus);
+
+            // Tear Down
+
+            resolve();
+          }, executionInterval / 2);
+        });
+      });
+    });
   });
 });

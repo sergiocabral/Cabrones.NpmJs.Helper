@@ -2,7 +2,6 @@ import { LockState } from './LockState';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
 import { HelperObject } from '../Data/HelperObject';
 import { LockInstance } from './LockInstance';
-import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
 import { LockResult } from './LockResult';
 import { HelperNumeric } from '../Data/HelperNumeric';
 
@@ -131,9 +130,16 @@ export class Lock {
     const instances: LockInstance[] = Array<LockInstance>().concat(
       this.locks[name] ?? []
     );
+
+    const hasLocked =
+      instances.findIndex(instance => instance.state === LockState.Locked) >= 0;
+    if (hasLocked) {
+      return LockState.Locked;
+    }
+
     instances.sort(
       (instance1, instance2) =>
-        -HelperNumeric.sortCompare(instance1.state, instance2.state)
+        -HelperNumeric.sortCompare(instance1.updated, instance2.updated)
     );
     return instances?.length > 0 ? instances[0].state : LockState.Undefined;
   }
@@ -145,6 +151,10 @@ export class Lock {
    * @return true se havia algum lock para ser cancelado.
    */
   public cancel(name: string, mode: 'all' | 'current' = 'all'): number {
+    if (mode !== 'all' && mode !== 'current') {
+      throw new InvalidArgumentError('Expected "all" ou "current" mode.');
+    }
+
     const lockInstances = this.locks[name]?.filter(
       lockInstance => lockInstance.state === LockState.Locked
     );
@@ -159,8 +169,6 @@ export class Lock {
         case 'current':
           lockInstances[0].state = LockState.Canceled;
           return 1;
-        default:
-          throw new InvalidArgumentError('Expected "all" ou "current" mode.');
       }
     }
 
@@ -196,10 +204,6 @@ export class Lock {
     myLockInstance.index =
       (this.locks[name] = this.locks[name] ?? []).push(myLockInstance) - 1;
 
-    if (this.locks[name][myLockInstance.index] !== myLockInstance) {
-      throw new ShouldNeverHappenError();
-    }
-
     return new Promise<LockResult<TCallbackResult>>(resolve => {
       let waitForUnlockTimeout: NodeJS.Timeout | undefined;
       const waitForUnlock = () => {
@@ -207,7 +211,8 @@ export class Lock {
           lockInstance => lockInstance.state === LockState.Locked
         );
 
-        if (currentLock === myLockInstance) {
+        if (currentLock === myLockInstance && !myLockInstance.executed) {
+          myLockInstance.executed = true;
           HelperObject.promisify(callback)()
             .then(callbackResult => {
               if (myLockInstance.state === LockState.Locked) {

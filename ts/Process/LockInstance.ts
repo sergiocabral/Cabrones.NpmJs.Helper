@@ -1,6 +1,8 @@
 import { HelperText } from '../Data/HelperText';
 import { LockState } from './LockState';
 import { EmptyError } from '../Error/EmptyError';
+import { InvalidArgumentError } from '../Error/InvalidArgumentError';
+import { InvalidExecutionError } from '../Error/InvalidExecutionError';
 
 /**
  * Instância de lock.
@@ -36,9 +38,36 @@ export class LockInstance {
   public readonly id: string = HelperText.random(40);
 
   /**
+   * Momento da última atualização do estado.
+   */
+  private updatedValue: number = performance.now();
+
+  /**
+   * Momento da última atualização do estado.
+   */
+  public get updated(): number {
+    return this.updatedValue;
+  }
+
+  /**
    * Estado do lock.
    */
-  public state: LockState = LockState.Locked;
+  private stateValue: LockState = LockState.Locked;
+
+  /**
+   * Estado do lock.
+   */
+  public get state(): LockState {
+    return this.stateValue;
+  }
+
+  /**
+   * Estado do lock.
+   */
+  public set state(value: LockState) {
+    this.stateValue = value;
+    this.updatedValue = performance.now();
+  }
 
   /**
    * Ordem (tipo index) na lista de locks de mesmo nome.
@@ -63,6 +92,31 @@ export class LockInstance {
       throw new EmptyError('Order already defined.');
     }
     this.indexValue = value;
+  }
+
+  /**
+   * Sinaliza se já foi executado o callback.
+   */
+  public executedValue = false;
+
+  /**
+   * Sinaliza se já foi executado o callback.
+   */
+  public get executed(): boolean {
+    return this.executedValue;
+  }
+
+  /**
+   * Sinaliza se já foi executado o callback.
+   */
+  public set executed(value: boolean) {
+    if (this.executedValue) {
+      throw new InvalidExecutionError('Value already defined.');
+    }
+    if (!value) {
+      throw new InvalidArgumentError('Only true is accepted.');
+    }
+    this.executedValue = value;
   }
 
   /**

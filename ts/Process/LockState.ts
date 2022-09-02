@@ -5,25 +5,25 @@ export enum LockState {
   /**
    * Quando ainda não foi definido.
    */
-  Undefined,
+  Undefined = 'Undefined',
 
   /**
    * Quando é cancelado. Não deve executar nada pendente.
    */
-  Canceled,
+  Canceled = 'Canceled',
 
   /**
    * Quando o tempo de vida acaba. Não deve executar nada pendente.
    */
-  Expired,
+  Expired = 'Expired',
 
   /**
    * Quando é liberado e permite a execução do que está pendente.
    */
-  Unlocked,
+  Unlocked = 'Unlocked',
 
   /**
    * Quando ainda está em bloqueio.
    */
-  Locked
+  Locked = 'Locked'
 }
