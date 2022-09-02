@@ -69,6 +69,11 @@ import { LogWriterToConsole } from './Log/LogWriterToConsole';
 import { LogWriterToFile } from './Log/LogWriterToFile';
 import { LogWriterToPersistent } from './Log/LogWriterToPersistent';
 
+import { Lock } from './Process/Lock';
+import { LockInstance } from './Process/LockInstance';
+import { LockResult } from './Process/LockResult';
+import { LockState } from './Process/LockState';
+
 import './Prototype/Array';
 import './Prototype/Date';
 import './Prototype/JSON';
@@ -155,6 +160,10 @@ export {
   LogWriterToConsole,
   LogWriterToFile,
   LogWriterToPersistent,
+  Lock,
+  LockInstance,
+  LockResult,
+  LockState,
   ConnectionState,
   HttpStatusCode,
   IConnection,
