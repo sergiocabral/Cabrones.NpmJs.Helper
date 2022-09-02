@@ -221,4 +221,52 @@ describe('Class LockInstance', () => {
       expect(action).toThrow(InvalidExecutionError);
     });
   });
+  describe('dispose()', () => {
+    test('se for chamado deve cancelar o evento de timeout', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const timeout = 100;
+        const mock = jest.fn();
+
+        // Act, When
+
+        const sut = new LockInstance(Math.random().toString(), timeout, mock);
+
+        setTimeout(() => sut.dispose(), timeout / 2);
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(mock).toBeCalledTimes(0);
+
+          // Tear down
+
+          resolve();
+        }, timeout * 2);
+      });
+    });
+    test('se NÃO for chamado NÃO deve cancelar o evento de timeout', async () => {
+      return new Promise<void>(resolve => {
+        // Arrange, Given
+
+        const timeout = 100;
+        const mock = jest.fn();
+
+        // Act, When
+
+        void new LockInstance(Math.random().toString(), timeout, mock);
+
+        setTimeout(() => {
+          // Assert, Then
+
+          expect(mock).toBeCalledTimes(1);
+
+          // Tear down
+
+          resolve();
+        }, timeout * 2);
+      });
+    });
+  });
 });
