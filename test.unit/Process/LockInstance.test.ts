@@ -1,5 +1,10 @@
-import { Lock } from '../../ts/Process/Lock';
 import { LockInstance } from '../../ts/Process/LockInstance';
+import { LockState } from '../../ts/Process/LockState';
+import {
+  EmptyError,
+  InvalidArgumentError,
+  InvalidExecutionError
+} from '../../ts';
 
 describe('Class LockInstance', () => {
   describe('Construtor', () => {
@@ -29,7 +34,7 @@ describe('Class LockInstance', () => {
         // Act, When
 
         const startTime = performance.now();
-        const sut = new LockInstance(Math.random().toString(), timeout, mock);
+        void new LockInstance(Math.random().toString(), timeout, mock);
 
         setTimeout(() => {
           const duration = endTime - startTime;
@@ -70,6 +75,150 @@ describe('Class LockInstance', () => {
           }
         );
       });
+    });
+  });
+  test('ao definir um estado redefine updated', () => {
+    // Arrange, Given
+
+    const tolerance = 0.1;
+
+    const sut = new LockInstance(
+      Math.random().toString(),
+      undefined,
+      undefined
+    );
+
+    // Act, When
+
+    sut.state = LockState.Undefined;
+    const receivedUpdate1 = sut.updated;
+    const moment1 = performance.now();
+
+    sut.state = LockState.Undefined;
+    const receivedUpdate2 = sut.updated;
+    const moment2 = performance.now();
+
+    // Assert, Then
+
+    const diffMoment = moment2 - moment1;
+    const diffUpdated = receivedUpdate2 - receivedUpdate1;
+    const diff = Math.abs(diffUpdated - diffMoment);
+
+    expect(diff).toBeGreaterThan(0);
+    expect(diff).toBeLessThan(tolerance);
+  });
+  describe('propriedade index', () => {
+    test('não pode ler se não foi definido', () => {
+      // Arrange, Given
+
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const action = () => sut.index;
+
+      // Assert, Then
+
+      expect(action).toThrow(EmptyError);
+    });
+    test('pode ser lido após definido', () => {
+      // Arrange, Given
+
+      const expectedValue = Math.random();
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      sut.index = expectedValue;
+      const receivedValue = sut.index;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('não pode ser definido mais de uma vez', () => {
+      // Arrange, Given
+
+      const expectedValue = Math.random();
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const action = () => (sut.index = expectedValue);
+
+      // Assert, Then
+
+      expect(action).not.toThrow();
+      expect(action).toThrow(EmptyError);
+    });
+  });
+  describe('propriedade executed', () => {
+    test('por padrão é false', () => {
+      // Arrange, Given
+
+      const expectedValue = false;
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const receivedValue = sut.executed;
+
+      // Assert, Then
+
+      expect(receivedValue).toBe(expectedValue);
+    });
+    test('não aceita ser definido como false', () => {
+      // Arrange, Given
+
+      const invalidValue = false;
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const action = () => (sut.executed = invalidValue);
+
+      // Assert, Then
+
+      expect(action).toThrow(InvalidArgumentError);
+    });
+    test('não pode ser definido mais de uma vez', () => {
+      // Arrange, Given
+
+      const validValue = true;
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const action = () => (sut.executed = validValue);
+
+      // Assert, Then
+
+      expect(action).not.toThrow();
+      expect(action).toThrow(InvalidExecutionError);
     });
   });
 });

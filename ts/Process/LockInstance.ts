@@ -1,4 +1,3 @@
-import { HelperText } from '../Data/HelperText';
 import { LockState } from './LockState';
 import { EmptyError } from '../Error/EmptyError';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
@@ -31,11 +30,6 @@ export class LockInstance {
    * Timeout do tempo de expiração.
    */
   private readonly expiredTimeout?: NodeJS.Timeout;
-
-  /**
-   * Identificador único para essa instância de lock.
-   */
-  public readonly id: string = HelperText.random(40);
 
   /**
    * Momento da última atualização do estado.
