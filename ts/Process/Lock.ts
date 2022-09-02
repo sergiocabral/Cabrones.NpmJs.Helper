@@ -141,7 +141,7 @@ export class Lock {
       (instance1, instance2) =>
         -HelperNumeric.sortCompare(instance1.updated, instance2.updated)
     );
-    return instances?.length > 0 ? instances[0].state : LockState.Undefined;
+    return instances.length > 0 ? instances[0].state : LockState.Undefined;
   }
 
   /**
