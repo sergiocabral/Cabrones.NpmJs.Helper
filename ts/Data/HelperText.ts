@@ -175,7 +175,9 @@ export class HelperText {
           .toString()
           .replace('.', ''),
         'hex'
-      ).toString('base64');
+      )
+        .toString('base64')
+        .replace(/\W/g, '');
     }
     return result.substring(0, length);
   }

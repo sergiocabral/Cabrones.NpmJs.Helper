@@ -457,5 +457,21 @@ describe('Classe HelperText', () => {
         expect(action).toThrow(InvalidArgumentError);
       }
     });
+    test('deve conter apenas alfanuméricos', () => {
+      // Arrange, Given
+
+      const regexAlphaNumeric = /^[a-zA-Z0-9]+$/;
+      const count = Math.random() * 1000 + 1000;
+
+      for (let i = 0; i < count; i++) {
+        // Act, When
+
+        const value = HelperText.random();
+
+        // Assert, Then
+
+        expect(value).toMatch(regexAlphaNumeric);
+      }
+    });
   });
 });
