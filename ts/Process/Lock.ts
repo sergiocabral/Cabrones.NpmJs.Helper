@@ -1,22 +1,9 @@
 import { LockState } from './LockState';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';
-import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
 import { HelperObject } from '../Data/HelperObject';
-
-/**
- * Dados do Lock.
- */
-class LockStateData {
-  /**
-   * Construtor.
-   * @param identifier Identificador do Lock
-   * @param state Estado do Lock.
-   */
-  public constructor(
-    public readonly identifier: string,
-    public state: LockState
-  ) {}
-}
+import { LockInstance } from './LockInstance';
+import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
+import { LockResult } from './LockResult';
 
 /**
  * Atividades de bloqueio de execução paralela
@@ -131,65 +118,61 @@ export class Lock {
   }
 
   /**
-   * Identificadores de locks ativos
+   * Locks utilizados.
    */
-  private locks: Map<string, LockStateData> = new Map<string, LockStateData>();
-
-  /**
-   * Define um lock.
-   * @param lock Informações do Lock.
-   */
-  private async set(lock: LockStateData): Promise<boolean> {
-    this.locks.set(lock.identifier, lock);
-    return new Promise<boolean>(resolve =>
-      setImmediate(() => resolve(this.get(lock) === lock))
-    );
-  }
-
-  /**
-   * Retorna os dados do lock.
-   * @param lock Identificador do lock.
-   */
-  private get(lock: string | LockStateData): LockStateData {
-    lock = typeof lock === 'string' ? lock : lock.identifier;
-    return this.locks.get(lock) ?? new LockStateData(lock, LockState.Undefined);
-  }
+  private locks: Record<string, LockInstance[]> = {};
 
   /**
    * Retorna o estado do lock.
-   * @param identifier Identificador do lock.
+   * @param name Nome do lock.
    */
-  public getState(identifier: string): LockState {
-    return this.get(identifier).state;
+  public getState(name: string): LockState {
+    const instances: undefined | LockInstance[] = this.locks[name];
+    return instances?.length > 0 ? instances[0].state : LockState.Undefined;
   }
 
   /**
    * Cancela um lock.
-   * @param identifier Identificador do lock.
+   * @param name Nome do lock.
+   * @param mode Modo de cancelamento
    * @return true se havia algum lock para ser cancelado.
    */
-  public cancel(identifier: string): boolean {
-    const lockState = this.get(identifier);
-    if (lockState.state === LockState.Locked) {
-      lockState.state = LockState.Canceled;
-      return true;
+  public cancel(name: string, mode: 'all' | 'current' = 'all'): number {
+    const lockInstances = this.locks[name]?.filter(
+      lockInstance => lockInstance.state === LockState.Locked
+    );
+
+    if (lockInstances?.length > 0) {
+      switch (mode) {
+        case 'all':
+          for (const lockInstance of lockInstances) {
+            lockInstance.state = LockState.Canceled;
+          }
+          return lockInstances.length;
+        case 'current':
+          lockInstances[0].state = LockState.Canceled;
+          return 1;
+        default:
+          throw new InvalidArgumentError('Expected "all" ou "current" mode.');
+      }
     }
-    return false;
+
+    return 0;
   }
 
   /**
    * Executa algo quando o lock estiver liberado.
-   * @param identifier Identificador de lock
+   * @param name Nome do lock
    * @param callback Executa apenas quando o lock for liberado.
    * @param expirationInMilliseconds Tempo de expiração para o lock existir.
    * @param checkIntervalInMilliseconds Intervalo para verificação de liberação do lock.
    */
-  public async run(
-    identifier: string,
-    callback: () => Promise<void> | void,
+  public async run<TCallbackResult = unknown>(
+    name: string,
+    callback: () => Promise<TCallbackResult> | TCallbackResult,
     expirationInMilliseconds?: number,
     checkIntervalInMilliseconds?: number
-  ): Promise<LockState> {
+  ): Promise<LockResult<TCallbackResult>> {
     expirationInMilliseconds = Lock.validateNumberGreaterThenZero(
       expirationInMilliseconds ?? this.defaultExpirationInMilliseconds
     );
@@ -198,77 +181,89 @@ export class Lock {
       checkIntervalInMilliseconds ?? this.defaultCheckIntervalInMilliseconds
     );
 
-    const callbackAsPromise = HelperObject.promisify(callback);
+    const myLockInstance: LockInstance = new LockInstance(
+      name,
+      expirationInMilliseconds,
+      () => (myLockInstance.state = LockState.Expired)
+    );
+    myLockInstance.index =
+      (this.locks[name] = this.locks[name] ?? []).push(myLockInstance) - 1;
 
-    let amIExpired = false;
-    let expiredTimeout: NodeJS.Timeout | undefined;
-    if (expirationInMilliseconds !== undefined) {
-      expiredTimeout = setTimeout(
-        () => (amIExpired = true),
-        expirationInMilliseconds
-      );
+    if (this.locks[name][myLockInstance.index] !== myLockInstance) {
+      throw new ShouldNeverHappenError();
     }
 
-    const myLock = new LockStateData(identifier, LockState.Locked);
-
-    return new Promise<LockState>((resolve, reject) => {
+    return new Promise<LockResult<TCallbackResult>>(resolve => {
       let waitForUnlockTimeout: NodeJS.Timeout | undefined;
       const waitForUnlock = () => {
-        const currentLock = this.get(identifier);
+        const currentLock = this.locks[name].find(
+          lockInstance => lockInstance.state === LockState.Locked
+        );
 
-        if (amIExpired) {
-          resolve((myLock.state = LockState.Expired));
-        } else if (currentLock.state === LockState.Canceled) {
-          clearTimeout(expiredTimeout);
-          resolve(currentLock.state);
-        } else if (currentLock.state === LockState.Locked) {
-          waitForUnlockTimeout = setTimeout(
-            waitForUnlock,
-            checkIntervalInMilliseconds
-          );
-        } else if (myLock.state === LockState.Locked) {
-          this.set(myLock)
-            .then(locked => {
-              if (locked) {
-                callbackAsPromise()
-                  .then(() => {
-                    clearTimeout(expiredTimeout);
-                    clearTimeout(waitForUnlockTimeout);
-                    resolve((myLock.state = LockState.Unlocked));
-                  })
-                  .catch(reject);
+        if (currentLock === myLockInstance) {
+          HelperObject.promisify(callback)()
+            .then(callbackResult => {
+              if (myLockInstance.state === LockState.Locked) {
+                myLockInstance.state = LockState.Unlocked;
+                myLockInstance.dispose();
+                clearTimeout(waitForUnlockTimeout);
+                resolve({
+                  lockState: myLockInstance.state,
+                  callbackSuccess: true,
+                  callbackResult
+                });
               }
-              waitForUnlockTimeout = setTimeout(
-                waitForUnlock,
-                checkIntervalInMilliseconds
-              );
             })
-            .catch(() => reject(new ShouldNeverHappenError()));
+            .catch((callbackError: unknown) => {
+              if (myLockInstance.state === LockState.Locked) {
+                myLockInstance.state = LockState.Unlocked;
+                myLockInstance.dispose();
+                clearTimeout(waitForUnlockTimeout);
+                resolve({
+                  lockState: myLockInstance.state,
+                  callbackSuccess: false,
+                  callbackError
+                });
+              }
+            });
         }
+
+        if (myLockInstance.state !== LockState.Locked) {
+          myLockInstance.dispose();
+          resolve({
+            lockState: myLockInstance.state
+          });
+          return;
+        }
+
+        waitForUnlockTimeout = setTimeout(
+          waitForUnlock,
+          checkIntervalInMilliseconds
+        );
       };
       waitForUnlock();
     });
   }
 
-  /**
-   * Espera o lock estar liberado.
-   * @param identifier Identificador de lock
-   * @param expirationInMilliseconds Tempo de expiração para o lock existir.
-   * @param checkIntervalInMilliseconds Intervalo para verificação de liberação do lock.
-   */
-  public async wait(
-    identifier: string,
-    expirationInMilliseconds?: number,
-    checkIntervalInMilliseconds?: number
-  ): Promise<LockState> {
-    return this.run(
-      identifier,
-      () => {
-        // Nothing to do.
-        // TODO: O wait não deve esperar apenas ele mesmo, mas todos os locks na fila
-      },
-      expirationInMilliseconds,
-      checkIntervalInMilliseconds
-    );
-  }
+  // /**
+  //  * Espera o lock estar liberado.
+  //  * @param identifier Identificador de lock
+  //  * @param expirationInMilliseconds Tempo de expiração para o lock existir.
+  //  * @param checkIntervalInMilliseconds Intervalo para verificação de liberação do lock.
+  //  */
+  // public async wait(
+  //   identifier: string,
+  //   expirationInMilliseconds?: number,
+  //   checkIntervalInMilliseconds?: number
+  // ): Promise<LockState> {
+  //   return this.run(
+  //     identifier,
+  //     () => {
+  //       // Nothing to do.
+  //       // TODO: O wait não deve esperar apenas ele mesmo, mas todos os locks na fila
+  //     },
+  //     expirationInMilliseconds,
+  //     checkIntervalInMilliseconds
+  //   );
+  // }
 }

@@ -307,7 +307,7 @@ describe('Class Lock', function () {
         // Act, When
 
         const startTime = performance.now();
-        const lockState = await sut.run(lockIdentifier, wait);
+        const lock = await sut.run(lockIdentifier, wait);
         const endTime = performance.now();
 
         // Assert, Then
@@ -317,7 +317,7 @@ describe('Class Lock', function () {
           instanceExpirationInMilliseconds * 2
         );
 
-        expect(lockState).toBe(LockState.Expired);
+        expect(lock.lockState).toBe(LockState.Expired);
       });
       test('deve usar o valor informado', async () => {
         // Arrange, Given
@@ -336,7 +336,7 @@ describe('Class Lock', function () {
         // Act, When
 
         const startTime = performance.now();
-        const lockState = await sut.run(
+        const lock = await sut.run(
           lockIdentifier,
           wait,
           informedExpirationInMilliseconds
@@ -350,7 +350,7 @@ describe('Class Lock', function () {
           informedExpirationInMilliseconds * 2
         );
 
-        expect(lockState).toBe(LockState.Expired);
+        expect(lock.lockState).toBe(LockState.Expired);
       });
       test('não deve aceitar valor menor que zero', async () => {
         // Arrange, Given
@@ -555,7 +555,7 @@ describe('Class Lock', function () {
         const startTime = performance.now();
         void sut.run(lockIdentifier, wait);
         setTimeout(() => sut.cancel(lockIdentifier), executionInterval / 2);
-        const lockState = await sut.run(lockIdentifier, noWait);
+        const lock = await sut.run(lockIdentifier, noWait);
         const endTime = performance.now();
 
         // Assert, Then
@@ -563,7 +563,7 @@ describe('Class Lock', function () {
         const executionDuration = endTime - startTime;
         expect(executionDuration).toBeLessThan(executionInterval);
 
-        expect(lockState).toBe(LockState.Canceled);
+        expect(lock.lockState).toBe(LockState.Canceled);
       });
       test('retorna true se houver lock para cancelar', async () => {
         // Arrange, Given
@@ -582,7 +582,7 @@ describe('Class Lock', function () {
 
         // Assert, Then
 
-        expect(canceled).toBe(true);
+        expect(canceled).toBe(1);
       });
       test('retorna false se o lock nunca foi usado', async () => {
         // Arrange, Given
@@ -596,7 +596,7 @@ describe('Class Lock', function () {
 
         // Assert, Then
 
-        expect(canceled).toBe(false);
+        expect(canceled).toBe(0);
       });
       test('retorna false se o lock já foi liberado', async () => {
         // Arrange, Given
@@ -615,7 +615,7 @@ describe('Class Lock', function () {
 
         // Assert, Then
 
-        expect(canceled).toBe(false);
+        expect(canceled).toBe(0);
       });
     });
     describe('verificar estado do lock', () => {
@@ -717,7 +717,7 @@ describe('Class Lock', function () {
 
     const executionInterval = 100;
     const wait = () =>
-        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+      new Promise<void>(resolve => setTimeout(resolve, executionInterval));
 
     const lockIdentifier = Math.random().toString();
     const sut = new Lock();
@@ -728,10 +728,10 @@ describe('Class Lock', function () {
     lockStates.push(sut.getState(lockIdentifier));
     setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
     await sut.run(lockIdentifier, wait);
-    lockStates.push(sut.getState(lockIdentifier))
+    lockStates.push(sut.getState(lockIdentifier));
     setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
     await sut.run(lockIdentifier, wait);
-    lockStates.push(sut.getState(lockIdentifier))
+    lockStates.push(sut.getState(lockIdentifier));
 
     // Assert, Then
 
@@ -740,13 +740,13 @@ describe('Class Lock', function () {
     expect(lockStates[2]).toBe(LockState.Unlocked);
     expect(lockStates[3]).toBe(LockState.Locked);
     expect(lockStates[4]).toBe(LockState.Unlocked);
-  })
+  });
   test('ciclo de vida do estado do lock: Undefined, Locked, Expired, Locked, Unlocked', async () => {
     // Arrange, Given
 
     const executionInterval = 100;
     const wait = () =>
-        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+      new Promise<void>(resolve => setTimeout(resolve, executionInterval));
 
     const lockIdentifier = Math.random().toString();
     const sut = new Lock();
@@ -757,10 +757,10 @@ describe('Class Lock', function () {
     lockStates.push(sut.getState(lockIdentifier));
     setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
     await sut.run(lockIdentifier, wait, executionInterval / 2);
-    lockStates.push(sut.getState(lockIdentifier))
+    lockStates.push(sut.getState(lockIdentifier));
     setImmediate(() => lockStates.push(sut.getState(lockIdentifier)));
     await sut.run(lockIdentifier, wait);
-    lockStates.push(sut.getState(lockIdentifier))
+    lockStates.push(sut.getState(lockIdentifier));
 
     // Assert, Then
 
@@ -769,13 +769,13 @@ describe('Class Lock', function () {
     expect(lockStates[2]).toBe(LockState.Expired);
     expect(lockStates[3]).toBe(LockState.Locked);
     expect(lockStates[4]).toBe(LockState.Unlocked);
-  })
+  });
   test('ciclo de vida do estado do lock: Undefined, Locked, Canceled, Locked, Unlocked', async () => {
     // Arrange, Given
 
     const executionInterval = 100;
     const wait = () =>
-        new Promise<void>(resolve => setTimeout(resolve, executionInterval));
+      new Promise<void>(resolve => setTimeout(resolve, executionInterval));
 
     const lockIdentifier = Math.random().toString();
     const sut = new Lock();
@@ -784,13 +784,19 @@ describe('Class Lock', function () {
     // Act, When
 
     lockStates.push(sut.getState(lockIdentifier));
-    setTimeout(() => lockStates.push(sut.getState(lockIdentifier)), executionInterval / 2);
+    setTimeout(
+      () => lockStates.push(sut.getState(lockIdentifier)),
+      executionInterval / 2
+    );
     setTimeout(() => sut.cancel(lockIdentifier), executionInterval / 2);
     await sut.run(lockIdentifier, wait);
-    lockStates.push(sut.getState(lockIdentifier))
-    setTimeout(() => lockStates.push(sut.getState(lockIdentifier)), executionInterval / 2);
+    lockStates.push(sut.getState(lockIdentifier));
+    setTimeout(
+      () => lockStates.push(sut.getState(lockIdentifier)),
+      executionInterval / 2
+    );
     await sut.run(lockIdentifier, wait);
-    lockStates.push(sut.getState(lockIdentifier))
+    lockStates.push(sut.getState(lockIdentifier));
 
     // Assert, Then
 
@@ -799,6 +805,5 @@ describe('Class Lock', function () {
     expect(lockStates[2]).toBe(LockState.Canceled);
     expect(lockStates[3]).toBe(LockState.Locked);
     expect(lockStates[4]).toBe(LockState.Unlocked);
-  })
+  });
 });
-
