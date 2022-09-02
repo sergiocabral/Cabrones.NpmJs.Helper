@@ -4,6 +4,7 @@ import { HelperObject } from '../Data/HelperObject';
 import { LockInstance } from './LockInstance';
 import { ShouldNeverHappenError } from '../Error/ShouldNeverHappenError';
 import { LockResult } from './LockResult';
+import { HelperNumeric } from '../Data/HelperNumeric';
 
 /**
  * Atividades de bloqueio de execução paralela
@@ -127,7 +128,13 @@ export class Lock {
    * @param name Nome do lock.
    */
   public getState(name: string): LockState {
-    const instances: undefined | LockInstance[] = this.locks[name];
+    const instances: LockInstance[] = Array<LockInstance>().concat(
+      this.locks[name] ?? []
+    );
+    instances.sort(
+      (instance1, instance2) =>
+        -HelperNumeric.sortCompare(instance1.state, instance2.state)
+    );
     return instances?.length > 0 ? instances[0].state : LockState.Undefined;
   }
 
