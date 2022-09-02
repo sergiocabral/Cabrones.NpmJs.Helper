@@ -269,4 +269,66 @@ describe('Class LockInstance', () => {
       });
     });
   });
+  describe('clone()', () => {
+    test('deve retorna outra instância de objeto', () => {
+      // Arrange, Given
+
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const sutClone = sut.clone();
+
+      // Assert, Then
+
+      expect(sutClone).not.toBe(sut);
+    });
+    test('deve retorna um JSON igual', () => {
+      // Arrange, Given
+
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const sutClone = sut.clone();
+
+      // Assert, Then
+
+      expect(JSON.stringify(sutClone)).toBe(JSON.stringify(sut));
+    });
+    test('deve ser uma instância válida ao invés de apenas um JSON', () => {
+      // Arrange, Given
+
+      const sut = new LockInstance(
+        Math.random().toString(),
+        undefined,
+        undefined
+      );
+
+      // Act, When
+
+      const sutClone = sut.clone();
+
+      const validActionWithErrorExpected = () => (sutClone.executed = false);
+
+      const updated1 = sutClone.updated;
+      sutClone.state = sutClone.state;
+      const updated2 = sutClone.updated;
+
+      // Assert, Then
+
+      expect(validActionWithErrorExpected).toThrowError();
+
+      expect(updated2).not.toBe(0);
+      expect(updated2).toBeGreaterThan(updated1);
+    });
+  });
 });
