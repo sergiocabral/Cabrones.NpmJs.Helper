@@ -1,6 +1,4 @@
-import { Lock } from '../../ts/Process/Lock';
-import { InvalidArgumentError } from '../../ts';
-import { LockState } from '../../ts/Process/LockState';
+import { Lock, InvalidArgumentError, LockState } from '../../ts';
 
 describe('Class Lock', function () {
   const originals: Record<string, any> = {};

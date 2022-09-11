@@ -1,6 +1,6 @@
-import { LockInstance } from '../../ts/Process/LockInstance';
-import { LockState } from '../../ts/Process/LockState';
 import {
+  LockInstance,
+  LockState,
   EmptyError,
   InvalidArgumentError,
   InvalidExecutionError
