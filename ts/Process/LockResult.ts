@@ -1,8 +1,8 @@
+import { LockState } from './LockState';
+
 /**
  * Resultado na liberação de um lock.
  */
-import { LockState } from './LockState';
-
 export interface LockResult<TCallbackResult = unknown> {
   /**
    * Estado do lock.
