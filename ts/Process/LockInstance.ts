@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks';
 import { LockState } from './LockState';
 import { EmptyError } from '../Error/EmptyError';
 import { InvalidArgumentError } from '../Error/InvalidArgumentError';

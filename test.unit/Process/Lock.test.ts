@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks';
 import { Lock, InvalidArgumentError, LockState } from '../../ts';
 
 describe('Class Lock', function () {
