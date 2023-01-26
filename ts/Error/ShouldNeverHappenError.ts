@@ -12,7 +12,7 @@ export class ShouldNeverHappenError extends GenericError {
    */
   public constructor(
     message?: string,
-    public innerError?: Error | GenericError | unknown
+    public readonly innerError?: Error | GenericError | unknown
   ) {
     super(message, innerError, 'ShouldNeverHappenError');
   }
