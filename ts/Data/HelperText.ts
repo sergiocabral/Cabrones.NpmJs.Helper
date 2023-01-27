@@ -186,8 +186,8 @@ export class HelperText {
    * Quebra um texto em linhas.
    * @param text Texto de entrada.
    * @param trim Remove espaços no começo e fim de linha.
-   * @param breaks Sequências onde a quebra é realizada.
    * @param removeEmptyLines Remove linhas vazias.
+   * @param breaks Sequências onde a quebra é realizada.
    */
   public static breakLines(
     text: string,
