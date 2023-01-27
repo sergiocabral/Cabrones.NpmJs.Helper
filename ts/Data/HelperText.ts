@@ -181,4 +181,53 @@ export class HelperText {
     }
     return result.substring(0, length);
   }
+
+  /**
+   * Quebra um texto em linhas.
+   * @param text Texto de entrada.
+   * @param trim Remove espaços no começo e fim de linha.
+   * @param breaks Sequências onde a quebra é realizada.
+   * @param removeEmptyLines Remove linhas vazias.
+   */
+  public static breakLines(
+    text: string,
+    trim = false,
+    removeEmptyLines = false,
+    breaks: Array<string | RegExp> = ['\r\n', '\n\r', '\n', '\r']
+  ): string[] {
+    let lines = [text];
+
+    for (const toBreak of breaks) {
+      lines = lines.reduce((result: string[], content: string): string[] => {
+        result.push(...content.split(toBreak));
+        return result;
+      }, []);
+    }
+
+    if (trim) {
+      for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        lines[lineIndex] = lines[lineIndex].trim();
+      }
+
+      while (lines[0] === '') {
+        lines.splice(0, 1);
+      }
+
+      while (lines[lines.length - 1] === '') {
+        lines.splice(lines.length - 1, 1);
+      }
+    }
+
+    if (removeEmptyLines) {
+      let lineIndex = 0;
+      while (lineIndex < lines.length) {
+        if (lines[lineIndex] === '') {
+          lines.splice(lineIndex, 1);
+          lineIndex--;
+        }
+        lineIndex++;
+      }
+    }
+    return lines;
+  }
 }
