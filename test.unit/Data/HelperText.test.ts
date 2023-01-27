@@ -474,4 +474,250 @@ describe('Classe HelperText', () => {
       }
     });
   });
+
+  describe('breakLines()', () => {
+    test('Deve retornar única se não houver quebras', () => {
+      // Arrange, Given
+
+      const inputText = 'texto sem quebra de linha';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(1);
+      expect(outputLines[0]).toBe(inputText);
+    });
+    test('deve linhas para texto com quebras', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\r\nlinha2\n\rlinha3\nlinha4\rlinha5';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(5);
+      expect(outputLines[0]).toBe('linha1');
+      expect(outputLines[1]).toBe('linha2');
+      expect(outputLines[2]).toBe('linha3');
+      expect(outputLines[3]).toBe('linha4');
+      expect(outputLines[4]).toBe('linha5');
+    });
+    test('deve respeitar espaços', () => {
+      // Arrange, Given
+
+      const inputText =
+        '  linha1  \r\n  linha2  \n\r  linha3  \n  linha4  \r  linha5  ';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(5);
+      expect(outputLines[0]).toBe('  linha1  ');
+      expect(outputLines[1]).toBe('  linha2  ');
+      expect(outputLines[2]).toBe('  linha3  ');
+      expect(outputLines[3]).toBe('  linha4  ');
+      expect(outputLines[4]).toBe('  linha5  ');
+    });
+    test('deve respeitar linhas vazias', () => {
+      // Arrange, Given
+
+      const inputText = '\r\n\n\r\n\r';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(5);
+      expect(outputLines[0]).toBe('');
+      expect(outputLines[1]).toBe('');
+      expect(outputLines[2]).toBe('');
+      expect(outputLines[3]).toBe('');
+      expect(outputLines[4]).toBe('');
+    });
+    test('deve manter linhas vazias', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\n\nlinha3';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(3);
+      expect(outputLines[0]).toBe('linha1');
+      expect(outputLines[1]).toBe('');
+      expect(outputLines[2]).toBe('linha3');
+    });
+    test('não deve aplicar trim por padrão', () => {
+      // Arrange, Given
+
+      const inputText = '  texto com espaço 1  \n  texto com espaço 2  ';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe('  texto com espaço 1  ');
+      expect(outputLines[1]).toBe('  texto com espaço 2  ');
+    });
+    test('quando solicitado, aplicando trim no texto', () => {
+      // Arrange, Given
+
+      const inputText = '  texto sem espaço 1  \n  texto sem espaço 2  ';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText, true);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe('texto sem espaço 1');
+      expect(outputLines[1]).toBe('texto sem espaço 2');
+    });
+    test('quando solicitado, aplicando trim nas linhas iniciais e finais', () => {
+      // Arrange, Given
+
+      const inputText = '\n\n\n\n\n\n  linha única  \n\n\n\n\n\n';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText, true);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(1);
+      expect(outputLines[0]).toBe('linha única');
+    });
+    test('não quebra linha se nenhum break for especificado', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\r\nlinha2\n\rlinha3\nlinha4\rlinha5';
+      const breaks = Array<string>();
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(
+        inputText,
+        false,
+        false,
+        breaks
+      );
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(1);
+      expect(outputLines[0]).toBe(inputText);
+    });
+    test('quebra linha com break tipo string', () => {
+      // Arrange, Given
+
+      const textWithBreaks = 'linha1\r\nlinha2\n\rlinha3\nlinha4\rlinha5';
+      const customBreak = Math.random().toString();
+      const textWithCustomBreak = `${textWithBreaks}${customBreak}${textWithBreaks}`;
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(
+        textWithCustomBreak,
+        false,
+        false,
+        [customBreak]
+      );
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe(textWithBreaks);
+      expect(outputLines[1]).toBe(textWithBreaks);
+    });
+    test('quebra linha com break tipo RegExp', () => {
+      // Arrange, Given
+
+      const textWithBreaks = 'linha1\r\nlinha2\n\rlinha3\nlinha4\rlinha5';
+      const customBreak = Math.random().toString();
+      const customBreakRegex = new RegExp(HelperText.escapeRegExp(customBreak));
+      const textWithCustomBreak = `${textWithBreaks}${customBreak}${textWithBreaks}`;
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(
+        textWithCustomBreak,
+        false,
+        false,
+        [customBreakRegex]
+      );
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe(textWithBreaks);
+      expect(outputLines[1]).toBe(textWithBreaks);
+    });
+    test('quando solicitado, remove linhas em branco', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\n\n\n\nlinha3';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText, false, true);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe('linha1');
+      expect(outputLines[1]).toBe('linha3');
+    });
+    test('ao remover linhas em branco, ignora linhas com espaços', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\n \n \n \nlinha3';
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText, false, true);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(5);
+      expect(outputLines[0]).toBe('linha1');
+      expect(outputLines[1]).toBe(' ');
+      expect(outputLines[2]).toBe(' ');
+      expect(outputLines[3]).toBe(' ');
+      expect(outputLines[4]).toBe('linha3');
+    });
+    test('ao remover linhas em branco, remove linhas com espaços se trim for informado', () => {
+      // Arrange, Given
+
+      const inputText = 'linha1\n \n \n \nlinha3';
+      const useTrim = true;
+
+      // Act, When
+
+      const outputLines = HelperText.breakLines(inputText, useTrim, true);
+
+      // Assert, Then
+
+      expect(outputLines.length).toBe(2);
+      expect(outputLines[0]).toBe('linha1');
+      expect(outputLines[1]).toBe('linha3');
+    });
+  });
 });
