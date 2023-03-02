@@ -170,29 +170,47 @@ export class HelperFileSystem {
   /**
    * Localiza arquivos recursivamente dentro de um caminho.
    * @param directoryPath Caminho
-   * @param filter Filtros
+   * @param allowFileName Filtro para localizar nomes de arquivos.
    * @param limitCount Limite de arquivos para encontrar.
+   * @param denyDirectoryName Filtro para ignorar nomes de diretórios
    */
   public static findFilesInto(
     directoryPath: string,
-    filter?: FiltersType,
-    limitCount?: number
+    allowFileName?: FiltersType,
+    limitCount?: number,
+    denyDirectoryName?: FiltersType
   ): string[] {
     const result: string[] = [];
     directoryPath = fs.realpathSync(directoryPath);
-    const items = fs.readdirSync(directoryPath);
-    for (const item of items) {
-      if (limitCount !== undefined && result.length >= limitCount) {
-        break;
-      }
-      const itemPath = pathNode.join(directoryPath, item);
-      const stats = HelperFileSystem.getStats(itemPath);
-      if (stats !== undefined) {
-        if (stats.isDirectory()) {
-          result.push(...this.findFilesInto(itemPath, filter, limitCount));
-        } else {
-          if (filter === undefined || HelperText.matchFilter(item, filter)) {
-            result.push(itemPath);
+    const directoryName = pathNode.basename(directoryPath);
+    if (
+      denyDirectoryName === undefined ||
+      !HelperText.matchFilter(directoryName, denyDirectoryName)
+    ) {
+      const items = fs.readdirSync(directoryPath);
+      for (const item of items) {
+        if (limitCount !== undefined && result.length >= limitCount) {
+          break;
+        }
+        const itemPath = pathNode.join(directoryPath, item);
+        const stats = HelperFileSystem.getStats(itemPath);
+        if (stats !== undefined) {
+          if (stats.isDirectory()) {
+            result.push(
+              ...this.findFilesInto(
+                itemPath,
+                allowFileName,
+                limitCount,
+                denyDirectoryName
+              )
+            );
+          } else {
+            if (
+              allowFileName === undefined ||
+              HelperText.matchFilter(item, allowFileName)
+            ) {
+              result.push(itemPath);
+            }
           }
         }
       }

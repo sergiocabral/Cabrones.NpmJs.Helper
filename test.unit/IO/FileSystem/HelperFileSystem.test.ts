@@ -947,6 +947,43 @@ describe('Classe HelperFileSystem', () => {
           )
         ).toBe(true);
       });
+      test('filtro para ignorar diretório por nome', () => {
+        // Arrange, Given
+
+        const directoryBase = `test-dir-delete-me-${Math.random()}`;
+        const directoryAllow = `test-dir-delete-me-${Math.random()}`;
+        const directoryDeny = `test-dir-delete-me-${Math.random()}`;
+        const fileName = `file-temp-${Math.random()}`;
+
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/${directoryAllow}/${fileName}`,
+          `Created by test. Delete me, please.`
+        );
+        HelperFileSystem.createRecursive(
+          `${directoryBase}/${directoryDeny}/${fileName}`,
+          `Created by test. Delete me, please.`
+        );
+
+        // Act, When
+
+        const allPaths = HelperFileSystem.findFilesInto(
+          directoryBase,
+          undefined,
+          undefined,
+          directoryDeny
+        );
+
+        // Assert, Then
+
+        expect(allPaths.length).toBe(1);
+        expect(
+          allPaths[0].endsWith(
+            HelperFileSystem.joinPath(
+              `${directoryBase}/${directoryAllow}/${fileName}`
+            )
+          )
+        ).toBe(true);
+      });
     });
   });
   describe('findFilesOut', () => {
